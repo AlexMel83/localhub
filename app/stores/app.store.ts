@@ -1,7 +1,7 @@
-import { defineStore } from "pinia";
-import { useNuxtApp } from "nuxt/app";
-import type { AuthApi } from "../api/auth";
-import { useCookie } from "#app";
+import { defineStore } from 'pinia';
+import { useNuxtApp } from 'nuxt/app';
+import type { AuthApi } from '../api/auth';
+import { useCookie } from '#app';
 
 interface User {
   id: number;
@@ -29,16 +29,16 @@ interface AuthResponse {
   };
 }
 
-export const useAppStore = defineStore("app", {
+export const useAppStore = defineStore('app', {
   state: () => {
-    const themeCookie = useCookie("theme", { default: () => "light" }); // Кукі за замовчуванням 'light'
-    const isDark = themeCookie.value === "dark";
+    const themeCookie = useCookie('theme', { default: () => 'light' }); // Кукі за замовчуванням 'light'
+    const isDark = themeCookie.value === 'dark';
 
     return {
       isMenuOpen: false,
       isLoading: false,
       menuOpen: false,
-      searchTerm: "",
+      searchTerm: '',
       isDark, // Початкове значення береться з cookie
     };
   },
@@ -51,20 +51,20 @@ export const useAppStore = defineStore("app", {
     },
     toggleDarkMode() {
       this.isDark = !this.isDark;
-      const themeCookie = useCookie("theme");
-      themeCookie.value = this.isDark ? "dark" : "light"; // Оновлюємо кукі
-      if (process.client) {
+      const themeCookie = useCookie('theme');
+      themeCookie.value = this.isDark ? 'dark' : 'light'; // Оновлюємо кукі
+      if (import.meta.client) {
         if (this.isDark) {
-          document.documentElement.classList.add("dark");
+          document.documentElement.classList.add('dark');
         } else {
-          document.documentElement.classList.remove("dark");
+          document.documentElement.classList.remove('dark');
         }
       }
     },
   },
 });
 
-export const useAuthStore = defineStore("auth", {
+export const useAuthStore = defineStore('auth', {
   state: () => ({
     userData: null as AuthResponse | null,
     isAuthed: false,
@@ -75,21 +75,21 @@ export const useAuthStore = defineStore("auth", {
         this.userData = {
           user: {
             id: 0,
-            email: "",
-            name: "",
-            surname: "",
-            phone: "",
-            role: "",
+            email: '',
+            name: '',
+            surname: '',
+            phone: '',
+            role: '',
             isactivated: false,
             social_login: false,
             facebook_id: null,
-            google_id: "",
-            picture: "",
-            created_at: "",
-            updated_at: "",
+            google_id: '',
+            picture: '',
+            created_at: '',
+            updated_at: '',
           },
           tokens: {
-            accessToken: "",
+            accessToken: '',
             refreshToken: undefined,
             expAcToken: undefined,
           },
@@ -102,13 +102,13 @@ export const useAuthStore = defineStore("auth", {
         this.userData.tokens = { ...this.userData.tokens, ...data.tokens };
       }
       this.isAuthed = true;
-      if (typeof window !== "undefined") {
-        localStorage.setItem("userData", JSON.stringify(this.userData));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('userData', JSON.stringify(this.userData));
       }
     },
     loadUserData() {
-      if (typeof window !== "undefined") {
-        const data = localStorage.getItem("userData");
+      if (typeof window !== 'undefined') {
+        const data = localStorage.getItem('userData');
         if (data) {
           this.userData = JSON.parse(data);
           this.isAuthed = !!this.userData?.tokens?.accessToken;
@@ -123,17 +123,17 @@ export const useAuthStore = defineStore("auth", {
       try {
         await $api.auth.logout();
         this.$reset();
-        if (typeof window !== "undefined") {
+        if (typeof window !== 'undefined') {
           localStorage.clear();
         }
       } catch (error) {
-        console.error("Error during logOut:", error);
+        console.error('Error during logOut:', error);
       }
     },
   },
 });
 
-export const useIsLoadingStore = defineStore("isLoading", {
+export const useIsLoadingStore = defineStore('isLoading', {
   state: () => ({
     isLoading: true,
   }),

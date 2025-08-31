@@ -13,21 +13,20 @@ export const MAP_CONFIG = {
 
 export const TILE_PROVIDERS = [
   {
-    name: "OpenStreetMap",
+    name: 'OpenStreetMap',
     visible: true,
-    attribution:
-      '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
   },
   {
-    name: "Mapbox satellite",
+    name: 'Mapbox satellite',
     visible: false,
     maxZoom: 19,
     url: `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=${mapboxApiKey}`,
     attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>',
   },
   {
-    name: "Mapbox hybrid",
+    name: 'Mapbox hybrid',
     visible: false,
     maxZoom: 19,
     url: `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/{z}/{x}/{y}?access_token=${mapboxApiKey}`,

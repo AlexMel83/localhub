@@ -6,7 +6,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig();
   const authStore = useAuthStore();
   let baseURL;
-  if (process.client) {
+  if (import.meta.client) {
     if (window.location.hostname === 'tour.starkon.pp.ua') {
       // baseURL = 'https://tourapi.' + window.location.hostname;
       baseURL = config.public.apiBase || 'http://localhost:5050';

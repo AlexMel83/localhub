@@ -1,4 +1,4 @@
-import type { AxiosInstance } from "axios";
+import type { AxiosInstance } from 'axios';
 
 export interface AuthResponse {
   status: number;
@@ -45,11 +45,7 @@ export interface User {
 
 export interface AuthApi {
   signIn(payload: { email: string; password: string }): Promise<AuthResponse>;
-  signUp(payload: {
-    email: string;
-    password: string;
-    role?: string;
-  }): Promise<AuthResponse>;
+  signUp(payload: { email: string; password: string; role?: string }): Promise<AuthResponse>;
   activate(activationLink: string): Promise<string>;
   logout(): Promise<void>;
   socAuth(provider: string): Promise<AuthResponse>;
@@ -60,23 +56,17 @@ export interface AuthApi {
 
 export default function (instance: AxiosInstance): AuthApi {
   return {
-    async signIn(payload: {
-      email: string;
-      password: string;
-    }): Promise<AuthResponse> {
-      return instance.post("/login", payload);
+    async signIn(payload: { email: string; password: string }): Promise<AuthResponse> {
+      return instance.post('/login', payload);
     },
-    async signUp(payload: {
-      email: string;
-      password: string;
-    }): Promise<AuthResponse> {
-      return instance.post("/registration", payload);
+    async signUp(payload: { email: string; password: string }): Promise<AuthResponse> {
+      return instance.post('/registration', payload);
     },
     async activate(activationlink) {
-      return instance.post("/activate/", { activationlink });
+      return instance.post('/activate/', { activationlink });
     },
     async logout() {
-      return instance.post("/logout");
+      return instance.post('/logout');
     },
     async socAuth(provider) {
       return instance.get(`/social-login/${provider}`, {
@@ -87,10 +77,10 @@ export default function (instance: AxiosInstance): AuthApi {
       return instance.post(`/auth-user/${authLink}`);
     },
     async refresh(refreshToken) {
-      return instance.post("/refresh", { refreshToken });
+      return instance.post('/refresh', { refreshToken });
     },
     async updateUser(payload: User) {
-      return instance.put("/users", payload);
+      return instance.put('/users', payload);
     },
   };
 }

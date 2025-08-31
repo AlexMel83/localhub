@@ -14,7 +14,7 @@
         @input="search"
         @focus="$emit('toggleSearchResults')"
       >
-        <template #leading> </template>
+        <template #leading />
 
         <template v-if="searchQuery !== ''" #trailing>
           <UButton
@@ -23,8 +23,8 @@
             size="sm"
             icon="i-lucide-x"
             aria-label="Clear input"
-            @click="searchQuery = ''"
             class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            @click="searchQuery = ''"
           />
         </template>
       </UInput>
@@ -40,32 +40,29 @@
           <div v-else>
             <UButton
               v-for="(result, index) in searchData"
-              key="index"
+              :key="index"
               color="neutral"
               variant="link"
               size="sm"
               icon="lucide-map-pin"
               aria-label="Clear input"
-              @click="selectResult(result)"
               class="items-start gap-2 cursor-pointer hover:bg-slate-600 hover:text-white"
+              @click="selectResult(result)"
             >
               {{ result.place_name_uk }}
             </UButton>
           </div>
         </div>
         <!--Selected Search Result-->
-        <div
-          v-if="selectedResult"
-          class="mt-2 px-3 py-3 bg-white rounded-md relative"
-        >
+        <div v-if="selectedResult" class="mt-2 px-3 py-3 bg-white rounded-md relative">
           <UButton
             color="neutral"
             variant="link"
             size="sm"
             icon="i-lucide-x"
             aria-label="Clear input"
-            @click="removeResult"
             class="size-5 absolute top-2 right-2 cursor-pointer"
+            @click="removeResult"
           />
           <h1 class="text-lg">
             {{ selectedResult.text }}
@@ -96,9 +93,9 @@
 </template>
 
 <script setup>
-import { ref, watch, onUnmounted } from "vue";
-import axios from "axios";
-import { useRuntimeConfig } from "#app";
+import { ref, watch, onUnmounted } from 'vue';
+import axios from 'axios';
+import { useRuntimeConfig } from '#app';
 
 const props = defineProps({
   coords: {
@@ -123,15 +120,9 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits([
-  "toggleSearchResults",
-  "getGeoLocation",
-  "selectedResult",
-  "plotResult",
-  "removeResult",
-]);
+const emit = defineEmits(['toggleSearchResults', 'getGeoLocation', 'selectedResult', 'plotResult', 'removeResult']);
 
-const searchQuery = ref("");
+const searchQuery = ref('');
 const searchData = ref(null);
 const queryTimeout = ref(null);
 const selectedResult = ref(null);
@@ -144,23 +135,19 @@ const search = () => {
 
   searchData.value = null;
   queryTimeout.value = setTimeout(async () => {
-    if (searchQuery.value !== "") {
+    if (searchQuery.value !== '') {
       const params = new URLSearchParams({
         fuzzyMatch: true,
-        language: "uk",
+        language: 'uk',
         limit: 10,
-        proximity: props.coords
-          ? `${props.coords.lng},${props.coords.lat}`
-          : "0,0",
+        proximity: props.coords ? `${props.coords.lng},${props.coords.lat}` : '0,0',
       });
       try {
-        const { data } = await axios.get(
-          `${apiBase}/geosearch/${searchQuery.value}?${params}`
-        );
+        const { data } = await axios.get(`${apiBase}/geosearch/${searchQuery.value}?${params}`);
 
         searchData.value = data.features;
       } catch (error) {
-        console.error("Error fetching search data:", error);
+        console.error('Error fetching search data:', error);
       }
     }
   }, 750);
@@ -168,13 +155,13 @@ const search = () => {
 
 const selectResult = (result) => {
   selectedResult.value = result;
-  emit("plotResult", result.geometry);
-  emit("selectedResult", result);
+  emit('plotResult', result.geometry);
+  emit('selectedResult', result);
 };
 
 const removeResult = () => {
   selectedResult.value = null;
-  emit("removeResult");
+  emit('removeResult');
 };
 
 // Clean up timeout on component unmount

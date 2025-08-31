@@ -1,10 +1,7 @@
 <template>
   <section
     v-if="panoramas.length > 0"
-    :class="[
-      'mapsection relative',
-      fullScreen ? 'fixed inset-0 w-full h-screen z-[1600]' : 'h-96',
-    ]"
+    :class="['mapsection relative', fullScreen ? 'fixed inset-0 w-full h-screen z-[1600]' : 'h-96']"
     name="image-map"
     :style="{
       transition: 'height 300ms ease-in-out, width 300ms ease-in-out',
@@ -16,11 +13,7 @@
       :map-ref="map?.leafletObject ? map : null"
       @update:is-full-screen="fullScreen = $event"
     />
-    <MapGeoError
-      v-if="geoError"
-      :error-message="geoErrorMsg"
-      @close="closeGeoError"
-    />
+    <MapGeoError v-if="geoError" :error-message="geoErrorMsg" @close="closeGeoError" />
     <map-features
       :search-results="searchResults"
       :fetch-coords="fetchCoords"
@@ -77,17 +70,12 @@
 </template>
 
 <script setup>
-import { MAP_CONFIG, TILE_PROVIDERS } from "@/constants/map-config";
-import L from "leaflet";
-import "leaflet.markercluster";
-import {
-  LControlLayers,
-  LControlScale,
-  LMap,
-  LTileLayer,
-} from "@vue-leaflet/vue-leaflet";
-import { useAppStore } from "~/stores/app.store";
-import { useI18n } from "vue-i18n";
+import { MAP_CONFIG, TILE_PROVIDERS } from '@/constants/map-config';
+import L from 'leaflet';
+import 'leaflet.markercluster';
+import { LControlLayers, LControlScale, LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
+import { useAppStore } from '~/stores/app.store';
+import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 const store = useAppStore();
 
@@ -119,27 +107,21 @@ const onMapReady = () => {
   markerClusterGroupMemories.value = L.markerClusterGroup();
   markerClusterGroupPanoramas.value = L.markerClusterGroup();
   if (memoriesGroup.value?.leafletObject) {
-    memoriesGroup.value.leafletObject.addLayer(
-      markerClusterGroupMemories.value
-    );
+    memoriesGroup.value.leafletObject.addLayer(markerClusterGroupMemories.value);
   }
   if (panoramasGroup.value?.leafletObject) {
-    panoramasGroup.value.leafletObject.addLayer(
-      markerClusterGroupPanoramas.value
-    );
+    panoramasGroup.value.leafletObject.addLayer(markerClusterGroupPanoramas.value);
   }
 };
 
 const plotGeoLocation = (coords) => {
   if (map.value?.leafletObject) {
-    geoMarker.value = createCustomIcon(coords.lat, coords.lng).addTo(
-      map.value.leafletObject
-    );
+    geoMarker.value = createCustomIcon(coords.lat, coords.lng).addTo(map.value.leafletObject);
     geoMarker.value.bindPopup(
       createCoordinatesPopupContent({
         lat: coords.lat.toFixed(4),
         lng: coords.lng.toFixed(4),
-      })
+      }),
     );
     map.value.leafletObject.setView([coords.lat, coords.lng], MAP_CONFIG.ZOOM);
   }
@@ -150,21 +132,15 @@ const plotResult = (coords) => {
     map.value.leafletObject.removeLayer(resultMarker.value);
   }
   if (map.value?.leafletObject) {
-    resultMarker.value = createCustomIcon(
-      coords.coordinates[1],
-      coords.coordinates[0]
-    ).addTo(map.value.leafletObject);
+    resultMarker.value = createCustomIcon(coords.coordinates[1], coords.coordinates[0]).addTo(map.value.leafletObject);
     resultMarker.value.bindPopup(
       createCoordinatesPopupContent({
         lat: coords.coordinates[1].toFixed(4),
         lng: coords.coordinates[0].toFixed(4),
       }),
-      { offset: [0, -20] }
+      { offset: [0, -20] },
     );
-    map.value.leafletObject.setView(
-      [coords.coordinates[1], coords.coordinates[0]],
-      MAP_CONFIG.ZOOM
-    );
+    map.value.leafletObject.setView([coords.coordinates[1], coords.coordinates[0]], MAP_CONFIG.ZOOM);
     closeSearchResults();
   }
 };
@@ -172,28 +148,25 @@ const plotResult = (coords) => {
 const createCustomIcon = (lat, lng) => {
   const icon = L.divIcon({
     html: createSvgIcon(),
-    className: "custom-div-icon",
+    className: 'custom-div-icon',
     iconAnchor: [17, 35],
     iconSize: [35, 35],
   });
   const marker = L.marker([lat, lng], { icon, draggable: true });
   markerCoordinates.value = { lat, lng };
-  marker.on("moveend", (event) => {
+  marker.on('moveend', (event) => {
     const newLatLng = event.target.getLatLng();
     markerCoordinates.value = {
       lat: newLatLng.lat.toFixed(7),
       lng: newLatLng.lng.toFixed(7),
     };
-    marker.setPopupContent(
-      createCoordinatesPopupContent(markerCoordinates.value),
-      { offset: [0, -20] }
-    );
+    marker.setPopupContent(createCoordinatesPopupContent(markerCoordinates.value), { offset: [0, -20] });
   });
 
   return marker;
 };
 
-const createSvgIcon = (color = "#ef4444") => `
+const createSvgIcon = (color = '#ef4444') => `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}" class="custom-map-pin">
     <path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
   </svg>
@@ -201,8 +174,8 @@ const createSvgIcon = (color = "#ef4444") => `
 
 const createPoint = async (coords) => {
   const payload = {
-    title: selectedResultData.value?.place_name || "",
-    address: selectedResultData.value?.place_name || "",
+    title: selectedResultData.value?.place_name || '',
+    address: selectedResultData.value?.place_name || '',
     location: `POINT(${coords.lng} ${coords.lat})`,
     user_id: store?.userData?.user?.id,
   };
@@ -213,27 +186,19 @@ const createCoordinatesPopupContent = (coords) => {
   return `
       <div class="px-1">
         <p class="text-center font-bold mb-2">${t(
-          "Map.coordinates"
-        )} <p class="text-center">${t("Map.latitude")} ${coords.lat}, ${t(
-    "Map.longitude"
-  )} ${coords.lng}</p>
+          'Map.coordinates',
+        )} <p class="text-center">${t('Map.latitude')} ${coords.lat}, ${t('Map.longitude')} ${coords.lng}</p>
           <label for="title">Заголовок</label>
         <input class="border p-1 w-full" name="title" value="${
-          selectedResultData.value?.place_name || ""
-        }" placeholder="${
-    selectedResultData.value?.place_name || t("Map.inputTitle")
-  }" class="border p-1 w-full" />
-        <label for="address">${t("Map.address")}</label>
-        <input name="address" value="${
-          selectedResultData.value?.place_name || ""
-        }" placeholder="${
-    selectedResultData.value?.place_name || t("Map.inputAddress")
-  }" class="border p-1 w-full" />
-        <button type="button" @click="${createPoint(
-          coords
-        )}" class="bg-blue-500 text-white p-1 rounded mt-2">${t(
-    "Map.createPoint"
-  )}</button>
+          selectedResultData.value?.place_name || ''
+        }" placeholder="${selectedResultData.value?.place_name || t('Map.inputTitle')}" class="border p-1 w-full" />
+        <label for="address">${t('Map.address')}</label>
+        <input name="address" value="${selectedResultData.value?.place_name || ''}" placeholder="${
+          selectedResultData.value?.place_name || t('Map.inputAddress')
+        }" class="border p-1 w-full" />
+        <button type="button" @click="${createPoint(coords)}" class="bg-blue-500 text-white p-1 rounded mt-2">${t(
+          'Map.createPoint',
+        )}</button>
       </div>
     `;
 };
@@ -241,7 +206,7 @@ const createCoordinatesPopupContent = (coords) => {
 const getGeoLocation = () => {
   if (coords.value) {
     resetCoords();
-  } else if (sessionStorage.getItem("coords")) {
+  } else if (sessionStorage.getItem('coords')) {
     setCoordsFromSession();
   } else {
     requestGeoLocation();
@@ -250,12 +215,12 @@ const getGeoLocation = () => {
 
 const resetCoords = () => {
   coords.value = null;
-  sessionStorage.removeItem("coords");
+  sessionStorage.removeItem('coords');
   map.value?.leafletObject?.removeLayer(geoMarker.value);
 };
 
 const setCoordsFromSession = () => {
-  coords.value = JSON.parse(sessionStorage.getItem("coords"));
+  coords.value = JSON.parse(sessionStorage.getItem('coords'));
   plotGeoLocation(coords.value);
 };
 
@@ -270,7 +235,7 @@ const setCoords = (position) => {
     lat: position.coords.latitude,
     lng: position.coords.longitude,
   };
-  sessionStorage.setItem("coords", JSON.stringify(coords.value));
+  sessionStorage.setItem('coords', JSON.stringify(coords.value));
   plotGeoLocation(coords.value);
 };
 
