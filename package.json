@@ -21,12 +21,24 @@
     "@pinia/nuxt": "^0.11.2",
     "axios": "^1.11.0",
     "better-sqlite3": "^12.2.0",
-    "eslint": "^9.34.0",
     "leaflet.markercluster": "^1.5.3",
     "nuxt": "^4.0.3",
     "pinia": "^3.0.3",
     "typescript": "^5.9.2",
     "vue": "^3.5.20",
     "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@typescript-eslint/eslint-plugin": "^8.1.0",
+    "@typescript-eslint/parser": "^8.1.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-vue": "^9.27.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.7",
+    "prettier": "^3.3.3"
   }
 }
