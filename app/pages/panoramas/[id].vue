@@ -22,6 +22,13 @@
         {{ $t('Panoramas.shootingDate') }}
         {{ formatDate(panorama.shooting_date) }}
       </div>
+      <div v-if="state.goods">
+        <h2>Our Goods and Actions</h2>
+        <div v-for="good in state.goods" :key="good['Назва товару']">
+          {{ good['Назва товару'] }} {{ good['Звичайна ціна (UAH)'] }} {{ good['Акційна ціна (UAH)'] }}
+          {{ good['Термін дії акції'] }} {{ good['фото'] }}
+        </div>
+      </div>
     </div>
     <div v-else class="loading">
       {{ $t('Panoramas.back') }}
@@ -30,8 +37,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, reactive } from 'vue';
 import { useRoute } from 'vue-router';
+import axios from 'axios';
+
+const state = reactive({ goods: [] });
 
 const route = useRoute();
 const streetViewContainer = ref(null);
@@ -101,6 +111,12 @@ const loadPanorama = async () => {
 
 onMounted(async () => {
   await loadPanorama();
+  const url =
+    'https://script.google.com/macros/s/AKfycbzfUqCk_D9bM1tmHgTeA_v8wmRzSMqYFI1qSPW0Ln8TpI5LNqxKHZs8lr0ffu8Vy4tM/exec';
+  axios.get(url).then((data) => {
+    state.goods = data.data;
+    console.log(state.goods);
+  });
 });
 </script>
 
