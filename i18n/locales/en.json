@@ -1,0 +1,18 @@
+{
+  "Map": {
+    "expandMap": "Expand map",
+    "collapseMap": "Collapse map",
+    "searchPlaceholder": "Search",
+    "geoErrorTitle": "Geolocation error",
+    "geoErrorClose": "Close",
+    "panoramas": "Panoramas",
+    "memories": "Memories",
+    "coordinates": "Coordinates:",
+    "latitude": "Latitude:",
+    "longitude": "Longitude:",
+    "inputTitle": "Input title",
+    "inputAddress": "Input address",
+    "address": "Address:",
+    "createPlace": "Define place"
+  }
+}

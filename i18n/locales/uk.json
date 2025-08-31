@@ -1,0 +1,18 @@
+{
+  "Map": {
+    "expandMap": "Розгорнути мапу",
+    "collapseMap": "Згорнути мапу",
+    "searchPlaceholder": "Пошук",
+    "geoErrorTitle": "Помилка геолокації",
+    "geoErrorClose": "Закрити",
+    "panoramas": "Панорами",
+    "memories": "Спогади",
+    "coordinates": "Координати:",
+    "latitude": "Широта:",
+    "longitude": "Довгота:",
+    "inputTitle": "Введіть назву",
+    "inputAddress": "Введіть адресу",
+    "address": "Адреса:",
+    "createPlace": "Визначити місце"
+  }
+}
