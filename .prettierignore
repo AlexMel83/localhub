@@ -1,0 +1,6 @@
+.nuxt/
+.wrangler/
+.husky/
+nuxt.config.ts
+dist/
+node_modules/
