@@ -11,11 +11,7 @@ export default defineNuxtConfig({
     "@nuxtjs/i18n",
     "@pinia/nuxt",
   ],
-  css: [
-    "~/assets/css/main.css",
-    "leaflet.markercluster/dist/MarkerCluster.css",
-    "leaflet.markercluster/dist/MarkerCluster.Default.css",
-  ],
+  css: ["~/assets/css/main.css"],
   leaflet: {
     markerCluster: true,
   },

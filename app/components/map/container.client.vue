@@ -11,7 +11,7 @@
       position: fullScreen ? 'fixed' : 'relative',
     }"
   >
-    <MapExpandButton
+    <ButtonExpand
       :is-full-screen="fullScreen"
       :map-ref="map?.leafletObject ? map : null"
       @update:is-full-screen="fullScreen = $event"

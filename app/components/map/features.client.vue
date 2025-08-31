@@ -7,26 +7,25 @@
       <UInput
         v-model="searchQuery"
         :ui="{ icon: { trailing: { pointer: '' } } }"
+        icon="i-lucide-search"
         type="text"
         :placeholder="$t('Map.searchPlaceholder')"
         autocomplete="off"
         @input="search"
         @focus="$emit('toggleSearchResults')"
       >
-        <template #leading>
-          <span>
-            <magnifying-glass-icon class="text-black dark:text-white" />
-          </span>
-        </template>
+        <template #leading> </template>
 
-        <template #trailing>
-          <button
-            v-show="searchQuery !== ''"
-            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+        <template v-if="searchQuery !== ''" #trailing>
+          <UButton
+            color="neutral"
+            variant="link"
+            size="sm"
+            icon="i-lucide-x"
+            aria-label="Clear input"
             @click="searchQuery = ''"
-          >
-            <icons-close-icon class="icon-class" />
-          </button>
+            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          />
         </template>
       </UInput>
       <!--Search result-->
@@ -39,17 +38,19 @@
           <!--Loading-->
           <LoadingSpinner v-if="!searchData" />
           <div v-else>
-            <div
+            <UButton
               v-for="(result, index) in searchData"
-              :key="index"
-              class="px-4 py-2 flex items-center gap-2 cursor-pointer hover:bg-slate-600 hover:text-white"
+              key="index"
+              color="neutral"
+              variant="link"
+              size="sm"
+              icon="lucide-map-pin"
+              aria-label="Clear input"
               @click="selectResult(result)"
+              class="items-start gap-2 cursor-pointer hover:bg-slate-600 hover:text-white"
             >
-              <IconsGeoPin class="size-6" />
-              <p class="text-xs">
-                {{ result.place_name_uk }}
-              </p>
-            </div>
+              {{ result.place_name_uk }}
+            </UButton>
           </div>
         </div>
         <!--Selected Search Result-->
@@ -57,9 +58,14 @@
           v-if="selectedResult"
           class="mt-2 px-3 py-3 bg-white rounded-md relative"
         >
-          <IconsCloseIcon
-            class="size-5 absolute top-2 right-2 cursor-pointer"
+          <UButton
+            color="neutral"
+            variant="link"
+            size="sm"
+            icon="i-lucide-x"
+            aria-label="Clear input"
             @click="removeResult"
+            class="size-5 absolute top-2 right-2 cursor-pointer"
           />
           <h1 class="text-lg">
             {{ selectedResult.text }}
@@ -77,8 +83,9 @@
       :class="{ 'bg-primary-300': coords, 'bg-white': !coords }"
       @click="$emit('getGeoLocation')"
     >
-      <IconsGeoPin
-        class="size-6 text-slate-600 hover:scale-110 text-[25px]"
+      <UIcon
+        name="lucide-map-pin"
+        class="size-5 text-slate-600 hover:scale-110 text-[25px]"
         :class="{
           'text-black': coords,
           'animate-pulse': fetchCoords,
@@ -92,7 +99,6 @@
 import { ref, watch, onUnmounted } from "vue";
 import axios from "axios";
 import { useRuntimeConfig } from "#app";
-import MagnifyingGlassIcon from "~/components/icons/MagnifyingGlassIcon.vue";
 
 const props = defineProps({
   coords: {
@@ -125,7 +131,7 @@ const emit = defineEmits([
   "removeResult",
 ]);
 
-const searchQuery = ref(null);
+const searchQuery = ref("");
 const searchData = ref(null);
 const queryTimeout = ref(null);
 const selectedResult = ref(null);
@@ -147,7 +153,6 @@ const search = () => {
           ? `${props.coords.lng},${props.coords.lat}`
           : "0,0",
       });
-      console.log(apiBase);
       try {
         const { data } = await axios.get(
           `${apiBase}/geosearch/${searchQuery.value}?${params}`
