@@ -14,5 +14,19 @@
     "inputAddress": "Input address",
     "address": "Address:",
     "createPoint": "Define place"
+  },
+  "Panoramas": {
+    "collapse": "Collapse panoramas",
+    "expand": "Expand panoramas",
+    "created": "Created:",
+    "updated": "Updated:",
+    "shootingDate": "Date of shooting:",
+    "see": "See",
+    "address": "Address:",
+    "addressNotAvailable": "Address not available",
+    "description": "Description:",
+    "back": "Back",
+    "forward": "Forward",
+    "loading": "Loading panoramas..."
   }
 }

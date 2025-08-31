@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  plugins: ["~/plugins/axios.js"],
+  plugins: ["~/plugins/axios.js", "~/plugins/google-maps.js"],
   modules: [
     "@nuxtjs/leaflet",
     "@nuxt/eslint",
@@ -32,7 +32,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiKeyMapbox: process.env.APIKEY_MAPBOX,
-      // googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+      googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
       // gtagId: process.env.NUXT_PUBLIC_GTAG_ID || "G-6RYNGNQ3ZB",
       apiBase: process.env.API_BASE_URL || "https://api.memory.pp.ua",
       isDocker: process.env.NUXT_PUBLIC_IS_DOCKER || "false",

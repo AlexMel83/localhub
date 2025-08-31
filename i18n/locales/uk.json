@@ -14,5 +14,19 @@
     "inputAddress": "Введіть адресу",
     "address": "Адреса:",
     "createPoint": "Визначити місце"
+  },
+  "Panoramas": {
+    "collapse": "Згорнути панорами",
+    "expand": "Розгорнути панорами",
+    "created": "Створено:",
+    "updated": "Оновлено:",
+    "shootingDate": "Дата зйомки:",
+    "see": "Переглянути",
+    "address": "Адреса:",
+    "addressNotAvailable": "Адрес не указан",
+    "description": "Опис:",
+    "back": "Назад",
+    "forward": "Вперед",
+    "loading": "Завантаження панорами..."
   }
 }
