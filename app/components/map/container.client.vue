@@ -1,18 +1,13 @@
 <template>
   <section
-    v-if="panoramas.length > 0"
-    :class="['mapsection relative', fullScreen ? 'fixed inset-0 w-full h-screen z-[1600]' : 'h-96']"
+    class="mapsection relative"
+    :class="fullScreen ? 'fixed inset-0 w-full h-screen z-[1600]' : 'h-screen'"
     name="image-map"
     :style="{
       transition: 'height 300ms ease-in-out, width 300ms ease-in-out',
       position: fullScreen ? 'fixed' : 'relative',
     }"
   >
-    <ButtonExpand
-      :is-full-screen="fullScreen"
-      :map-ref="map?.leafletObject ? map : null"
-      @update:is-full-screen="fullScreen = $event"
-    />
     <MapGeoError v-if="geoError" :error-message="geoErrorMsg" @close="closeGeoError" />
     <map-features
       :search-results="searchResults"
@@ -59,11 +54,6 @@
         :show-panorama-markers="showPanoramaMarkers"
         :layer-name="$t('Map.panoramas')"
       />
-      <!-- <MapMemoryMarkers
-        :memories="memories"
-        :show-memory-markers="showMemoryMarkers"
-        :layer-name="$t('Map.memories')"
-      /> -->
       <LControlScale position="bottomright" :imperial="false" :metric="true" />
     </LMap>
   </section>
@@ -76,6 +66,7 @@ import 'leaflet.markercluster';
 import { LControlLayers, LControlScale, LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import { useAppStore } from '~/stores/app.store';
 import { useI18n } from 'vue-i18n';
+import { LControlZoom } from '#components';
 const { t } = useI18n();
 const store = useAppStore();
 
@@ -272,6 +263,10 @@ const handleSelectedResult = (result) => {
 </script>
 
 <style scoped>
+:deep(.leaflet-control-zoom) {
+  margin-top: 80px !important;
+}
+
 .custom-div-icon {
   background: none;
   border: none;

@@ -1,4 +1,7 @@
 {
+  "header": {
+    "search": "Пошук"
+  },
   "Map": {
     "expandMap": "Розгорнути мапу",
     "collapseMap": "Згорнути мапу",

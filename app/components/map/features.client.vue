@@ -1,10 +1,8 @@
 <template>
-  <div
-    class="w-auto absolute top-[15px] left-[30px] md:left-[60px] z-[2] flex gap-4 px-6 pb-8 md:px-0 md:py-0 bg-transparent"
-  >
+  <div class="w-auto absolute top-[80px] left-[40px] z-[2] flex gap-4 px-6 pb-8 md:px-0 md:py-0 bg-transparent">
     <!--Search-->
     <div class="relative flex-1">
-      <UInput
+      <!-- <UInput
         v-model="searchQuery"
         :ui="{ icon: { trailing: { pointer: '' } } }"
         icon="i-lucide-search"
@@ -27,7 +25,7 @@
             @click="searchQuery = ''"
           />
         </template>
-      </UInput>
+      </UInput> -->
       <!--Search result-->
       <div class="absolute mt-2 w-full">
         <!--Results-->

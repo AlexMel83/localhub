@@ -1,4 +1,7 @@
 {
+  "header": {
+    "search": "search"
+  },
   "Map": {
     "expandMap": "Expand map",
     "collapseMap": "Collapse map",
