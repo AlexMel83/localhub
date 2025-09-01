@@ -66,7 +66,7 @@ import 'leaflet.markercluster';
 import { LControlLayers, LControlScale, LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import { useAppStore } from '~/stores/app.store';
 import { useI18n } from 'vue-i18n';
-import { LControlZoom } from '#components';
+
 const { t } = useI18n();
 const store = useAppStore();
 

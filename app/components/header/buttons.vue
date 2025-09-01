@@ -3,8 +3,8 @@
     <!-- Переключатель языка -->
     <UButton
       class="cursor-pointer hover:text-custom-orange dark:hover:text-custom-orange transition-colors relative w-12 h-8 flex items-center justify-center overflow-hidden"
-      @click="toggleLanguage"
       color="neutral"
+      @click="toggleLanguage"
     >
       <transition name="fade" mode="out-in">
         <span :key="currentLocale" class="absolute">
@@ -16,8 +16,8 @@
     <UButton
       class="cursor-pointer hover:text-custom-orange dark:hover:text-custom-orange transition-colors"
       aria-label="Toggle dark mode"
-      @click="appStore.toggleDarkMode"
       color="neutral"
+      @click="appStore.toggleDarkMode"
     >
       <Icon
         :name="`${appStore.isDark ? 'line-md:sunny-filled-loop' : 'line-md:sunny-filled-loop-to-moon-filled-loop-transition'}`"
@@ -25,7 +25,7 @@
       />
     </UButton>
     <!-- Кнопка поиска -->
-    <UButton class="cursor-pointer" aria-label="Search" @click="toggleSearch" color="neutral">
+    <UButton class="cursor-pointer" aria-label="Search" color="neutral" @click="toggleSearch">
       <Icon name="lucide-search" class="w-5 h-5" />
     </UButton>
     <!-- Кнопка мобильного меню -->
@@ -35,8 +35,8 @@
         'text-custom-orange': isMenuOpen,
         'hover:text-custom-orange dark:hover:text-custom-orange': !isMenuOpen,
       }"
-      @click="toggleMenu"
       color="neutral"
+      @click="toggleMenu"
     >
       <Icon
         :name="`${isMenuOpen ? 'material-symbols:close-rounded' : 'humbleicons:bars'}`"
@@ -76,7 +76,7 @@ watch(
 );
 
 onMounted(() => {
-  if (process.client) {
+  if (import.meta.client) {
     document.documentElement.classList.toggle('dark', appStore.isDark);
   }
 });
