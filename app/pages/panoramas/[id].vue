@@ -36,9 +36,9 @@
 
           <UTable
             ref="table"
+            v-model:column-filters="columnFilters"
             sticky
             class="flex-1 max-h-[312px]"
-            v-model:column-filters="columnFilters"
             :data="goods"
             :columns="columns"
           />
