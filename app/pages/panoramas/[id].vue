@@ -34,7 +34,14 @@
             />
           </div>
 
-          <UTable ref="table" v-model:column-filters="columnFilters" :data="goods" :columns="columns" />
+          <UTable
+            ref="table"
+            sticky
+            class="flex-1 max-h-[312px]"
+            v-model:column-filters="columnFilters"
+            :data="goods"
+            :columns="columns"
+          />
         </div>
       </div>
     </div>
@@ -51,6 +58,8 @@ import axios from 'axios';
 
 const goods = ref([]);
 const UBadge = resolveComponent('UBadge');
+const UButton = resolveComponent('UButton');
+const UIcon = resolveComponent('UIcon');
 
 const route = useRoute();
 const streetViewContainer = ref(null);
@@ -75,11 +84,41 @@ const columns = [
   },
   {
     accessorKey: 'name',
-    header: 'Назва товару',
+    header: ({ column }) => {
+      const isSorted = column.getIsSorted();
+
+      return h(UButton, {
+        color: 'neutral',
+        variant: 'ghost',
+        label: 'Назва товару',
+        icon: isSorted
+          ? isSorted === 'asc'
+            ? 'i-lucide-arrow-up-narrow-wide'
+            : 'i-lucide-arrow-down-wide-narrow'
+          : 'i-lucide-arrow-up-down',
+        class: '-mx-2.5',
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      });
+    },
   },
   {
     accessorKey: 'basic_price',
-    header: () => h('div', { class: 'text-right' }, 'Звичайна ціна'),
+    header: ({ column }) => {
+      const isSorted = column.getIsSorted();
+
+      return h(UButton, {
+        color: 'neutral',
+        variant: 'ghost',
+        label: 'Ціна',
+        icon: isSorted
+          ? isSorted === 'asc'
+            ? 'i-lucide-arrow-up-narrow-wide'
+            : 'i-lucide-arrow-down-wide-narrow'
+          : 'i-lucide-arrow-up-down',
+        class: '-mx-2.5 text-right whitespace-normal break-words min-w-[80px] w-full', // щоб вирівняти вправо
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      });
+    },
     cell: ({ row }) => {
       const value = row.getValue('basic_price');
       if (!value) return '';
@@ -126,7 +165,26 @@ const columns = [
   },
   {
     accessorKey: 'action_price',
-    header: () => h('div', { class: 'text-right' }, 'Акційна ціна'),
+    header: ({ column }) => {
+      const isSorted = column.getIsSorted();
+      return h(
+        'button',
+        {
+          class: 'w-full flex items-center justify-end',
+          onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+        },
+        [
+          h('span', { class: 'text-center whitespace-normal break-words min-w-[80px]' }, 'Акційна ціна'),
+          h(UIcon, {
+            name: isSorted
+              ? isSorted === 'asc'
+                ? 'i-lucide-arrow-up-narrow-wide'
+                : 'i-lucide-arrow-down-wide-narrow'
+              : 'i-lucide-arrow-up-down',
+          }),
+        ],
+      );
+    },
     cell: ({ row }) => {
       const value = row.getValue('action_price');
       if (!value) return '';
@@ -139,12 +197,12 @@ const columns = [
         currency: 'UAH',
       }).format(amount);
 
-      return h('div', { class: 'text-right font-medium' }, formatted);
+      return h('div', { class: 'text-center font-medium' }, formatted);
     },
   },
   {
     accessorKey: 'action_start',
-    header: 'Дата початку акції',
+    header: 'Початок акції',
     cell: ({ row }) => {
       const value = row.getValue('action_start');
       if (!value) return '';
@@ -152,10 +210,13 @@ const columns = [
       const date = new Date(value);
       return isNaN(date.getTime()) ? '' : date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
     },
+    meta: {
+      class: 'text-center',
+    },
   },
   {
     accessorKey: 'action_over',
-    header: 'Дата закінчення акції',
+    header: 'Закінчення акції',
     cell: ({ row }) => {
       const value = row.getValue('action_over');
       if (!value) return '';
@@ -163,45 +224,8 @@ const columns = [
       const date = new Date(value);
       return isNaN(date.getTime()) ? '' : date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
     },
-  },
-  {
-    accessorKey: 'action_price',
-    header: () => h('div', { class: 'text-right' }, 'Акційна ціна'),
-    cell: ({ row }) => {
-      const value = row.getValue('action_price');
-      if (!value) return '';
-
-      const amount = Number.parseFloat(value);
-      if (isNaN(amount)) return '';
-
-      const formatted = new Intl.NumberFormat('uk-UA', {
-        style: 'currency',
-        currency: 'UAH',
-      }).format(amount);
-
-      return h('div', { class: 'text-right font-medium' }, formatted);
-    },
-  },
-  {
-    accessorKey: 'action_start',
-    header: 'Дата початку акції',
-    cell: ({ row }) => {
-      const value = row.getValue('action_start');
-      if (!value) return '';
-
-      const date = new Date(value);
-      return isNaN(date.getTime()) ? '' : date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
-    },
-  },
-  {
-    accessorKey: 'action_over',
-    header: 'Дата закінчення акції',
-    cell: ({ row }) => {
-      const value = row.getValue('action_over');
-      if (!value) return '';
-
-      const date = new Date(value);
-      return isNaN(date.getTime()) ? '' : date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
+    meta: {
+      class: 'text-center',
     },
   },
   {
