@@ -22,11 +22,19 @@
         {{ $t('Panoramas.shootingDate') }}
         {{ formatDate(panorama.shooting_date) }}
       </div>
-      <div v-if="state.goods">
-        <h2>Our Goods and Actions</h2>
-        <div v-for="good in state.goods" :key="good['Назва товару']">
-          {{ good['Назва товару'] }} {{ good['Звичайна ціна (UAH)'] }} {{ good['Акційна ціна (UAH)'] }}
-          {{ good['Термін дії акції'] }} {{ good['фото'] }}
+      <div>
+        <h2>Наші товари та акції</h2>
+        <div class="flex flex-col flex-1 w-full">
+          <div class="flex px-4 py-3.5 border-b border-accented">
+            <UInput
+              :model-value="table?.tableApi?.getColumn('name')?.getFilterValue()"
+              class="max-w-sm"
+              placeholder="Пошук по назві"
+              @update:model-value="table?.tableApi?.getColumn('name')?.setFilterValue($event)"
+            />
+          </div>
+
+          <UTable ref="table" v-model:column-filters="columnFilters" :data="goods" :columns="columns" />
         </div>
       </div>
     </div>
@@ -37,17 +45,179 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, reactive } from 'vue';
+import { ref, onMounted, nextTick, h, resolveComponent } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 
-const state = reactive({ goods: [] });
+const goods = ref([]);
+const UBadge = resolveComponent('UBadge');
 
 const route = useRoute();
 const streetViewContainer = ref(null);
 const currentId = ref(parseInt(route.params.id));
 const errorMessage = ref('');
 const { $api, $loadGoogleMaps } = useNuxtApp();
+
+const loadGoodsData = async (url = '') => {
+  url =
+    'https://script.google.com/macros/s/AKfycbzfUqCk_D9bM1tmHgTeA_v8wmRzSMqYFI1qSPW0Ln8TpI5LNqxKHZs8lr0ffu8Vy4tM/exec';
+  axios.get(url).then((data) => {
+    goods.value = data.data;
+    console.log(goods.value);
+  });
+};
+
+const columns = [
+  {
+    accessorKey: 'id',
+    header: '#',
+    cell: ({ row }) => `#${row.getValue('id')}`,
+  },
+  {
+    accessorKey: 'name',
+    header: 'Назва товару',
+  },
+  {
+    accessorKey: 'basic_price',
+    header: () => h('div', { class: 'text-right' }, 'Звичайна ціна'),
+    cell: ({ row }) => {
+      const value = row.getValue('basic_price');
+      if (!value) return '';
+
+      const amount = Number.parseFloat(value);
+      if (isNaN(amount)) return '';
+
+      const formatted = new Intl.NumberFormat('uk-UA', {
+        style: 'currency',
+        currency: 'UAH',
+      }).format(amount);
+
+      return h('div', { class: 'text-right font-medium' }, formatted);
+    },
+  },
+  {
+    accessorKey: 'action_status',
+    header: 'Статус',
+    cell: ({ row }) => {
+      const status = (row.getValue('action_status') || '').toString().toLowerCase();
+
+      let label = '';
+      let color = 'success';
+
+      switch (status) {
+        case 'акція':
+          label = 'Акція';
+          color = 'primary';
+          break;
+        case 'закінчилась':
+          label = 'Закінчилась';
+          color = 'error';
+          break;
+        case 'не почалась':
+          label = 'Не почалась';
+          color = 'neutral';
+          break;
+        default:
+          return '';
+      }
+
+      return h(UBadge, { variant: 'subtle', color }, () => label);
+    },
+  },
+  {
+    accessorKey: 'action_price',
+    header: () => h('div', { class: 'text-right' }, 'Акційна ціна'),
+    cell: ({ row }) => {
+      const value = row.getValue('action_price');
+      if (!value) return '';
+
+      const amount = Number.parseFloat(value);
+      if (isNaN(amount)) return '';
+
+      const formatted = new Intl.NumberFormat('uk-UA', {
+        style: 'currency',
+        currency: 'UAH',
+      }).format(amount);
+
+      return h('div', { class: 'text-right font-medium' }, formatted);
+    },
+  },
+  {
+    accessorKey: 'action_start',
+    header: 'Дата початку акції',
+    cell: ({ row }) => {
+      const value = row.getValue('action_start');
+      if (!value) return '';
+
+      const date = new Date(value);
+      return isNaN(date.getTime()) ? '' : date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
+    },
+  },
+  {
+    accessorKey: 'action_over',
+    header: 'Дата закінчення акції',
+    cell: ({ row }) => {
+      const value = row.getValue('action_over');
+      if (!value) return '';
+
+      const date = new Date(value);
+      return isNaN(date.getTime()) ? '' : date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
+    },
+  },
+  {
+    accessorKey: 'action_price',
+    header: () => h('div', { class: 'text-right' }, 'Акційна ціна'),
+    cell: ({ row }) => {
+      const value = row.getValue('action_price');
+      if (!value) return '';
+
+      const amount = Number.parseFloat(value);
+      if (isNaN(amount)) return '';
+
+      const formatted = new Intl.NumberFormat('uk-UA', {
+        style: 'currency',
+        currency: 'UAH',
+      }).format(amount);
+
+      return h('div', { class: 'text-right font-medium' }, formatted);
+    },
+  },
+  {
+    accessorKey: 'action_start',
+    header: 'Дата початку акції',
+    cell: ({ row }) => {
+      const value = row.getValue('action_start');
+      if (!value) return '';
+
+      const date = new Date(value);
+      return isNaN(date.getTime()) ? '' : date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
+    },
+  },
+  {
+    accessorKey: 'action_over',
+    header: 'Дата закінчення акції',
+    cell: ({ row }) => {
+      const value = row.getValue('action_over');
+      if (!value) return '';
+
+      const date = new Date(value);
+      return isNaN(date.getTime()) ? '' : date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
+    },
+  },
+  {
+    accessorKey: 'photo',
+    header: 'Фото товару',
+  },
+];
+
+const table = useTemplateRef('table');
+
+const columnFilters = ref([
+  {
+    id: 'name',
+    value: '',
+  },
+]);
 
 const { data: panorama } = useAsyncData('panorama', async () => {
   const panoramaData = await $api.panoramas.getPanoramaById(currentId.value);
@@ -111,12 +281,7 @@ const loadPanorama = async () => {
 
 onMounted(async () => {
   await loadPanorama();
-  const url =
-    'https://script.google.com/macros/s/AKfycbzfUqCk_D9bM1tmHgTeA_v8wmRzSMqYFI1qSPW0Ln8TpI5LNqxKHZs8lr0ffu8Vy4tM/exec';
-  axios.get(url).then((data) => {
-    state.goods = data.data;
-    console.log(state.goods);
-  });
+  await loadGoodsData();
 });
 </script>
 
