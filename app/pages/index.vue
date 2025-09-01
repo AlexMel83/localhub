@@ -1,49 +1,50 @@
 <template>
-  <div><MapContainer :panoramas="filteredPanoramas || []" /></div>
+  <div>
+    <MapContainer v-if="!appStore.isListView" :panoramas="filteredPanoramas || []" />
+    <div v-else class="p-4">
+      <ul>
+        <li
+          v-for="panorama in filteredPanoramas"
+          :key="panorama.id"
+          class="border-b py-2 cursor-pointer hover:bg-gray-100"
+        >
+          {{ panorama.title }}
+        </li>
+      </ul>
+      <div v-if="filteredPanoramas.length === 0" class="text-center text-gray-500 mt-4">Панорами не знайдені</div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { useAppStore } from '~/stores/app.store';
+const appStore = useAppStore();
 
-const isLoading = ref(false);
 const { $api } = useNuxtApp();
 const panoramasDataApi = ref([]);
-const appStore = useAppStore();
 const searchTerm = computed(() => appStore.searchTerm);
-const page = ref(1);
+const isLoading = ref(false);
 
 onMounted(async () => {
-  try {
-    if (!searchTerm.value) {
-      await fetchPanoramas();
-    }
-  } catch (error) {
-    console.error('Error in onMounted:', error);
+  if (!searchTerm.value) {
+    await fetchPanoramas();
   }
 });
 
-const fetchPanoramas = async (searchQuery = null) => {
+const fetchPanoramas = async () => {
   isLoading.value = true;
   try {
-    const response = await $api.panoramas.getPanoramas(searchQuery);
-
+    const response = await $api.panoramas.getPanoramas();
     panoramasDataApi.value = response.data;
   } catch (error) {
-    console.error('Error fetching panoramas data:', error);
+    console.error('Error fetching panoramas:', error);
   } finally {
     isLoading.value = false;
   }
 };
 
 const filteredPanoramas = computed(() => {
-  const lowerCaseSearchTerm = searchTerm.value?.toLowerCase() || '';
-  // const startIndex = (page.value - 1) * perPage;
-  // const endIndex = startIndex + perPage;
-  return panoramasDataApi.value.filter((panorama) => panorama.title.toLowerCase().includes(lowerCaseSearchTerm));
-  // .slice(startIndex, endIndex);
-});
-
-watch(page, () => {
-  window.scrollTo(0, 0);
+  const search = searchTerm.value?.toLowerCase() || '';
+  return panoramasDataApi.value.filter((p) => p.title.toLowerCase().includes(search));
 });
 </script>

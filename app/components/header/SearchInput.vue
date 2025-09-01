@@ -3,7 +3,7 @@
     <UInput
       v-model="searchTerm"
       name="searchTerm"
-      :placeholder="$t('header.search')"
+      :placeholder="$t('Header.search')"
       autocomplete="off"
       color="neutral"
       :ui="{ icon: { trailing: { pointer: '' } } }"

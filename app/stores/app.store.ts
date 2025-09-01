@@ -39,7 +39,8 @@ export const useAppStore = defineStore('app', {
       isLoading: false,
       menuOpen: false,
       searchTerm: '',
-      isDark, // Початкове значення береться з cookie
+      isDark,
+      isListView: false,
     };
   },
   actions: {
@@ -60,6 +61,9 @@ export const useAppStore = defineStore('app', {
           document.documentElement.classList.remove('dark');
         }
       }
+    },
+    toggleListView() {
+      this.isListView = !this.isListView;
     },
   },
 });

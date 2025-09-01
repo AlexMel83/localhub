@@ -1,6 +1,8 @@
 {
-  "header": {
-    "search": "search"
+  "Header": {
+    "search": "search",
+    "viewMap": "View on map",
+    "viewList": "View on list"
   },
   "Map": {
     "expandMap": "Expand map",
