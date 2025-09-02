@@ -49,11 +49,7 @@
         :loading-attribute="'lazy'"
         :use-cache="true"
       />
-      <MapPanoramaMarkers
-        :panoramas="panoramas"
-        :show-panorama-markers="showPanoramaMarkers"
-        :layer-name="$t('Map.panoramas')"
-      />
+      <MapStoreMarkers :stores="stores" :show-store-markers="showStoreMarkers" :layer-name="$t('Map.stores')" />
       <LControlScale position="bottomright" :imperial="false" :metric="true" />
     </LMap>
   </section>
@@ -71,18 +67,15 @@ const { t } = useI18n();
 const store = useAppStore();
 
 defineProps({
-  panoramas: { type: Array, default: () => [] },
-  memories: { type: Array, default: () => [] },
+  stores: { type: Array, default: () => [] },
   heightClass: { type: String, default: null },
 });
 
-const markerClusterGroupPanoramas = ref(null);
-const markerClusterGroupMemories = ref(null);
-const showPanoramaMarkers = ref(true);
+const markerClusterGroupStores = ref(null);
+const showStoreMarkers = ref(true);
 const markerCoordinates = ref({ lat: 0, lng: 0 });
 const selectedResultData = ref(null);
-const panoramasGroup = ref(null);
-const memoriesGroup = ref(null);
+const storesGroup = ref(null);
 const searchResults = ref(null);
 const resultMarker = ref(null);
 const fullScreen = ref(false);
@@ -95,13 +88,9 @@ const map = ref(null);
 
 const onMapReady = () => {
   if (!map.value?.leafletObject) return;
-  markerClusterGroupMemories.value = L.markerClusterGroup();
-  markerClusterGroupPanoramas.value = L.markerClusterGroup();
-  if (memoriesGroup.value?.leafletObject) {
-    memoriesGroup.value.leafletObject.addLayer(markerClusterGroupMemories.value);
-  }
-  if (panoramasGroup.value?.leafletObject) {
-    panoramasGroup.value.leafletObject.addLayer(markerClusterGroupPanoramas.value);
+  markerClusterGroupStores.value = L.markerClusterGroup();
+  if (storesGroup.value?.leafletObject) {
+    storesGroup.value.leafletObject.addLayer(markerClusterGroupStores.value);
   }
 };
 
