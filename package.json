@@ -1,6 +1,8 @@
 {
   "name": "localhub",
   "description": "LocalHub Старокостянтинів — онлайн-платформа розвитку місцевого бізнесу з мапою підприємств, каталогом послуг і акцій, міні-сайтами для підприємців та зручним пошуком для жителів.",
+  "author": "AlexMel83",
+  "license": "SEE LICENSE IN LICENSE.md",
   "type": "module",
   "private": true,
   "scripts": {

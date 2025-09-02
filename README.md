@@ -1,10 +1,29 @@
-# Nuxt Minimal Starter
+# 🌍 LocalHub Старокостянтинів
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+**LocalHub** — онлайн-платформа для розвитку місцевого бізнесу у Старокостянтинові.  
+Проєкт створений на **Nuxt 3** і допомагає об’єднати підприємців та жителів міста.
 
-## Setup
+## 🚀 Можливості платформи
 
-Make sure to install dependencies:
+- Інтерактивна мапа локального бізнесу (Leaflet + PostgreSQL/PostGIS)
+- Каталог товарів і послуг з можливістю фільтрації
+- Акції та спецпропозиції з пріоритетним відображенням
+- Міні-сайти для підприємців з розширеними опціями (прайси, віртуальні тури)
+- Розділ комерційної нерухомості з 3D/VR-турами
+- Інструменти просування та аналітики для бізнесу
+
+## 🛠 Технології
+
+- [Nuxt 3](https://nuxt.com/) + [TailwindCSS](https://tailwindcss.com/) + @nuxt/ui
+- Node.js + Express
+- PostgreSQL + PostGIS
+- LeafletJS (інтерактивна мапа)
+
+---
+
+## ⚙️ Налаштування
+
+Встановіть залежності:
 
 ```bash
 # npm
@@ -19,57 +38,3 @@ yarn install
 # bun
 bun install
 ```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
