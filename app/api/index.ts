@@ -1,18 +1,18 @@
 import type { AxiosInstance } from 'axios';
 import authModule from './auth';
 import type { AuthResponse } from './auth';
-import panoramasModule from './panoramas';
-import type { PanoramasResponse } from './panoramas';
+import storesModule from './stores';
+import type { StoresResponse } from './stores';
 
 export default function (instance: AxiosInstance) {
   return {
     auth: authModule(instance),
-    panoramas: panoramasModule(instance),
+    stores: storesModule(instance),
   };
 }
 
 export interface ApiModule {
   auth: AuthResponse;
-  panoramas: PanoramasResponse;
+  stores: StoresResponse;
   getUser(): Promise<AuthResponse>;
 }

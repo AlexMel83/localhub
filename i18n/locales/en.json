@@ -10,7 +10,7 @@
     "searchPlaceholder": "Search",
     "geoErrorTitle": "Geolocation error",
     "geoErrorClose": "Close",
-    "panoramas": "Panoramas",
+    "stores": "Stores",
     "memories": "Memories",
     "coordinates": "Coordinates:",
     "latitude": "Latitude:",
@@ -20,9 +20,9 @@
     "address": "Address:",
     "createPoint": "Define place"
   },
-  "Panoramas": {
-    "collapse": "Collapse panoramas",
-    "expand": "Expand panoramas",
+  "Stores": {
+    "collapse": "Collapse stores",
+    "expand": "Expand stores",
     "created": "Created:",
     "updated": "Updated:",
     "shootingDate": "Date of shooting:",
@@ -32,6 +32,6 @@
     "description": "Description:",
     "back": "Back",
     "forward": "Forward",
-    "loading": "Loading panoramas..."
+    "loading": "Loading stores..."
   }
 }

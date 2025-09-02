@@ -5,22 +5,22 @@
     <div v-if="errorMessage" class="error-message text-red-500 text-left mt-4 dark:text-white">
       {{ errorMessage }}
     </div>
-    <div v-if="panorama" class="panorama-container max-w-[800px] mx-auto px-2">
+    <div v-if="store" class="store-container max-w-[800px] mx-auto px-2">
       <h1 class="text-3xl font-bold text-gray-900 text-left my-2 dark:text-white">
-        {{ panorama.title }}
+        {{ store.title }}
       </h1>
-      <div v-if="panorama.address" class="text-left mb-3 dark:text-white">
-        {{ $t('Panoramas.address') }}
-        {{ panorama.address || $t('Panoramas.addressNotAvailable') }}
+      <div v-if="store.address" class="text-left mb-3 dark:text-white">
+        {{ $t('Stores.address') }}
+        {{ store.address || $t('Stores.addressNotAvailable') }}
       </div>
 
-      <div v-if="panorama.description" class="text-left mb-3 dark:text-white">
-        {{ $t('Panoramas.description') }} {{ panorama.description }}
+      <div v-if="store.description" class="text-left mb-3 dark:text-white">
+        {{ $t('Stores.description') }} {{ store.description }}
       </div>
 
-      <div v-if="panorama.shooting_date" class="text-left mb-3 dark:text-white">
-        {{ $t('Panoramas.shootingDate') }}
-        {{ formatDate(panorama.shooting_date) }}
+      <div v-if="store.shooting_date" class="text-left mb-3 dark:text-white">
+        {{ $t('Stores.shootingDate') }}
+        {{ formatDate(store.shooting_date) }}
       </div>
       <div>
         <h2>Наші товари та акції</h2>
@@ -46,7 +46,7 @@
       </div>
     </div>
     <div v-else class="loading">
-      {{ $t('Panoramas.back') }}
+      {{ $t('Stores.back') }}
     </div>
   </div>
 </template>
@@ -243,9 +243,9 @@ const columnFilters = ref([
   },
 ]);
 
-const { data: panorama } = useAsyncData('panorama', async () => {
-  const panoramaData = await $api.panoramas.getPanoramaById(currentId.value);
-  return panoramaData.data[0];
+const { data: store } = useAsyncData('store', async () => {
+  const storeData = await $api.stores.getStoreById(currentId.value);
+  return storeData.data[0];
 });
 
 const formatDate = (dateString) => {
@@ -259,17 +259,17 @@ const formatDate = (dateString) => {
 
 const initStreetView = async () => {
   await $loadGoogleMaps();
-  if (panorama.value && streetViewContainer.value) {
+  if (store.value && streetViewContainer.value) {
     const location = {
-      lat: parseFloat(panorama.value.latitude),
-      lng: parseFloat(panorama.value.longitude),
+      lat: parseFloat(store.value.latitude),
+      lng: parseFloat(store.value.longitude),
     };
 
     const streetView = new google.maps.StreetViewPanorama(streetViewContainer.value, {
       position: location,
       pov: {
-        heading: parseFloat(panorama.value.heading) || 0,
-        pitch: parseFloat(panorama.value.tilt) - 90 || 0,
+        heading: parseFloat(store.value.heading) || 0,
+        pitch: parseFloat(store.value.tilt) - 90 || 0,
       },
       zoom: 0,
     });
@@ -292,19 +292,19 @@ const initStreetView = async () => {
   }
 };
 
-const loadPanorama = async () => {
+const loadStore = async () => {
   try {
-    const response = await $api.panoramas.getPanoramaById(currentId.value);
-    panorama.value = response.data[0];
+    const response = await $api.stores.getStoreById(currentId.value);
+    store.value = response.data[0];
     await nextTick();
     initStreetView();
   } catch (error) {
-    console.error('Ошибка загрузки панорамы:', error);
+    console.error('Ошибка загрузки store:', error);
   }
 };
 
 onMounted(async () => {
-  await loadPanorama();
+  await loadStore();
   await loadGoodsData();
 });
 </script>

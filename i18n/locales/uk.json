@@ -10,7 +10,7 @@
     "searchPlaceholder": "Пошук",
     "geoErrorTitle": "Помилка геолокації",
     "geoErrorClose": "Закрити",
-    "panoramas": "Панорами",
+    "stores": "Панорами",
     "memories": "Спогади",
     "coordinates": "Координати:",
     "latitude": "Широта:",
@@ -20,7 +20,7 @@
     "address": "Адреса:",
     "createPoint": "Визначити місце"
   },
-  "Panoramas": {
+  "Stores": {
     "collapse": "Згорнути панорами",
     "expand": "Розгорнути панорами",
     "created": "Створено:",
@@ -32,6 +32,6 @@
     "description": "Опис:",
     "back": "Назад",
     "forward": "Вперед",
-    "loading": "Завантаження панорами..."
+    "loading": "Завантаження магазинів..."
   }
 }

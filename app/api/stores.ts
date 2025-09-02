@@ -1,11 +1,14 @@
 import type { AxiosInstance } from 'axios';
 
-export interface Panorama {
+export interface Store {
   id: number;
   user_id: number;
   title: string;
   description: string;
   address: string;
+  contacts: string;
+  working_hours: string;
+  price: string;
   shooting_date: string;
   latitude: string;
   longitude: string;
@@ -21,10 +24,10 @@ export interface Panorama {
   updated_at: string;
 }
 
-export interface PanoramasResponse {
+export interface StoresResponse {
   status: number;
   data: {
-    panoramas: Panorama[];
+    stores: Store[];
   };
 }
 
@@ -32,23 +35,23 @@ export interface QueryParams {
   [key: string]: string;
 }
 
-export interface PanoramasApi {
-  getPanoramas(queryParams: QueryParams): Promise<PanoramasResponse>;
-  getPanoramaById(id: number): Promise<Panorama>;
+export interface StoresApi {
+  getStores(queryParams: QueryParams): Promise<StoresResponse>;
+  getStoreById(id: number): Promise<Store>;
 }
 
 export default function (instance: AxiosInstance) {
   return {
-    async getPanoramas(queryParams: QueryParams) {
-      let url = '/panoramas';
+    async getStores(queryParams: QueryParams) {
+      let url = '/stores';
       if (queryParams && Object.keys(queryParams).length) {
         const queryString = new URLSearchParams(queryParams).toString();
         url += `?${queryString}`;
       }
       return await instance.get(url);
     },
-    async getPanoramaById(id: number) {
-      return await instance.get(`/panoramas?id=${id}`);
+    async getStoreById(id: number) {
+      return await instance.get(`/stores?id=${id}`);
     },
   };
 }

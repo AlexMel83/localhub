@@ -1,17 +1,13 @@
 <template>
   <div>
-    <MapContainer v-if="!appStore.isListView" :panoramas="filteredPanoramas || []" />
+    <MapContainer v-if="!appStore.isListView" :stores="filteredStores || []" />
     <div v-else class="p-4">
       <ul>
-        <li
-          v-for="panorama in filteredPanoramas"
-          :key="panorama.id"
-          class="border-b py-2 cursor-pointer hover:bg-gray-100"
-        >
-          {{ panorama.title }}
+        <li v-for="store in filteredStores" :key="store.id" class="border-b py-2 cursor-pointer hover:bg-gray-100">
+          {{ store.title }}
         </li>
       </ul>
-      <div v-if="filteredPanoramas.length === 0" class="text-center text-gray-500 mt-4">Панорами не знайдені</div>
+      <div v-if="filteredStores.length === 0" class="text-center text-gray-500 mt-4">Stores не знайдені</div>
     </div>
   </div>
 </template>
@@ -21,30 +17,30 @@ import { useAppStore } from '~/stores/app.store';
 const appStore = useAppStore();
 
 const { $api } = useNuxtApp();
-const panoramasDataApi = ref([]);
+const storesDataApi = ref([]);
 const searchTerm = computed(() => appStore.searchTerm);
 const isLoading = ref(false);
 
 onMounted(async () => {
   if (!searchTerm.value) {
-    await fetchPanoramas();
+    await fetchStores();
   }
 });
 
-const fetchPanoramas = async () => {
+const fetchStores = async () => {
   isLoading.value = true;
   try {
-    const response = await $api.panoramas.getPanoramas();
-    panoramasDataApi.value = response.data;
+    const response = await $api.stores.getStores();
+    storesDataApi.value = response.data;
   } catch (error) {
-    console.error('Error fetching panoramas:', error);
+    console.error('Error fetching stores:', error);
   } finally {
     isLoading.value = false;
   }
 };
 
-const filteredPanoramas = computed(() => {
+const filteredStores = computed(() => {
   const search = searchTerm.value?.toLowerCase() || '';
-  return panoramasDataApi.value.filter((p) => p.title.toLowerCase().includes(search));
+  return storesDataApi.value.filter((p) => p.title.toLowerCase().includes(search));
 });
 </script>
