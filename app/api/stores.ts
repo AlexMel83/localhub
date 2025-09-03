@@ -2,8 +2,11 @@ import type { AxiosInstance } from 'axios';
 
 export interface Store {
   id: number;
+  slug: string;
   user_id: number;
   title: string;
+  type: string;
+  rating: number;
   description: string;
   address: string;
   contacts: string;
@@ -38,6 +41,7 @@ export interface QueryParams {
 export interface StoresApi {
   getStores(queryParams: QueryParams): Promise<StoresResponse>;
   getStoreById(id: number): Promise<Store>;
+  getStoreBySlug(slug: string): Promise<Store>;
 }
 
 export default function (instance: AxiosInstance) {
@@ -52,6 +56,9 @@ export default function (instance: AxiosInstance) {
     },
     async getStoreById(id: number) {
       return await instance.get(`/stores?id=${id}`);
+    },
+    async getStoreBySlug(slug: string) {
+      return await instance.get(`/stores?slug=${slug}`);
     },
   };
 }

@@ -5,9 +5,9 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div
           v-for="store in filteredStores"
-          :key="store.id"
+          :key="store.slug"
           class="relative rounded-lg overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 h-64"
-          @click="$router.push(`/stores/${store.id}`)"
+          @click="$router.push(`/stores/${store.slug}`)"
         >
           <!-- Зображення на всю карточку -->
           <div class="w-full h-full relative overflow-hidden group">
@@ -30,43 +30,44 @@
             <p class="text-xs text-gray-300 line-clamp-2">{{ store.address }}</p>
             <div class="flex items-center justify-between">
               <p class="text-sm mt-2">{{ store.working_hours }}</p>
-              <!-- Рейтинг 4,5 зірки -->
+              <!-- Рейтинг зірок -->
               <div class="flex items-center mt-2 text-yellow-400">
-                <!-- Чотири повні зірочки -->
-                <UIcon v-for="i in 4" :key="i" name="line-md:star-pulsating-filled-loop" class="w-5 h-5" />
-                <!-- Напівзірочка -->
-                <UIcon name="line-md:star-pulsating-filled-loop" class="w-5 h-5">
-                  <template #default="{ attrs }">
-                    <svg v-bind="attrs" class="w-5 h-5" viewBox="0 0 24 24">
-                      <defs>
-                        <linearGradient id="half-star-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="50%" style="stop-color: #facc15" />
-                          <stop offset="50%" style="stop-color: #d1d5db" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M12 .587l3.668 7.431 8.332 1.151-6.001 5.852 1.416 8.247L12 18.897l-7.415 3.869 1.416-8.247-6.001-5.852 8.332-1.151z"
-                        fill="url(#half-star-gradient)"
-                      />
-                    </svg>
+                <template v-for="n in 5" :key="n">
+                  <template v-if="n <= Math.floor(store.rating)">
+                    <!-- Повні зірочки -->
+                    <UIcon name="line-md:star-pulsating-filled-loop" class="w-5 h-5" />
                   </template>
-                </UIcon>
+                  <template v-else-if="n - 0.5 === store.rating">
+                    <!-- Напівзірочка (використовуємо material-symbols:star-half) -->
+                    <UIcon name="material-symbols:star-half" class="w-5 h-5" />
+                  </template>
+                  <template v-else>
+                    <!-- Пусті зірочки -->
+                    <UIcon name="line-md:star" class="w-5 h-5 text-gray-400" />
+                  </template>
+                </template>
               </div>
             </div>
           </div>
           <!-- Іконка серця -->
           <div
             class="absolute top-2 right-2 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-300"
-            @click.stop="toggleLike(store.id)"
+            @click.stop="toggleLike(store.slug)"
           >
             <UIcon
               name="material-symbols:favorite"
-              :class="{ 'text-red-500 fill-current': isLiked(store.id) }"
+              :class="{ 'text-red-500 fill-current': isLiked(store.slug) }"
               class="w-6 h-6"
             />
           </div>
-          <!-- Позначка "М" -->
-          <div class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">М</div>
+          <!-- Динамічна позначка типу об'єкта -->
+          <div
+            v-if="store.type"
+            :class="typeStyles[store.type] || typeStyles.default"
+            class="absolute top-2 left-2 text-white text-xs px-2 py-1 rounded-full uppercase"
+          >
+            {{ typeLabels[store.type] || store.type }}
+          </div>
         </div>
         <!-- Повідомлення про відсутність магазинів поза циклом -->
         <div v-if="filteredStores.length === 0" class="text-center text-gray-500 mt-4 col-span-full">
@@ -87,6 +88,23 @@ const searchTerm = computed(() => appStore.searchTerm);
 const isLoading = ref(false);
 
 const likedStores = ref(new Set());
+
+const typeStyles = {
+  culture: 'bg-purple-600',
+  store: 'bg-green-600',
+  hotel: 'bg-red-600',
+  service: 'bg-blue-600',
+  market: 'bg-orange-600',
+  default: 'bg-gray-500',
+};
+
+const typeLabels = {
+  culture: 'Культура',
+  store: 'Магазин',
+  hotel: 'Готель',
+  service: 'Сервіс',
+  market: 'Ринок',
+};
 
 function onParallax(event, el) {
   const { offsetX, offsetY, currentTarget } = event;
@@ -124,7 +142,10 @@ const fetchStores = async () => {
   isLoading.value = true;
   try {
     const response = await $api.stores.getStores();
-    storesDataApi.value = response.data;
+    storesDataApi.value = response.data.map((store) => ({
+      ...store,
+      rating: store.rating || Math.floor(Math.random() * 5 * 2) / 2 + 0.5, // Приклад випадкового рейтингу від 0.5 до 5 з кроком 0.5
+    }));
   } catch (error) {
     console.error('Error fetching stores:', error);
   } finally {

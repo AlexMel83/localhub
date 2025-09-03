@@ -103,10 +103,11 @@ const UIcon = resolveComponent('UIcon');
 
 const route = useRoute();
 const streetViewContainer = ref(null);
-const currentId = ref(parseInt(route.params.id));
+const currentSlug = ref(route.params.slug); // Змінено з parseInt, оскільки slug може бути рядком
 const errorMessage = ref('');
 const { $api, $loadGoogleMaps } = useNuxtApp();
 const searchTerm = ref('');
+const store = ref(null); // Ініціалізація як null
 
 const clearSearch = () => {
   searchTerm.value = '';
@@ -167,7 +168,7 @@ const columns = [
             ? 'i-lucide-arrow-up-narrow-wide'
             : 'i-lucide-arrow-down-wide-narrow'
           : 'i-lucide-arrow-up-down',
-        class: '-mx-2.5 text-right whitespace-normal break-words min-w-[80px] w-full', // щоб вирівняти вправо
+        class: '-mx-2.5 text-right whitespace-normal break-words min-w-[80px] w-full',
         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       });
     },
@@ -295,9 +296,17 @@ const columnFilters = ref([
   },
 ]);
 
-const { data: store } = useAsyncData('store', async () => {
-  const storeData = await $api.stores.getStoreById(currentId.value);
-  return storeData.data[0];
+const { data: initialStore, error } = useAsyncData('store', async () => {
+  try {
+    const storeData = await $api.stores.getStoreBySlug(currentSlug.value);
+    if (!storeData.data || storeData.data.length === 0) {
+      throw new Error('Магазин не знайдено');
+    }
+    return storeData.data[0];
+  } catch (err) {
+    errorMessage.value = 'Помилка завантаження магазину: ' + (err.message || 'Невідома помилка');
+    return null; // Повертаємо null у випадку помилки
+  }
 });
 
 const formatDate = (dateString) => {
@@ -311,17 +320,17 @@ const formatDate = (dateString) => {
 
 const initStreetView = async () => {
   await $loadGoogleMaps();
-  if (store.value && streetViewContainer.value) {
+  if (initialStore.value && streetViewContainer.value) {
     const location = {
-      lat: parseFloat(store.value.latitude),
-      lng: parseFloat(store.value.longitude),
+      lat: parseFloat(initialStore.value.latitude),
+      lng: parseFloat(initialStore.value.longitude),
     };
 
     const streetView = new google.maps.StreetViewPanorama(streetViewContainer.value, {
       position: location,
       pov: {
-        heading: parseFloat(store.value.heading) || 0,
-        pitch: parseFloat(store.value.tilt) - 90 || 0,
+        heading: parseFloat(initialStore.value.heading) || 0,
+        pitch: parseFloat(initialStore.value.tilt) - 90 || 0,
       },
       zoom: 0,
     });
@@ -340,24 +349,28 @@ const initStreetView = async () => {
       }
     });
   } else {
-    console.warn('Контейнер для панорамы не готов или данные панорамы отсутствуют.');
+    console.warn('Контейнер для панорамы не готов або дані панорамы відсутні.');
   }
 };
 
 const loadStore = async () => {
   try {
-    const response = await $api.stores.getStoreById(currentId.value);
-    store.value = response.data[0];
+    if (error.value) {
+      errorMessage.value = 'Помилка завантаження магазину: ' + (error.value.message || 'Невідома помилка');
+      return;
+    }
+    store.value = initialStore.value;
     await nextTick();
-    initStreetView();
-  } catch (error) {
-    console.error('Ошибка загрузки store:', error);
+    await initStreetView();
+    await loadGoodsData();
+  } catch (err) {
+    console.error('Помилка ініціалізації store:', err);
+    errorMessage.value = 'Помилка ініціалізації: ' + (err.message || 'Невідома помилка');
   }
 };
 
 onMounted(async () => {
   await loadStore();
-  await loadGoodsData();
 });
 
 watch(searchTerm, (val) => {
