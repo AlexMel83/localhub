@@ -80,23 +80,23 @@ const markerStoreData = computed(() =>
 const likedStores = ref(new Set());
 
 // Перемикання стану "лайка" для конкретного магазину
-const toggleLike = (storeId) => {
-  if (likedStores.value.has(storeId)) {
-    likedStores.value.delete(storeId);
+const toggleLike = (storeSlug) => {
+  if (likedStores.value.has(storeSlug)) {
+    likedStores.value.delete(storeSlug);
   } else {
-    likedStores.value.add(storeId);
+    likedStores.value.add(storeSlug);
   }
   // Оновлюємо попапи для відображення змін
   updateMarkers();
 };
 
 // Перевірка, чи магазин "лайкнутий"
-const isLiked = (storeId) => {
-  return likedStores.value.has(storeId);
+const isLiked = (storeSlug) => {
+  return likedStores.value.has(storeSlug);
 };
 
 // Функція для генерації HTML зірок
-const generateRatingStarsHtml = (rating, storeId) => {
+const generateRatingStarsHtml = (rating) => {
   let starsHtml = '';
   for (let n = 1; n <= 5; n++) {
     if (n <= Math.floor(rating)) {
@@ -117,7 +117,7 @@ const createStorePopupContent = (store) => {
   const photoURL = store.thumbnail_url ? store.thumbnail_url : '/default-store.png'; // Поправлено шлях, якщо потрібно
 
   // Динамічний клас для кольору позначки типу
-  const typeColorClass = typeColors[store.type] ? `bg-[${typeColors[store.type]}]` : 'bg-gray-500';
+  // const typeColorClass = typeColors[store.type] ? `bg-[${typeColors[store.type]}]` : 'bg-gray-500';
   const typeLabel = typeLabels[store.type] || store.type;
 
   return `
