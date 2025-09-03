@@ -14,7 +14,7 @@
             <img
               :src="store.thumbnail_url"
               alt="Store thumbnail"
-              class="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-300 hover:opacity-90"
+              class="w-full h-full object-cover absolute top-0 left-0 transition-transform duration-300 hover:opacity-90 hover:scale-125"
             />
             <!-- Градієнт для затемнення нижньої частини -->
             <div
