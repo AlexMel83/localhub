@@ -1,12 +1,13 @@
 <template>
   <div>
-    <!-- <MetaTags
-      :title="store.title || 'Store'"
-      :description="store.description || 'Опис бізнесу'"
-      :image="store.thumbnail_url"
-      :url="`https://localhub.store/sores/${store.slug}`"
+    <MetaTags
+      v-if="store"
+      :title="store?.title || 'Store'"
+      :description="store?.description || 'Опис бізнесу'"
+      :image="store?.thumbnail_url"
+      :url="`https://localhub.store/stores/${store?.slug || ''}`"
       :structured-data="structuredData"
-    /> -->
+    />
     <!-- Панорама -->
     <div ref="streetViewContainer" class="street-view mb-4 rounded-xl shadow-md overflow-hidden" />
 
@@ -468,7 +469,6 @@ const structuredData = computed(() => {
       '@type': 'WebPage',
       '@id': `https://localhub.store/stores/${store.value.slug}`,
     },
-    keywords: post.value.tags?.join(', ') || 'Рада ВПО, Старокостянтинів, блог, допомога ВПО',
   };
 });
 </script>

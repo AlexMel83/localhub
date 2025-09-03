@@ -60,11 +60,11 @@ const props = defineProps({
 // ✨ Автоматичне визначення URL, якщо не передано
 const currentUrl = computed(() => {
   if (props.url) return props.url;
-  if (process.server) {
+  if (import.meta.server) {
     const reqUrl = useRequestURL();
     return reqUrl.href;
   }
-  if (process.client) {
+  if (import.meta.client) {
     return window.location.href;
   }
   return '';
