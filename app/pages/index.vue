@@ -6,7 +6,7 @@
         <div
           v-for="store in filteredStores"
           :key="store.id"
-          class="relative rounded-lg overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 h-64"
+          class="relative rounded-lg overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 h-64 transform hover:scale-102"
           @click="$router.push(`/stores/${store.id}`)"
         >
           <!-- Зображення на всю карточку -->
@@ -14,10 +14,12 @@
             <img
               :src="store.thumbnail_url"
               alt="Store thumbnail"
-              class="w-full h-full object-cover absolute top-0 left-0"
+              class="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-300 hover:opacity-90"
             />
             <!-- Градієнт для затемнення нижньої частини -->
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80" />
+            <div
+              class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80 transition-opacity duration-300 hover:to-gray-900"
+            />
           </div>
           <!-- Контент карточки поверх зображення -->
           <div class="absolute bottom-0 left-0 p-4 text-white w-full">

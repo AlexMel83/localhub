@@ -96,7 +96,7 @@ const createStorePopupContent = (store) => {
   `;
 
   return `
-    <div class="relative w-64 h-64 overflow-hidden" style="position: relative;">
+    <div class="relative w-64 h-54 overflow-hidden" style="position: relative;">
       <img src="${photoURL}" alt="${store.title}" class="w-full h-full object-cover absolute top-0 left-0" />
       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80"></div>
       <a href="/stores/${store.id}">

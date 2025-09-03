@@ -22,7 +22,7 @@ const isHomePage = computed(() => route.path === '/');
         {{ $t('Footer.developer') }} {{ $t('Footer.copyright') }}
       </NuxtLink>
     </div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center gap-6 text-xs text-center">
+    <div class="max-w-7xl ml-auto px-4 sm:px-6 lg:px-8 flex justify-center gap-6 text-xs text-center">
       <NuxtLink to="/donation-terms" class="hover:underline text-blue-600 dark:text-blue-400 hover:dark:text-blue-300">
         {{ $t('Footer.terms') }}
       </NuxtLink>
@@ -36,7 +36,7 @@ const isHomePage = computed(() => route.path === '/');
   </footer>
 
   <!-- Повний футер для інших сторінок -->
-  <footer v-else class="flex relative px-4 py-2 border-t">
+  <footer v-else class="flex w-full relative px-4 py-2 border-t">
     <div class="text-start text-sm">
       <NuxtLink
         class="hover:underline text-blue-600 dark:text-blue-400 hover:dark:text-blue-300"

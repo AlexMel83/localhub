@@ -21,10 +21,10 @@ const toggleSearch = () => {
       isHomePage && !appStore.isListView ? 'bg-transparent' : 'relative',
     ]"
   >
-    <div class="container flex justify-between items-center">
+    <div class="w-full flex justify-between items-center">
       <div>
         <NuxtLink to="/">
-          <NuxtImg src="Localhub-logo-320.jpg" class="h-full max-h-[40px] sm:max-h-[60px] object-contain" />
+          <NuxtImg src="Localhub-logo-320.jpg" class="h-full mr-auto max-h-[40px] sm:max-h-[60px] object-contain" />
         </NuxtLink>
       </div>
       <div class="flex items-center gap-4">
