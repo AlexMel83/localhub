@@ -38,7 +38,9 @@
     "description": "Description:",
     "back": "Back",
     "forward": "Forward",
-    "loading": "Loading stores..."
+    "loading": "Loading stores...",
+    "type": "Type: ",
+    "rating": "Rating:"
   },
   "Footer": {
     "terms": "Terms of use",

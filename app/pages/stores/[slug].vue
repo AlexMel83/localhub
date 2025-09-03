@@ -26,6 +26,37 @@
       <div v-if="store.working_hours" class="text-left mb-2 dark:text-white">
         <strong>{{ $t('Stores.workingHours') }}</strong> {{ store.working_hours }}
       </div>
+      <div v-if="store.type" class="text-left mb-2 dark:text-white">
+        <strong>{{ $t('Stores.type') }}</strong>
+        <span
+          v-if="store.type"
+          :class="typeStyles[store.type] || typeStyles.default"
+          class="text-white text-xs px-2 py-1 rounded-full uppercase"
+        >
+          {{ typeLabels[store.type] || store.type }}
+        </span>
+      </div>
+      <div v-if="store.rating" class="text-left mb-4 dark:text-white flex items-center gap-2">
+        <!-- Рейтинг зірок -->
+        <strong>{{ $t('Stores.rating') }}</strong>
+        <span class="flex items-center mt-2 text-yellow-400">
+          <template v-for="n in 5" :key="n">
+            <template v-if="n <= Math.floor(store.rating)">
+              <!-- Повні зірочки -->
+              <UIcon name="line-md:star-pulsating-filled-loop" class="w-5 h-5" />
+            </template>
+            <template v-else-if="n - 0.5 === store.rating">
+              <!-- Напівзірочка (використовуємо material-symbols:star-half) -->
+              <UIcon name="material-symbols:star-half" class="w-5 h-5" />
+            </template>
+            <template v-else>
+              <!-- Пусті зірочки -->
+              <UIcon name="line-md:star" class="w-5 h-5 text-gray-400" />
+            </template>
+          </template>
+        </span>
+        <span class="ml-2 text-sm text-gray-500 dark:text-gray-300">({{ store.rating.toFixed(1) }})</span>
+      </div>
 
       <div class="text-left mb-2 text-sm italic dark:text-gray-300">
         {{ $t('Stores.createdAt') }} {{ formatDate(store.created_at) }}<br />
@@ -66,7 +97,7 @@
             ref="table"
             v-model:column-filters="columnFilters"
             sticky
-            class="flex-1 max-h-[400px] rounded-xl overflow-hidden"
+            class="flex-1 max-h-[400px] rounded-xl overflow-auto"
             :data="goods"
             :columns="columns"
             aria-label="Stores"
@@ -108,6 +139,23 @@ const errorMessage = ref('');
 const { $api, $loadGoogleMaps } = useNuxtApp();
 const searchTerm = ref('');
 const store = ref(null); // Ініціалізація як null
+
+const typeStyles = {
+  culture: 'bg-purple-600',
+  store: 'bg-green-600',
+  hotel: 'bg-red-600',
+  service: 'bg-blue-600',
+  market: 'bg-orange-600',
+  default: 'bg-gray-500',
+};
+
+const typeLabels = {
+  culture: 'Культура',
+  store: 'Магазин',
+  hotel: 'Готель',
+  service: 'Сервіс',
+  market: 'Ринок',
+};
 
 const clearSearch = () => {
   searchTerm.value = '';
@@ -374,7 +422,7 @@ onMounted(async () => {
 });
 
 watch(searchTerm, (val) => {
-  table?.value?.tableApi?.getColumn('name')?.setFilterValue(val);
+  table.value?.tableApi?.getColumn('name')?.setFilterValue(val);
 });
 </script>
 

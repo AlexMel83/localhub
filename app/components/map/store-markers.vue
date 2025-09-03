@@ -4,10 +4,9 @@
 
 <script setup>
 import L from 'leaflet';
-import 'leaflet.markercluster/dist/leaflet.markercluster'; // Переконайтеся, що цей імпорт коректний
+import 'leaflet.markercluster/dist/leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
-
 import { LLayerGroup } from '@vue-leaflet/vue-leaflet';
 
 const storesGroup = ref(null);
@@ -25,17 +24,15 @@ const props = defineProps({
   layerName: { type: String, default: null },
 });
 
-// Об'єкт для мапінгу типів на Tailwind CSS класи кольорів (використовуємо тут для SVG fill)
 const typeColors = {
-  culture: '#8B5CF6', // purple-600
-  store: '#10B981', // green-600
-  hotel: '#EF4444', // red-600
-  service: '#3B82F6', // blue-600
-  market: '#F97316', // orange-600
-  default: '#6B7280', // gray-500
+  culture: '#8B5CF6',
+  store: '#10B981',
+  hotel: '#EF4444',
+  service: '#3B82F6',
+  market: '#F97316',
+  default: '#6B7280',
 };
 
-// Об'єкт для мапінгу типів на текст (якщо потрібно відображати щось інше, ніж сам тип)
 const typeLabels = {
   culture: 'Культура',
   store: 'Магазин',
@@ -48,8 +45,8 @@ const createStoreIcon = (type) => {
   const color = typeColors[type] || typeColors.default;
   return L.divIcon({
     html: createSvgIcon(color),
-    className: 'custom-div-icon', // Tailwind не застосовується безпосередньо до SVG в html, тому клас для контейнера
-    iconAnchor: [16, 32], // Центр низу іконки
+    className: 'custom-div-icon',
+    iconAnchor: [16, 32],
     iconSize: [32, 32],
   });
 };
@@ -71,42 +68,34 @@ const markerStoreData = computed(() =>
     description: store.description,
     working_hours: store.working_hours,
     thumbnail_url: store.thumbnail_url,
-    rating: store.rating || 0, // Забезпечимо наявність rating
-    type: store.type || 'default', // Забезпечимо наявність type
+    rating: store.rating || 0,
+    type: store.type || 'default',
   })),
 );
 
-// Зберігання стану "лайків" для кожного магазину
 const likedStores = ref(new Set());
 
-// Перемикання стану "лайка" для конкретного магазину
 const toggleLike = (storeSlug) => {
   if (likedStores.value.has(storeSlug)) {
     likedStores.value.delete(storeSlug);
   } else {
     likedStores.value.add(storeSlug);
   }
-  // Оновлюємо попапи для відображення змін
-  updateMarkers();
+  updateMarkers(); // Оновлюємо маркери після зміни стану "лайка"
 };
 
-// Перевірка, чи магазин "лайкнутий"
 const isLiked = (storeSlug) => {
   return likedStores.value.has(storeSlug);
 };
 
-// Функція для генерації HTML зірок
 const generateRatingStarsHtml = (rating) => {
   let starsHtml = '';
   for (let n = 1; n <= 5; n++) {
     if (n <= Math.floor(rating)) {
-      // Повна зірка
       starsHtml += `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.332 1.151-6.001 5.852 1.416 8.247L12 18.897l-7.415 3.869 1.416-8.247-6.001-5.852 8.332-1.151z"/></svg>`;
     } else if (n - 0.5 === rating) {
-      // Напівзірка (material-symbols:star-half)
       starsHtml += `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24zM12 15.4V6.1l1.71 4.04 4.38.38-3.32 2.88 1 3.91L12 15.4z"/></svg>`;
     } else {
-      // Пуста зірка
       starsHtml += `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current text-gray-400" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21zM12 15.4V6.1l1.71 4.04 4.38.38-3.32 2.88 1 3.91L12 15.4z"/></svg>`;
     }
   }
@@ -114,10 +103,7 @@ const generateRatingStarsHtml = (rating) => {
 };
 
 const createStorePopupContent = (store) => {
-  const photoURL = store.thumbnail_url ? store.thumbnail_url : '/default-store.png'; // Поправлено шлях, якщо потрібно
-
-  // Динамічний клас для кольору позначки типу
-  // const typeColorClass = typeColors[store.type] ? `bg-[${typeColors[store.type]}]` : 'bg-gray-500';
+  const photoURL = store.thumbnail_url ? store.thumbnail_url : '/default-store.png';
   const typeLabel = typeLabels[store.type] || store.type;
 
   return `
@@ -125,22 +111,21 @@ const createStorePopupContent = (store) => {
       <img src="${photoURL}" alt="${store.title}" class="w-full h-full object-cover absolute top-0 left-0" />
       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80"></div>
       
-      <!-- Позначка типу об'єкта -->
       <div class="absolute top-2 left-2 text-white text-xs px-2 py-1 rounded-full uppercase" style="background-color: ${typeColors[store.type] || typeColors.default};">
         ${typeLabel}
       </div>
 
       <a href="/stores/${store.slug}">
         <div class="absolute bottom-0 left-0 p-3 text-white w-full">
-            <h3 class="text-lg font-semibold truncate">${store.title}</h3>
-            <p class="text-sm text-gray-300 line-clamp-2">${store.description}</p>
-            <p class="text-sm text-gray-300 line-clamp-2">${store.address}</p>
-            <p class="text-sm mt-2">${store.working_hours}</p>
+          <h3 class="text-lg font-semibold truncate">${store.title}</h3>
+          <p class="text-sm text-gray-300 line-clamp-2">${store.description}</p>
+          <p class="text-sm text-gray-300 line-clamp-2">${store.address}</p>
+          <p class="text-sm mt-2">${store.working_hours}</p>
         </div>
       </a>
       
-      <!-- Іконка серця -->
-      <div class="absolute top-1 right-1 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-300" onclick="window.vueApp.toggleLike(${store.slug}); event.stopPropagation();">
+      <!-- Іконка серця з обробкою кліку через атрибут data -->
+      <div class="absolute top-1 right-3 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-300" data-store-slug="${store.slug}">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 ${isLiked(store.slug) ? 'text-red-500 fill-current' : ''}" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
@@ -148,7 +133,7 @@ const createStorePopupContent = (store) => {
 
       <!-- Рейтинг зірок (динамічний) -->
       <div class="absolute bottom-4 right-4 flex items-center text-yellow-400">
-        ${generateRatingStarsHtml(store.rating, store.slug)}
+        ${generateRatingStarsHtml(store.rating)}
       </div>
     </div>`;
 };
@@ -164,9 +149,23 @@ const updateMarkers = () => {
           store.latitude_fact ? store.latitude_fact : store.latitude,
           store.longitude_fact ? store.longitude_fact : store.longitude,
         ],
-        { icon: createStoreIcon(store.type) }, // Передаємо тип для кольору маркера
+        { icon: createStoreIcon(store.type) },
       );
       marker.bindPopup(createStorePopupContent(store));
+      // Додаємо обробник кліку для серця через Leaflet
+      marker.on('popupopen', () => {
+        const heartElement = document.querySelector(`[data-store-slug="${store.slug}"]`);
+        if (heartElement) {
+          heartElement.addEventListener(
+            'click',
+            (e) => {
+              e.stopPropagation();
+              toggleLike(store.slug);
+            },
+            { once: true },
+          ); // Використовуємо { once: true }, щоб уникнути дублювання слухачів
+        }
+      });
       return marker;
     });
     markerClusterGroupStores.value.addLayers(storeMarkers);
@@ -174,15 +173,7 @@ const updateMarkers = () => {
 };
 
 onMounted(() => {
-  // Додаємо доступ до vueApp для виклику методів із попапу
-  // Це глобальний об'єкт, щоб колбеки в HTML могли звертатися до компонентних функцій
-  if (typeof window !== 'undefined') {
-    // Перевірка, що код виконується в браузері
-    window.vueApp = { toggleLike };
-  }
-
   if (storesGroup.value?.leafletObject) {
-    // Ініціалізуємо markerClusterGroupStores
     markerClusterGroupStores.value = L.markerClusterGroup();
     updateMarkers();
     storesGroup.value.leafletObject.addLayer(markerClusterGroupStores.value);
@@ -208,18 +199,20 @@ watch(
   width: 32px;
   height: 32px;
 }
-/* Щоб Tailwind CSS класи застосовувались до SVG іконок у попапі */
-/* Це загальні стилі, що можуть знадобитись */
+
 .leaflet-popup-content svg.fill-current {
   fill: currentColor;
 }
+
 .leaflet-popup-content .text-yellow-400 svg {
-  color: #fbbf24; /* Tailwind yellow-400 */
+  color: #fbbf24;
 }
+
 .leaflet-popup-content .text-gray-400 svg {
-  color: #9ca3af; /* Tailwind gray-400 */
+  color: #9ca3af;
 }
+
 .leaflet-popup-content .text-red-500 svg {
-  color: #ef4444; /* Tailwind red-500 */
+  color: #ef4444;
 }
 </style>
