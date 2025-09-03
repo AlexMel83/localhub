@@ -54,8 +54,8 @@
                   color="gray"
                   variant="link"
                   :padded="false"
-                  @click="clearSearch"
                   aria-label="Clear search"
+                  @click="clearSearch"
                 >
                   <Icon name="material-symbols:close-small" />
                 </UButton>
@@ -75,10 +75,10 @@
       </div>
       <!-- кнопки -->
       <div class="flex gap-3 my-4 justify-center">
-        <UButton icon="i-lucide-map" @click="goToView(false)" aria-label="Back to map">
+        <UButton icon="i-lucide-map" aria-label="Back to map" @click="goToView(false)">
           {{ $t('Stores.backToMap') }}
         </UButton>
-        <UButton icon="i-lucide-list" variant="outline" @click="goToView(true)" aria-label="Back to list">
+        <UButton icon="i-lucide-list" variant="outline" aria-label="Back to list" @click="goToView(true)">
           {{ $t('Stores.backToList') }}
         </UButton>
       </div>

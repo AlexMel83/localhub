@@ -18,8 +18,8 @@
           color="gray"
           variant="link"
           :padded="false"
-          @click="clearSearch"
           aria-label="Clear search"
+          @click="clearSearch"
         >
           <Icon name="material-symbols:close-small" />
         </UButton>
