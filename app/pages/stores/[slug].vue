@@ -1,5 +1,12 @@
 <template>
   <div>
+    <!-- <MetaTags
+      :title="store.title || 'Store'"
+      :description="store.description || 'Опис бізнесу'"
+      :image="store.thumbnail_url"
+      :url="`https://localhub.store/sores/${store.slug}`"
+      :structured-data="structuredData"
+    /> -->
     <!-- Панорама -->
     <div ref="streetViewContainer" class="street-view mb-4 rounded-xl shadow-md overflow-hidden" />
 
@@ -104,7 +111,15 @@
           />
         </div>
       </div>
-      <!-- кнопки -->
+      <ShareButtons
+        v-if="store.title"
+        :page-object="{
+          title: store.title,
+          description: store.description,
+          image: store.thumbnail_url,
+        }"
+      />
+      <!-- кнопки назад -->
       <div class="flex gap-3 my-4 justify-center">
         <UButton icon="i-lucide-map" aria-label="Back to map" @click="goToView(false)">
           {{ $t('Stores.backToMap') }}
@@ -423,6 +438,38 @@ onMounted(async () => {
 
 watch(searchTerm, (val) => {
   table.value?.tableApi?.getColumn('name')?.setFilterValue(val);
+});
+
+const structuredData = computed(() => {
+  if (!store.value) return null;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: store.value.title || 'Магазин',
+    description: store.value.description || 'Опис магазину',
+    url: `https://radavpo.starkon.pp.ua/blogs/${store.value.slug}`,
+    image: store.value.thumbnail_url,
+    datePublished: store.value.created_at ? new Date(store.value.created_at).toISOString() : undefined,
+    dateModified: store.value.updated_at ? new Date(store.value.updated_at).toISOString() : undefined,
+    author: {
+      '@type': 'Organization',
+      name: 'Рада з питань ВПО при Старокостянтинівській міській раді',
+      url: 'https://radavpo.starkon.pp.ua',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Рада з питань ВПО при Старокостянтинівській міській раді',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://radavpo.starkon.pp.ua/cfhope-logo-transparent.png',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://localhub.store/stores/${store.value.slug}`,
+    },
+    keywords: post.value.tags?.join(', ') || 'Рада ВПО, Старокостянтинів, блог, допомога ВПО',
+  };
 });
 </script>
 

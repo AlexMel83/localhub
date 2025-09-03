@@ -49,6 +49,9 @@
     "developer": "Developed by IT-Starkon",
     "copyright": "© 2025. All rights reserved."
   },
+  "ShareButtons": {
+    "sharedSocial": "Sharing throug social media"
+  },
   "DonationServiceTerms": {
     "title": "Terms of the public offer of LocalHub",
     "contractTitle": "CONTRACT of the public offer for the provision of charitable donations",

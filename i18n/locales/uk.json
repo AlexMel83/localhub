@@ -49,6 +49,9 @@
     "developer": "Розроблено IT-Starkon",
     "copyright": "© 2025. Всі права захищено."
   },
+  "ShareButtons": {
+    "sharedSocial": "Поділитись через соціальні мережі"
+  },
   "DonationServiceTerms": {
     "title": "Умови публічної оферти платформи LocalHub",
     "contractTitle": "ДОГОВІР публічної оферти про надання благодійної пожертви",
