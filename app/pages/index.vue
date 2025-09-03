@@ -6,19 +6,21 @@
         <div
           v-for="store in filteredStores"
           :key="store.id"
-          class="relative rounded-lg overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 h-64 transform hover:scale-102"
+          class="relative rounded-lg overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 h-64"
           @click="$router.push(`/stores/${store.id}`)"
         >
           <!-- Зображення на всю карточку -->
-          <div class="w-full h-full">
+          <div class="w-full h-full relative overflow-hidden group">
             <img
               :src="store.thumbnail_url"
               alt="Store thumbnail"
-              class="w-full h-full object-cover absolute top-0 left-0 transition-transform duration-300 hover:opacity-90 hover:scale-125"
+              class="w-full h-full object-cover absolute top-0 left-0 transition-transform duration-500 group-hover:scale-110"
+              @mousemove="onParallax($event, $event.currentTarget)"
+              @mouseleave="resetParallax($event.currentTarget)"
             />
             <!-- Градієнт для затемнення нижньої частини -->
             <div
-              class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80 transition-opacity duration-300 hover:to-gray-900"
+              class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80 transition-opacity duration-300"
             />
           </div>
           <!-- Контент карточки поверх зображення -->
@@ -85,6 +87,18 @@ const searchTerm = computed(() => appStore.searchTerm);
 const isLoading = ref(false);
 
 const likedStores = ref(new Set());
+
+function onParallax(event, el) {
+  const { offsetX, offsetY, currentTarget } = event;
+  const { clientWidth, clientHeight } = currentTarget;
+  const moveX = (offsetX / clientWidth - 0.5) * 20; // макс 20px
+  const moveY = (offsetY / clientHeight - 0.5) * 20;
+  el.style.transform = `scale(1.1) translate(${moveX}px, ${moveY}px)`;
+}
+
+function resetParallax(el) {
+  el.style.transform = 'scale(1)';
+}
 
 // Перемикання стану "лайка" для конкретного магазину
 const toggleLike = (storeId) => {
