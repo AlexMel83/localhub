@@ -42,27 +42,74 @@ const markerStoreData = computed(() =>
     longitude: store.longitude_fact ? store.longitude_fact : store.longitude,
     address: store.address,
     title: store.title,
+    description: store.description,
+    working_hours: store.working_hours,
     thumbnail_url: store.thumbnail_url,
   })),
 );
 
+// Зберігання стану "лайків" для кожного магазину
+const likedStores = ref(new Set());
+
+// Перемикання стану "лайка" для конкретного магазину
+const toggleLike = (storeId) => {
+  if (likedStores.value.has(storeId)) {
+    likedStores.value.delete(storeId);
+  } else {
+    likedStores.value.add(storeId);
+  }
+  // Оновлюємо попапи для відображення змін
+  updateMarkers();
+};
+
+// Перевірка, чи магазин "лайкнутий"
+const isLiked = (storeId) => {
+  return likedStores.value.has(storeId);
+};
+
 const createStorePopupContent = (store) => {
   const photoURL = store.thumbnail_url ? store.thumbnail_url : './default-store.png';
-  const address = store.address
-    ? `<p><a href="https://www.google.com/maps?q=${encodeURIComponent(
-        store.address,
-      )}" target="_blank">${store.address}</a></p>`
-    : '';
+
+  // Додаємо іконку серця з логікою
+  const heartIcon = `
+    <div class="absolute top-1 right-5 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-300" onclick="window.vueApp.toggleLike(${store.id}); event.stopPropagation();">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 ${isLiked(store.id) ? 'text-red-500 fill-current' : ''}" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+      </svg>
+    </div>
+  `;
+
+  // Імітація рейтингу 4,5 зірки
+  const ratingStars = `
+    <div class="absolute bottom-4 right-4 flex items-center text-yellow-400">
+      ${'<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.332 1.151-6.001 5.852 1.416 8.247L12 18.897l-7.415 3.869 1.416-8.247-6.001-5.852 8.332-1.151z"/></svg>'.repeat(4)}
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+        <defs>
+          <linearGradient id="half-star-${store.id}" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="50%" style="stop-color: #facc15;" />
+            <stop offset="50%" style="stop-color: #d1d5db;" />
+          </linearGradient>
+        </defs>
+        <path d="M12 .587l3.668 7.431 8.332 1.151-6.001 5.852 1.416 8.247L12 18.897l-7.415 3.869 1.416-8.247-6.001-5.852 8.332-1.151z" fill="url(#half-star-${store.id})" />
+      </svg>
+    </div>
+  `;
 
   return `
-    <div class="popup-content" style="text-align: center;">
+    <div class="relative w-64 h-64 overflow-hidden" style="position: relative;">
+      <img src="${photoURL}" alt="${store.title}" class="w-full h-full object-cover absolute top-0 left-0" />
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80"></div>
       <a href="/stores/${store.id}">
-        <b style="display: block; font-weight: bold; font-size: 130%;">${store.title}</b>
-      </a>
-      ${address}
-      <a href="/stores/${store.id}">
-        <img src="${photoURL}" alt="${store.title}" style="max-width: 100%; display: block;" loading="lazy" />
-      </a>
+      <div class="absolute bottom-0 left-0 p-3 text-white w-full">
+          <h3 class="text-lg font-semibold truncate">${store.title}</h3>
+
+        <p class="text-sm text-gray-300 line-clamp-2">${store.description}</p>
+        <p class="text-sm text-gray-300 line-clamp-2">${store.address}</p>
+        <p class="text-sm mt-2">${store.working_hours}</p>
+      </div>
+       </a>
+      ${heartIcon}
+      ${ratingStars}
     </div>`;
 };
 
@@ -87,6 +134,8 @@ const updateMarkers = () => {
 };
 
 onMounted(() => {
+  // Додаємо доступ до vueApp для виклику методів із попапу
+  window.vueApp = { toggleLike };
   if (storesGroup.value?.leafletObject) {
     markerClusterGroupStores.value = L.markerClusterGroup();
     updateMarkers();
