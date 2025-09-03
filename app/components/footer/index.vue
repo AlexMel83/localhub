@@ -23,7 +23,7 @@ const isHomePage = computed(() => route.path === '/');
       </NuxtLink>
     </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center gap-6 text-xs text-center">
-      <NuxtLink to="/terms" class="hover:underline text-blue-600 dark:text-blue-400 hover:dark:text-blue-300">
+      <NuxtLink to="/donation-terms" class="hover:underline text-blue-600 dark:text-blue-400 hover:dark:text-blue-300">
         {{ $t('Footer.terms') }}
       </NuxtLink>
       <NuxtLink to="/privacy-policy" class="hover:underline text-blue-600 dark:text-blue-400 hover:dark:text-blue-300">
@@ -47,7 +47,7 @@ const isHomePage = computed(() => route.path === '/');
       </NuxtLink>
     </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center gap-6 text-sm text-center">
-      <NuxtLink to="/terms" class="hover:underline text-blue-600 dark:text-blue-400 hover:dark:text-blue-300">
+      <NuxtLink to="/donation-terms" class="hover:underline text-blue-600 dark:text-blue-400 hover:dark:text-blue-300">
         {{ $t('Footer.terms') }}
       </NuxtLink>
       <NuxtLink to="/privacy-policy" class="hover:underline text-blue-600 dark:text-blue-400 hover:dark:text-blue-300">
