@@ -3,7 +3,7 @@
     <div class="flex flex-col min-h-screen">
       <Header class="flex-0" />
       <NuxtPage class="flex-1" />
-      <Footer class="flex-0" />
+      <Footer />
     </div>
   </UApp>
 </template>

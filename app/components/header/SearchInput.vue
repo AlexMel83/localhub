@@ -7,12 +7,20 @@
       autocomplete="off"
       color="neutral"
       :ui="{ icon: { trailing: { pointer: '' } } }"
+      aria-label="Search"
     >
       <template #leading>
         <Icon name="mdi-light:magnify" />
       </template>
       <template #trailing>
-        <UButton v-if="searchTerm !== ''" color="gray" variant="link" :padded="false" @click="clearSearch">
+        <UButton
+          v-if="searchTerm !== ''"
+          color="gray"
+          variant="link"
+          :padded="false"
+          @click="clearSearch"
+          aria-label="Clear search"
+        >
           <Icon name="material-symbols:close-small" />
         </UButton>
       </template>

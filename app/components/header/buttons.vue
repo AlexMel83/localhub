@@ -5,6 +5,7 @@
       class="cursor-pointer hover:text-custom-orange dark:hover:text-custom-orange transition-colors relative w-12 h-8 flex items-center justify-center overflow-hidden"
       color="neutral"
       @click="toggleLanguage"
+      aria-label="Toggle language"
     >
       <transition name="fade" mode="out-in">
         <span :key="currentLocale" class="absolute">
@@ -37,6 +38,7 @@
       }"
       color="neutral"
       @click="toggleMenu"
+      aria-label="Toggle menu"
     >
       <Icon
         :name="`${isMenuOpen ? 'material-symbols:close-rounded' : 'humbleicons:bars'}`"

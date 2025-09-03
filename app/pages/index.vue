@@ -11,7 +11,7 @@
         >
           <!-- Зображення на всю карточку -->
           <div class="w-full h-full relative overflow-hidden group">
-            <img
+            <NuxtImg
               :src="store.thumbnail_url"
               alt="Store thumbnail"
               class="w-full h-full object-cover absolute top-0 left-0 transition-transform duration-500 group-hover:scale-110"

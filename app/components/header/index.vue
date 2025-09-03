@@ -7,7 +7,9 @@ const route = useRoute();
 const isSearchVisible = ref(false);
 
 // Перевіряємо, чи поточна сторінка є головною (наприклад, '/')
-const isHomePage = computed(() => route.path === '/');
+const isHomePage = computed(() => {
+  return route.path === '/' || /^\/[a-z]{2}\/?$/.test(route.path);
+});
 
 const toggleSearch = () => {
   isSearchVisible.value = !isSearchVisible.value;
