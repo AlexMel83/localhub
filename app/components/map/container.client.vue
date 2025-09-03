@@ -257,7 +257,11 @@ const handleSelectedResult = (result) => {
 }
 
 :deep(.leaflet-control-layers) {
-  margin-bottom: 40px !important;
+  margin-bottom: 35px !important;
+}
+
+:deep(.leaflet-control-attribution) {
+  margin-bottom: 35px !important;
 }
 
 .custom-div-icon {
