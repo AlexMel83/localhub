@@ -256,6 +256,10 @@ const handleSelectedResult = (result) => {
   margin-top: 80px !important;
 }
 
+:deep(.leaflet-control-layers) {
+  margin-bottom: 40px !important;
+}
+
 .custom-div-icon {
   background: none;
   border: none;

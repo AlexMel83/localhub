@@ -33,5 +33,113 @@
     "back": "Back",
     "forward": "Forward",
     "loading": "Loading stores..."
+  },
+  "Footer": {
+    "contacts": "Contact Information",
+    "social": "Our social networks:",
+    "address": "Avdiivka city, Molodijna street, 3A",
+    "terms": "Terms of use",
+    "policy": "Privacy policy",
+    "howToHelp": "How to help",
+    "developer": "Developed by Alexander Meleshko",
+    "copyright": "© 2025. All rights reserved."
+  },
+  "DonationServiceTerms": {
+    "title": "Terms of use of LocalHub",
+    "contractTitle": "CONTRACT of the public offer for the provision of charitable donations",
+    "description": "This public offer (hereinafter referred to as the “Offer”) is addressed to an unspecified number of persons – individuals and legal entities (hereinafter referred to as the “Benefactor”) who are visitors to the website https://localhub.store (hereinafter referred to as the “Site”). The Offer is an official and public proposal of the Charitable Organization “Charitable Fund for Social Reforms and Support “Nadiya” (EDRPOU code 26220897), represented by the Director Meleshko Oleksandr Mykolayovych, acting on the basis of the Charter (hereinafter referred to as the “Fund”), to conclude an agreement on the provision of a charitable donation (hereinafter referred to as the “Agreement”) on the terms set out below.",
+
+    "definitionTitle": "1. Terms and definitions",
+    "definition1": [
+      "Public offer (Offer)",
+      " – The Foundation's valid offer, posted on the Site, to make a charitable donation, is addressed to an unlimited number of persons."
+    ],
+    "definition2": [
+      "Acceptance",
+      " – full and unconditional acceptance of the terms of the Offer by making a money transfer using the payment methods available on the Site, or by transferring funds to the Fund's current account."
+    ],
+    "definition3": [
+      "Charitable donation",
+      " – free transfer of funds by the Benefactor to the Foundation for further use in order to implement LocalHub programs and other statutory tasks of the Foundation."
+    ],
+    "definition4": [
+      "Benefactor (Donor)",
+      " – an individual or legal entity who has voluntarily made a charitable donation and accepted this Offer."
+    ],
+
+    "subjectTitle": "2. Subject of the agreement",
+    "subjectDescription1": "2.1. The subject of this Agreement is the voluntary and gratuitous transfer by the Benefactor to the ownership of the Fund of funds in the form of a charitable donation to support and develop the LocalHub Starokostyantyniv platform, in particular: development of digital services for community entrepreneurs, support for internally displaced persons (IDPs), promotion of employment and self-employment, development of local businesses, cultural and educational initiatives.",
+    "subjectDescription2": "2.2. The benefactor independently determines the size and purpose of his charitable donation.",
+    "subjectDescription3": "2.3. Charitable donations are not intended to generate profit for the Benefactor or the Foundation and are directed solely to the implementation of the Foundation's statutory activities and LocalHub programs.",
+
+    "contactsTitle": "11. Fund details",
+    "fondName": "Charity Fund for Social Reforms and Support Hope",
+    "edrpou": "EDRPOU 26220897",
+    "address": "386065, Ukraine, Donetsk region, Avdiivka, Nechaeva St., 16",
+    "bankName": "JSC PrivatBank",
+    "bankAccount": "account UA813354960000026007051602289",
+    "director": "Director: Meleshko Oleksandr"
+  },
+  "HowToHelp": {
+    "title": "How to help",
+    "intro": "LocalHub Starokostyantyniv is a platform that helps support and develop the local economy during martial law, unite the community, and create new opportunities for entrepreneurs and residents. Your participation will make our common space stronger and more useful!",
+    "volonters": "We are looking for volunteers!",
+    "volontersDescription": "We need active people to help develop the platform and make it more convenient for residents, entrepreneurs, and visitors of the city. You can choose the direction where your knowledge and experience will be most useful to the community:",
+    "designers": ["Designers", " — to improve visual style and create an attractive space for users."],
+    "QA": ["QA", " — to test the functionality of the application and ensure the quality of the services."],
+    "lawyers": [
+      "Lawyers",
+      " — to prepare useful materials for entrepreneurs, IDPs and community residents (contracts, consultations, handbooks)."
+    ],
+    "ngos": [
+      "NGOs",
+      " — to jointly create social and business projects that strengthen the local economy and support IDPs."
+    ],
+    "ifYouStarterText": "Even if you are a beginner, but want to develop and contribute to the development of the community - write to us: ",
+    "ifYouStarterAfterLink": ". This is a good opportunity to gain experience working on a real project and become part of the changes in the city.",
+    "supportTitle": "Support",
+    "supportDescription": "The funds we receive go towards technical support, promotion, and launching new features that are useful for users and the community. As well as for the implementation of social projects to support IDPs. Even a small contribution will help us grow faster and the platform be more efficient!",
+
+    "joinTitle": "Partnership and cooperation",
+    "joinDescriptionText": "We are open to cooperation with entrepreneurs, public organizations and active residents. If you want to get involved or propose a partnership, contact us ",
+    "joinDescriptionAfterLink": ". Together we can create a platform that will drive community development.",
+    "aboutCompany": ["Initiator of the project: ", "Charitable fund of social reforms and support Hope"]
+  },
+  "PrivacyPolicy": {
+    "title": "Privacy Policy",
+    "subTitle": "LocalHub Starokostyantyniv — platform for the community and local business",
+    "fundName": "Initiator and operator: Charitable fund of social reforms and support Hope",
+    "ourSite": "Official website of the platform:",
+
+    "collectInfoTitle": "What information we collect and why",
+    "collectInfoDescription": "We process only the minimum data necessary for the operation of the LocalHub service: account data (name, email), business profiles (title, description, contacts, address, categories, schedule), geodata of points on the map (coordinates), content that you voluntarily publish (promotions, images, price lists, links), technical logs (IP, user-agent, security events). If you order paid services, payments are processed by the payment provider; we store only the fact of payment and the transaction identifier. If you provide permission in the browser, we temporarily process the approximate coordinates of your location for the nearby function - this data is not stored. The data is used to display the catalog and map, search and recommendations, improve the quality of the service, contact you, and fulfill legal obligations.",
+
+    "cookieTitle": "Cookies and similar technologies",
+    "cookieDescription": "We use three types of cookies: (1) necessary cookies for login, language settings, and security; (2) functional cookies to store your preferences (e.g., catalog filters); (3) analytical cookies to measure traffic and improve the service in an anonymized form. You can manage cookies in your browser settings; disabling necessary cookies may limit the functionality of the site.",
+
+    "anotherTitle": "Third-party services and links",
+    "anotherDescription": "The platform may contain links to business websites and integrate third-party services (e.g. maps, virtual tours, payment providers). We do not control the privacy policies of third parties - we recommend that you read them separately. We adhere to the principle of minimization before transferring data to third parties.",
+
+    "dataTitle": "Storage, security and retention",
+    "dataDescription": "We use technical and organizational security measures: connection encryption (HTTPS), access separation, backup. Personal data is stored no longer than is necessary for the purposes of processing or as required by law. Public business profiles and promotions are stored as long as the owner maintains them or it is necessary in the interests of the community. The account can be deleted upon request.",
+
+    "rightsTitle": "Your rights",
+    "rightsDescription": "You have the right to: (1) access your data; (2) rectification of inaccuracies; (3) erasure (“right to be forgotten”) where there are no legitimate grounds for retention; (4) restriction of processing; (5) objection to processing; (6) data portability. You can also withdraw consent where the processing is based on consent. To exercise your rights, please contact us by email.",
+
+    "changeTitle": "Policy update",
+    "changeDescription": "We periodically update this policy in the event of changes to the services or the law. The current version is always available on this page; we may notify you of significant changes in the service.",
+
+    "contactsTitle": "Contacts",
+    "contactsDescription": "For questions regarding the processing of personal data, please contact us by e-mail:"
+  },
+  "LoginRegistration": {
+    "title": "Log in or register",
+    "orInputEmail": "Or enter your email",
+    "email": "Email",
+    "password": "Password",
+    "repeat": "Repeat password",
+    "graduate": "Congratulations on successful registration!",
+    "sendEmail": "Activation letter sent to",
+    "via": "Via"
   }
 }
