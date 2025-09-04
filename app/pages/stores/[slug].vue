@@ -72,7 +72,7 @@
       </div>
 
       <!-- Товари та акції -->
-      <Goods :store="store" />
+      <GoodsServices :store="store" />
       <ShareButtons
         v-if="store.title"
         :page-object="{
@@ -100,13 +100,11 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
 import { useAppStore } from '@/stores/app.store';
-import { useRoute } from 'vue-router';
 
 const UButton = resolveComponent('UButton');
 const UIcon = resolveComponent('UIcon');
 const streetViewContainer = ref(null);
 const appStore = useAppStore();
-const route = useRoute();
 
 const errorMessage = ref('');
 const { $loadGoogleMaps } = useNuxtApp();

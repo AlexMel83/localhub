@@ -44,13 +44,12 @@
 <script setup>
 import { ref, onMounted, watch, h, resolveComponent } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
-const { $api } = useNuxtApp();
 import axios from 'axios';
 
 const UButton = resolveComponent('UButton');
 const UBadge = resolveComponent('UBadge');
 
-const props = defineProps({
+defineProps({
   store: {
     type: Object,
     required: true,
@@ -242,19 +241,6 @@ const columns = [
     header: 'Фото товару',
   },
 ];
-
-const { data: initialStore, error } = useAsyncData('store', async () => {
-  try {
-    const storeData = await $api.stores.getStoreBySlug(currentSlug.value);
-    if (!storeData.data || storeData.data.length === 0) {
-      throw new Error('Магазин не знайдено');
-    }
-    return storeData.data[0];
-  } catch (err) {
-    errorMessage.value = 'Помилка завантаження магазину: ' + (err.message || 'Невідома помилка');
-    return null; // Повертаємо null у випадку помилки
-  }
-});
 
 onMounted(async () => {
   await loadGoodsData();
