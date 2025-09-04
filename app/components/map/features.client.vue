@@ -1,5 +1,5 @@
 <template>
-  <div class="w-auto absolute top-[80px] left-[40px] z-[2] flex gap-4 px-6 pb-8 md:px-0 md:py-0 bg-transparent">
+  <div class="w-auto absolute top-[80px] left-[40px] z-[2] flex gap-4 px-0 py-0 bg-transparent">
     <!--Search-->
     <div class="relative flex-1">
       <!-- <UInput

@@ -13,12 +13,14 @@ const isHomePage = computed(() => route.path === '/');
     v-if="isHomePage && !appStore.isListView"
     class="flex transition-all duration-300 ease-in-out px-4 py-2 fixed bottom-0 left-0 w-full z-50 bg-transparent pointer-events-auto"
   >
-    <div class="text-start text-xs">
+    <div class="text-start text-xs md:text-sm">
       <NuxtLink class="hover:underline text-black" to="https://it.starkon.pp.ua" target="_blank">
         {{ $t('Footer.developer') }} {{ $t('Footer.copyright') }}
       </NuxtLink>
     </div>
-    <div class="text-black max-w-7xl ml-auto px-4 sm:px-6 lg:px-8 flex justify-center gap-6 text-xs text-center">
+    <div
+      class="text-black max-w-7xl ml-auto px-4 sm:px-6 lg:px-8 flex justify-center gap-6 text-xs md:text-sm text-center"
+    >
       <NuxtLink to="/donation-terms" class="hover:underline">
         {{ $t('Footer.terms') }}
       </NuxtLink>
@@ -33,7 +35,7 @@ const isHomePage = computed(() => route.path === '/');
 
   <!-- Повний футер для інших сторінок -->
   <footer v-else class="flex w-full relative px-4 py-2 border-t">
-    <div class="text-start text-sm">
+    <div class="text-start text-xs md:text-sm">
       <NuxtLink class="hover:underline" to="https://it.starkon.pp.ua" target="_blank">
         {{ $t('Footer.developer') }} {{ $t('Footer.copyright') }}
       </NuxtLink>

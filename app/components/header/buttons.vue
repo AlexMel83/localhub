@@ -30,7 +30,7 @@
       <Icon name="lucide-search" class="w-5 h-5" />
     </UButton>
     <!-- Кнопка мобильного меню -->
-    <UButton
+    <!-- <UButton
       class="cursor-pointer md:hidden transition-colors"
       :class="{
         'text-custom-orange': isMenuOpen,
@@ -44,7 +44,7 @@
         :name="`${isMenuOpen ? 'material-symbols:close-rounded' : 'humbleicons:bars'}`"
         :class="['w-7 h-7 transition-transform duration-300 ease-in-out', { 'rotate-90': isMenuOpen }]"
       />
-    </UButton>
+    </UButton> -->
   </div>
 </template>
 
