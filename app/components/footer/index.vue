@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { useAppStore } from '~/stores/app.store';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const appStore = useAppStore();
 const route = useRoute();
 
-const isHomePage = computed(() => route.path === '/');
+// Визначаємо, чи є поточна сторінка "головною" з урахуванням локалі
+const isHomePage = computed(() => {
+  const path = route.path;
+  // Для дефолтної локалі шлях '/', для інших — '/en', '/fr', тощо
+  return path === '/' || '/en';
+});
 </script>
 
 <template>
