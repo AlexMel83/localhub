@@ -72,46 +72,7 @@
       </div>
 
       <!-- Товари та акції -->
-      <div class="mt-8">
-        <h2 class="text-2xl font-semibold my-4 dark:text-white">Наші товари та акції</h2>
-        <div class="flex flex-col flex-1 w-full">
-          <div class="flex px-4 py-3.5 border-b border-accented">
-            <UInput
-              v-model="searchTerm"
-              color="neutral"
-              class="max-w-sm"
-              placeholder="Пошук по назві"
-              :ui="{ icon: { trailing: { pointer: '' } } }"
-              aria-label="Search"
-            >
-              <template #leading>
-                <Icon name="mdi-light:magnify" />
-              </template>
-              <template #trailing>
-                <UButton
-                  v-if="searchTerm"
-                  color="gray"
-                  variant="link"
-                  :padded="false"
-                  aria-label="Clear search"
-                  @click="clearSearch"
-                >
-                  <Icon name="material-symbols:close-small" />
-                </UButton>
-              </template>
-            </UInput>
-          </div>
-          <UTable
-            ref="table"
-            v-model:column-filters="columnFilters"
-            sticky
-            class="flex-1 max-h-[400px] rounded-xl overflow-auto"
-            :data="goods"
-            :columns="columns"
-            aria-label="Stores"
-          />
-        </div>
-      </div>
+      <GoodsServices :store="store" />
       <ShareButtons
         v-if="store.title"
         :page-object="{
@@ -137,24 +98,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, h, resolveComponent } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { useAppStore } from '@/stores/app.store';
-import { useRoute } from 'vue-router';
-import axios from 'axios';
 
-const appStore = useAppStore();
-const goods = ref([]);
-const UBadge = resolveComponent('UBadge');
 const UButton = resolveComponent('UButton');
 const UIcon = resolveComponent('UIcon');
-
-const route = useRoute();
 const streetViewContainer = ref(null);
-const currentSlug = ref(route.params.slug); // Змінено з parseInt, оскільки slug може бути рядком
+const appStore = useAppStore();
+
 const errorMessage = ref('');
-const { $api, $loadGoogleMaps } = useNuxtApp();
-const searchTerm = ref('');
-const store = ref(null); // Ініціалізація як null
+const { $loadGoogleMaps } = useNuxtApp();
+const store = ref(null);
 
 const typeStyles = {
   culture: 'bg-purple-600',
@@ -173,205 +127,10 @@ const typeLabels = {
   market: 'Ринок',
 };
 
-const clearSearch = () => {
-  searchTerm.value = '';
-};
-
 const goToView = (listView = false) => {
   appStore.isListView = listView;
   navigateTo('/');
 };
-
-const loadGoodsData = async (url = '') => {
-  url = store.value?.price || url;
-  if (!url) return;
-  try {
-    const { data } = await axios.get(url);
-    goods.value = data;
-  } catch (err) {
-    console.error('Помилка завантаження прайсу:', err);
-  }
-};
-
-const columns = [
-  {
-    accessorKey: 'id',
-    header: '#',
-    cell: ({ row }) => `#${row.getValue('id')}`,
-  },
-  {
-    accessorKey: 'name',
-    header: ({ column }) => {
-      const isSorted = column.getIsSorted();
-
-      return h(UButton, {
-        color: 'neutral',
-        variant: 'ghost',
-        label: 'Назва товару',
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
-        class: '-mx-2.5',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-      });
-    },
-  },
-  {
-    accessorKey: 'basic_price',
-    header: ({ column }) => {
-      const isSorted = column.getIsSorted();
-
-      return h(UButton, {
-        color: 'neutral',
-        variant: 'ghost',
-        label: 'Ціна',
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
-        class: '-mx-2.5 text-right whitespace-normal break-words min-w-[80px] w-full',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-      });
-    },
-    cell: ({ row }) => {
-      const value = row.getValue('basic_price');
-      if (!value) return '';
-
-      const amount = Number.parseFloat(value);
-      if (isNaN(amount)) return '';
-
-      const formatted = new Intl.NumberFormat('uk-UA', {
-        style: 'currency',
-        currency: 'UAH',
-      }).format(amount);
-
-      return h('div', { class: 'text-right font-medium' }, formatted);
-    },
-  },
-  {
-    accessorKey: 'action_status',
-    header: 'Статус',
-    cell: ({ row }) => {
-      const status = (row.getValue('action_status') || '').toString().toLowerCase();
-
-      let label = '';
-      let color = 'success';
-
-      switch (status) {
-        case 'акція':
-          label = 'Акція';
-          color = 'primary';
-          break;
-        case 'закінчилась':
-          label = 'Закінчилась';
-          color = 'error';
-          break;
-        case 'не почалась':
-          label = 'Не почалась';
-          color = 'neutral';
-          break;
-        default:
-          return '';
-      }
-
-      return h(UBadge, { variant: 'subtle', color }, () => label);
-    },
-  },
-  {
-    accessorKey: 'action_price',
-    header: ({ column }) => {
-      const isSorted = column.getIsSorted();
-      return h(
-        'button',
-        {
-          class: 'w-full flex items-center justify-end',
-          onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-        },
-        [
-          h('span', { class: 'text-center whitespace-normal break-words min-w-[80px]' }, 'Акційна ціна'),
-          h(UIcon, {
-            name: isSorted
-              ? isSorted === 'asc'
-                ? 'i-lucide-arrow-up-narrow-wide'
-                : 'i-lucide-arrow-down-wide-narrow'
-              : 'i-lucide-arrow-up-down',
-          }),
-        ],
-      );
-    },
-    cell: ({ row }) => {
-      const value = row.getValue('action_price');
-      if (!value) return '';
-
-      const amount = Number.parseFloat(value);
-      if (isNaN(amount)) return '';
-
-      const formatted = new Intl.NumberFormat('uk-UA', {
-        style: 'currency',
-        currency: 'UAH',
-      }).format(amount);
-
-      return h('div', { class: 'text-center font-medium' }, formatted);
-    },
-  },
-  {
-    accessorKey: 'action_start',
-    header: 'Початок акції',
-    cell: ({ row }) => {
-      const value = row.getValue('action_start');
-      if (!value) return '';
-
-      const date = new Date(value);
-      return isNaN(date.getTime()) ? '' : date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
-    },
-    meta: {
-      class: 'text-center',
-    },
-  },
-  {
-    accessorKey: 'action_over',
-    header: 'Закінчення акції',
-    cell: ({ row }) => {
-      const value = row.getValue('action_over');
-      if (!value) return '';
-
-      const date = new Date(value);
-      return isNaN(date.getTime()) ? '' : date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
-    },
-    meta: {
-      class: 'text-center',
-    },
-  },
-  {
-    accessorKey: 'photo',
-    header: 'Фото товару',
-  },
-];
-
-const table = useTemplateRef('table');
-
-const columnFilters = ref([
-  {
-    id: 'name',
-    value: '',
-  },
-]);
-
-const { data: initialStore, error } = useAsyncData('store', async () => {
-  try {
-    const storeData = await $api.stores.getStoreBySlug(currentSlug.value);
-    if (!storeData.data || storeData.data.length === 0) {
-      throw new Error('Магазин не знайдено');
-    }
-    return storeData.data[0];
-  } catch (err) {
-    errorMessage.value = 'Помилка завантаження магазину: ' + (err.message || 'Невідома помилка');
-    return null; // Повертаємо null у випадку помилки
-  }
-});
 
 const formatDate = (dateString) => {
   const options = {
@@ -426,20 +185,11 @@ const loadStore = async () => {
     store.value = initialStore.value;
     await nextTick();
     await initStreetView();
-    await loadGoodsData();
   } catch (err) {
     console.error('Помилка ініціалізації store:', err);
     errorMessage.value = 'Помилка ініціалізації: ' + (err.message || 'Невідома помилка');
   }
 };
-
-onMounted(async () => {
-  await loadStore();
-});
-
-watch(searchTerm, (val) => {
-  table.value?.tableApi?.getColumn('name')?.setFilterValue(val);
-});
 
 const structuredData = computed(() => {
   if (!store.value) return null;
@@ -470,6 +220,10 @@ const structuredData = computed(() => {
       '@id': `https://localhub.store/stores/${store.value.slug}`,
     },
   };
+});
+
+onMounted(async () => {
+  await loadStore();
 });
 </script>
 
