@@ -34,13 +34,15 @@ const isHomePage = computed(() => route.path === '/');
   </footer>
 
   <!-- Повний футер для інших сторінок -->
-  <footer v-else class="flex w-full relative px-4 py-2 border-t">
+  <footer v-else class="flex w-full relative px-2 sm:px-4 py-2 border-t">
     <div class="text-start text-xs md:text-sm">
       <NuxtLink class="hover:underline" to="https://it.starkon.pp.ua" target="_blank">
         {{ $t('Footer.developer') }} {{ $t('Footer.copyright') }}
       </NuxtLink>
     </div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center gap-6 text-sm text-center">
+    <div
+      class="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 flex justify-center gap-1 sm:gap-4 text-xs md:text-sm text-center"
+    >
       <NuxtLink to="/donation-terms" class="hover:underline">
         {{ $t('Footer.terms') }}
       </NuxtLink>

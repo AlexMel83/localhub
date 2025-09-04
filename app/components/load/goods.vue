@@ -4,7 +4,7 @@
     <div v-if="errorMessage" class="text-red-500 text-center p-4 dark:text-white">
       {{ errorMessage }}
     </div>
-    <div v-else class="flex flex-col flex-1 w-full">
+    <div v-else class="flex flex-col w-full">
       <div class="flex px-4 py-3.5 border-b border-accented">
         <UInput
           v-model="searchTerm"
@@ -36,7 +36,7 @@
         ref="table"
         v-model:column-filters="columnFilters"
         sticky
-        class="flex-1 max-h-[400px] rounded-xl overflow-auto"
+        class="max-h-[400px] rounded-xl overflow-auto"
         :data="goods"
         :columns="columns"
         aria-label="Stores"
