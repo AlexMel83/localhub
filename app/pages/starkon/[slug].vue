@@ -113,7 +113,7 @@ const UIcon = resolveComponent('UIcon');
 const route = useRoute();
 const currentSlug = ref(route.params.slug);
 const errorMessage = ref('');
-const { $api, $loadGoogleMaps } = useNuxtApp();
+const { $api } = useNuxtApp();
 
 const store = ref(null);
 

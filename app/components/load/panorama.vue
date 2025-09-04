@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue';
+import { ref, watch, nextTick } from 'vue';
 import { useNuxtApp } from '#app';
 import { useIntersectionObserver } from '@vueuse/core'; // Додаємо для ледачого завантаження
 
