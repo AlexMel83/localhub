@@ -257,11 +257,11 @@ const handleSelectedResult = (result) => {
 }
 
 :deep(.leaflet-control-layers) {
-  margin-bottom: 35px !important;
+  margin-bottom: 80px !important;
 }
 
 :deep(.leaflet-control-attribution) {
-  margin-bottom: 35px !important;
+  margin-bottom: 5px !important;
 }
 
 .custom-div-icon {
@@ -299,5 +299,14 @@ const handleSelectedResult = (result) => {
 
 .btn:hover {
   background-color: var(--btn-border);
+}
+
+@media (min-width: 480px) {
+  :deep(.leaflet-control-layers) {
+    margin-bottom: 35px !important;
+  }
+  :deep(.leaflet-control-attribution) {
+    margin-bottom: 35px !important;
+  }
 }
 </style>

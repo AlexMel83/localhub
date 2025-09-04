@@ -33,7 +33,7 @@ const toggleSearch = () => {
         <!-- Кнопка перемикання вигляду відображається тільки на головній сторінці -->
         <UButton
           v-if="isHomePage"
-          class="cursor-pointer hover:text-custom-orange dark:hover:text-custom-orange transition-colors"
+          class="ml-2 cursor-pointer hover:text-custom-orange dark:hover:text-custom-orange transition-colors"
           aria-label="Toggle view mode"
           color="neutral"
           @click="appStore.toggleListView"
