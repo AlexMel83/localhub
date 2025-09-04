@@ -99,11 +99,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, computed, defineAsyncComponent } from 'vue';
+import { ref, computed, defineAsyncComponent } from 'vue';
 import { useAppStore } from '@/stores/app.store';
 import { useRoute } from 'vue-router';
 
-// Ледаче завантаження LoadPanorama
 const loadPanorama = defineAsyncComponent(() => import('~/components/load/panorama.vue'));
 
 const appStore = useAppStore();
@@ -111,11 +110,25 @@ const UButton = resolveComponent('UButton');
 const UIcon = resolveComponent('UIcon');
 
 const route = useRoute();
-const currentSlug = ref(route.params.slug);
 const errorMessage = ref('');
 const { $api } = useNuxtApp();
 
-const store = ref(null);
+const {
+  data: store,
+  error,
+  pending,
+} = useAsyncData('store', async () => {
+  try {
+    const storeData = await $api.stores.getStoreBySlug(route.params.slug);
+    if (!storeData.data || storeData.data.length === 0) {
+      throw new Error('Магазин не знайдено');
+    }
+    return storeData.data[0];
+  } catch (err) {
+    errorMessage.value = 'Помилка завантаження магазину: ' + (err.message || 'Невідома помилка');
+    return null;
+  }
+});
 
 const typeStyles = {
   culture: 'bg-purple-600',
@@ -139,45 +152,14 @@ const goToView = (listView = false) => {
   navigateTo('/');
 };
 
-const { data: initialStore, error } = useAsyncData('store', async () => {
-  try {
-    const storeData = await $api.stores.getStoreBySlug(currentSlug.value);
-    if (!storeData.data || storeData.data.length === 0) {
-      throw new Error('Магазин не знайдено');
-    }
-    return storeData.data[0];
-  } catch (err) {
-    errorMessage.value = 'Помилка завантаження магазину: ' + (err.message || 'Невідома помилка');
-    return null;
-  }
-});
-
 const formatDate = (dateString) => {
   const options = {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
   };
-  return new Date(dateString).toLocaleString('ru-RU', options);
+  return new Date(dateString).toLocaleString('uk-UA', options);
 };
-
-const loadStore = async () => {
-  try {
-    if (error.value) {
-      errorMessage.value = 'Помилка завантаження магазину: ' + (error.value.message || 'Невідома помилка');
-      return;
-    }
-    store.value = initialStore.value;
-    await nextTick();
-  } catch (err) {
-    console.error('Помилка ініціалізації store:', err);
-    errorMessage.value = 'Помилка ініціалізації: ' + (err.message || 'Невідома помилка');
-  }
-};
-
-onMounted(async () => {
-  await loadStore();
-});
 
 const structuredData = computed(() => {
   if (!store.value) return null;
