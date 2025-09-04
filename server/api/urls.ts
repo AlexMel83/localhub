@@ -36,15 +36,20 @@ export default defineSitemapEventHandler(async () => {
     );
 
   try {
-    console.log('Fetching stores from:', `${apiBase}/stores`); // Додано логування
-    const storesRes = await fetch(`${apiBase}/stores`, {
+    // Усуваємо подвійний слеш і логуємо URL
+    const storesEndpoint = `${apiBase.replace(/\/+$/, '')}/stores`;
+    console.log('Fetching stores from:', storesEndpoint);
+
+    const storesRes = await fetch(storesEndpoint, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
     if (!storesRes.ok) {
       console.error(`Failed to fetch stores: ${storesRes.status} ${storesRes.statusText}`);
-      throw new Error(`Stores fetch failed: ${storesRes.status} - ${await storesRes.text()}`);
+      const errorText = await storesRes.text();
+      console.error('Response body:', errorText);
+      throw new Error(`Stores fetch failed: ${storesRes.status} - ${errorText}`);
     }
 
     const storesData = await storesRes.json();
@@ -76,7 +81,6 @@ export default defineSitemapEventHandler(async () => {
     }));
   } catch (error) {
     console.error('Error generating sitemap:', error);
-    // Логування детальної інформації про помилку
     if (error instanceof Error) {
       console.error('Error details:', error.message);
     }
