@@ -102,7 +102,7 @@ const toggleSearch = () => {
   localSearchVisible.value = !localSearchVisible.value;
   emit('toggle-search', localSearchVisible.value);
 };
-const toggleMenu = () => emit('toggleMenu');
+// const toggleMenu = () => emit('toggleMenu');
 </script>
 
 <style scoped>
