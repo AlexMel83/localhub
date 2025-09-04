@@ -31,20 +31,26 @@ export default defineSitemapEventHandler(async () => {
       locales.map((locale) => ({
         route: `${locale === defaultLocale ? '' : `/${locale}`}/${basePath}/${item.slug}`,
         lastmod: item.updated_at ? new Date(item.updated_at).toISOString() : new Date().toISOString(),
-        thumbnail_url: item.thumbnail_url, // Передаємо thumbnail_url
+        thumbnail_url: item.thumbnail_url,
       })),
     );
 
   try {
-    const storesRes = await fetch(`${apiBase}/stores`);
+    console.log('Fetching stores from:', `${apiBase}/stores`); // Додано логування
+    const storesRes = await fetch(`${apiBase}/stores`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     if (!storesRes.ok) {
       console.error(`Failed to fetch stores: ${storesRes.status} ${storesRes.statusText}`);
-      throw new Error(`Stores fetch failed: ${storesRes.status}`);
+      throw new Error(`Stores fetch failed: ${storesRes.status} - ${await storesRes.text()}`);
     }
 
     const storesData = await storesRes.json();
+    console.log('API response:', storesData); // Логування відповіді API
     if (!Array.isArray(storesData)) {
-      console.error('API returned invalid data format: expected an array');
+      console.error('API returned invalid data format: expected an array, got:', storesData);
       throw new Error('Invalid API response format');
     }
 
@@ -70,6 +76,10 @@ export default defineSitemapEventHandler(async () => {
     }));
   } catch (error) {
     console.error('Error generating sitemap:', error);
+    // Логування детальної інформації про помилку
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+    }
     return staticRoutes.map((route) => ({
       loc: `${siteUrl}${route}`,
       lastmod: new Date().toISOString(),
