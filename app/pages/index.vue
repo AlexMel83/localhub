@@ -8,7 +8,7 @@
           v-for="store in filteredStores"
           :key="store.slug"
           class="relative rounded-lg overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 h-64"
-          @click="$router.push(`/stores/${store.slug}`)"
+          @click="$router.push(`/starkon/${store.slug}`)"
         >
           <!-- Зображення на всю карточку -->
           <div class="w-full h-full relative overflow-hidden group">

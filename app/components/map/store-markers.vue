@@ -115,7 +115,7 @@ const createStorePopupContent = (store) => {
         ${typeLabel}
       </div>
 
-      <a href="/stores/${store.slug}">
+      <a href="/starkon/${store.slug}">
         <div class="absolute bottom-0 left-0 p-3 text-white w-full">
           <h3 class="text-lg font-semibold truncate">${store.title}</h3>
           <p class="text-sm text-gray-300 line-clamp-2">${store.description}</p>

@@ -5,7 +5,7 @@
       :title="store?.title || 'Store'"
       :description="store?.description || 'Опис бізнесу'"
       :image="store?.thumbnail_url"
-      :url="`https://localhub.store/stores/${store?.slug || ''}`"
+      :url="`https://localhub.store/starkon/${store?.slug || ''}`"
       :structured-data="structuredData"
     />
     <!-- Панорама -->
@@ -467,7 +467,7 @@ const structuredData = computed(() => {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://localhub.store/stores/${store.value.slug}`,
+      '@id': `https://localhub.store/starkon/${store.value.slug}`,
     },
   };
 });
