@@ -2,7 +2,6 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  plugins: ["~/plugins/axios.js", "~/plugins/google-maps.js"],
   modules: [
     "@nuxtjs/leaflet",
     "@nuxt/eslint",
@@ -42,4 +41,5 @@ export default defineNuxtConfig({
       API_KEY: process.env.API_KEY,
     },
   },
+  plugins: ["~/plugins/axios.js", "~/plugins/google-maps.js"],
 });
