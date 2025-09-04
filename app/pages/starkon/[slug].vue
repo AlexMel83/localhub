@@ -113,11 +113,7 @@ const route = useRoute();
 const errorMessage = ref('');
 const { $api } = useNuxtApp();
 
-const {
-  data: store,
-  error,
-  pending,
-} = useAsyncData('store', async () => {
+const { data: store } = useAsyncData('store', async () => {
   try {
     const storeData = await $api.stores.getStoreBySlug(route.params.slug);
     if (!storeData.data || storeData.data.length === 0) {
