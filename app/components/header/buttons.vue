@@ -114,11 +114,7 @@ const isHomePage = computed(() => {
 });
 
 const buttonClasses = computed(() => {
-  const baseClasses = [
-    'cursor-pointer transition-all duration-200 ease-in-out',
-    'focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600',
-    'active:scale-95',
-  ];
+  const baseClasses = ['cursor-pointer transition-all duration-200 ease-in-out', 'active:scale-95'];
 
   // Якщо це головна сторінка з мапою, фіксуємо світлий hover фон
   if (isHomePage.value && !appStore.isListView) {

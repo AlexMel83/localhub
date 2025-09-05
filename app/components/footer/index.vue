@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 const appStore = useAppStore();
 const route = useRoute();
-const $t = useI18n();
+const t = useI18n();
 
 // Визначаємо, чи є поточна сторінка "головною" з урахуванням локалі
 const isHomePage = computed(() => {

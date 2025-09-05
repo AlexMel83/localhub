@@ -3,6 +3,7 @@
     "search": "search",
     "viewMap": "View on map",
     "viewList": "View on list",
+    "toggleViewMode": "Toggle view mode",
     "toggleLanguage": "Toggle language",
     "toggleTheme": "Toggle theme",
     "toggleSearch": "Toggle search"
