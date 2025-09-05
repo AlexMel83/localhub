@@ -100,29 +100,27 @@
 
 <script setup>
 import { ref, computed, defineAsyncComponent } from 'vue';
-import { useAppStore } from '@/stores/app.store';
+import { useAppStore, useStoresStore } from '@/stores/app.store';
 import { useRoute } from 'vue-router';
 
 const loadPanorama = defineAsyncComponent(() => import('~/components/load/panorama.vue'));
 
 const appStore = useAppStore();
+const storesStore = useStoresStore();
 const UButton = resolveComponent('UButton');
 const UIcon = resolveComponent('UIcon');
+const store = ref({});
 
 const route = useRoute();
 const errorMessage = ref('');
 const { $customApi } = useNuxtApp();
 
-const { data: store } = useAsyncData('store', async () => {
-  try {
-    const storeData = await $customApi.stores.getStoreBySlug(route.params.slug);
-    if (!storeData.data || storeData.data.length === 0) {
-      throw new Error('Магазин не знайдено');
-    }
-    return storeData.data[0];
-  } catch (err) {
-    errorMessage.value = 'Помилка завантаження магазину: ' + (err.message || 'Невідома помилка');
-    return null;
+onMounted(async () => {
+  const s = await storesStore.fetchStoreBySlug($customApi, route.params.slug);
+  if (!s) {
+    errorMessage.value = 'Магазин не знайдено';
+  } else {
+    store.value = s;
   }
 });
 

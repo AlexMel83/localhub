@@ -31,6 +31,39 @@ interface AuthResponse {
   };
 }
 
+interface Store {
+  id: number;
+  slug: string;
+  title: string;
+  description?: string;
+  thumbnail_url?: string;
+  address?: string;
+  contacts?: string;
+  working_hours?: string;
+  type?: string;
+  rating?: number;
+  price?: string;
+  latitude?: number;
+  longitude?: number;
+  heading?: number;
+  tilt?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface StoresApi {
+  getStores: () => Promise<{ data: Store[] }>;
+  getStoreBySlug: (slug: string) => Promise<{ data: Store[] }>;
+}
+
+interface CustomApi {
+  stores: StoresApi;
+}
+
+interface Error {
+  message: string;
+}
+
 export const useAppStore = defineStore('app', {
   state: () => {
     const themeCookie = useCookie('theme', { default: () => 'light' }); // Кукі за замовчуванням 'light'
@@ -142,6 +175,7 @@ export const useAuthStore = defineStore('auth', {
 export const useStoresStore = defineStore('stores', {
   state: () => ({
     stores: [] as unknown[],
+    storeCache: {} as Record<string, unknown>,
     goodsCache: {} as Record<string, unknown[]>, // ключ — url прайсу
     isLoading: false,
     isLoaded: false,
@@ -150,12 +184,12 @@ export const useStoresStore = defineStore('stores', {
   }),
 
   actions: {
-    async fetchStores($customApi: unknown) {
+    async fetchStores($customApi: CustomApi) {
       if (this.isLoaded) return;
       this.isLoading = true;
       try {
         const response = await $customApi.stores.getStores();
-        this.stores = response.data.map((store: unknown) => ({
+        this.stores = response.data.map((store: Store) => ({
           ...store,
           rating: store.rating || Math.floor(Math.random() * 5 * 2) / 2 + 0.5,
         }));
@@ -164,6 +198,23 @@ export const useStoresStore = defineStore('stores', {
         console.error('Error fetching stores:', error);
       } finally {
         this.isLoading = false;
+      }
+    },
+
+    async fetchStoreBySlug($customApi: CustomApi, slug: string) {
+      if (this.storeCache[slug]) {
+        return this.storeCache[slug];
+      }
+      try {
+        const response = await $customApi.stores.getStoreBySlug(slug);
+        const store = response.data?.[0] || null;
+        if (store) {
+          this.storeCache[slug] = store;
+        }
+        return store;
+      } catch (err) {
+        console.error('Error fetching store by slug:', err);
+        return null;
       }
     },
 
@@ -183,7 +234,7 @@ export const useStoresStore = defineStore('stores', {
         return data;
       } catch (err: unknown) {
         console.error('Помилка завантаження прайсу:', err);
-        this.goodsError[priceUrl] = 'Помилка завантаження прайсу: ' + (err.message || 'Невідома помилка');
+        this.goodsError[priceUrl] = 'Помилка завантаження прайсу: ' + (err || 'Невідома помилка');
         return [];
       } finally {
         this.goodsLoading[priceUrl] = false;

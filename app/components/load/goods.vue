@@ -257,8 +257,4 @@ watch(
   },
   { deep: true },
 );
-
-onMounted(async () => {
-  await loadGoodsData(props.price);
-});
 </script>
