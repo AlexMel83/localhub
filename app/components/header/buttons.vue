@@ -66,7 +66,7 @@ import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { useAppStore } from '../../stores/app.store';
 import { useI18n } from 'vue-i18n';
 import { useRouter, useRoute } from 'vue-router';
-// @ts-expect-error types
+// @ts-expect-error types needed
 import { useNuxtApp } from '#app';
 
 interface Props {
@@ -90,7 +90,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const appStore = useAppStore();
-const { locale, t } = useI18n();
+const { locale } = useI18n();
 const router = useRouter();
 const route = useRoute();
 const { $gtag } = useNuxtApp();
@@ -208,10 +208,6 @@ const toggleSearch = (): void => {
   }
 };
 
-const toggleMenu = (): void => {
-  emit('toggleMenu');
-};
-
 const handleKeyboardShortcuts = (event: KeyboardEvent): void => {
   if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
     event.preventDefault();
@@ -233,14 +229,14 @@ const handleKeyboardShortcuts = (event: KeyboardEvent): void => {
 };
 
 onMounted(() => {
-  if (process.client) {
+  if (import.meta.client) {
     document.documentElement.classList.toggle('dark', appStore.isDark);
     document.addEventListener('keydown', handleKeyboardShortcuts);
   }
 });
 
 onUnmounted(() => {
-  if (process.client) {
+  if (import.meta.client) {
     document.removeEventListener('keydown', handleKeyboardShortcuts);
   }
 });
@@ -248,7 +244,7 @@ onUnmounted(() => {
 watch(
   () => appStore.isDark,
   (isDark) => {
-    if (process.client) {
+    if (import.meta.client) {
       document.documentElement.classList.toggle('dark', isDark);
     }
   },
