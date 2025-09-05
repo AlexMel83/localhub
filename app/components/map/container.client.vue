@@ -92,6 +92,17 @@ const onMapReady = () => {
   if (storesGroup.value?.leafletObject) {
     storesGroup.value.leafletObject.addLayer(markerClusterGroupStores.value);
   }
+
+  const attribution = map.value?.leafletObject?.attributionControl?.getContainer();
+  if (attribution) {
+    attribution.classList.add('collapsed');
+
+    attribution.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      attribution.classList.toggle('collapsed');
+    });
+  }
 };
 
 const plotGeoLocation = (coords) => {
@@ -295,6 +306,19 @@ const handleSelectedResult = (result) => {
   border-radius: 0 !important;
   min-width: 200px !important;
   max-width: 300px;
+}
+
+:deep(.leaflet-control-attribution) {
+  max-width: 65px;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: max-width 0.3s ease;
+}
+
+:deep(.leaflet-control-attribution:not(.collapsed)) {
+  max-width: 400px; /* розгорнутий стан */
+  padding-right: 8px;
 }
 
 .btn:hover {
