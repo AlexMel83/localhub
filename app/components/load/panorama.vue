@@ -9,7 +9,7 @@
 <script setup>
 import { ref, watch, nextTick } from 'vue';
 import { useNuxtApp } from '#app';
-import { useIntersectionObserver } from '@vueuse/core'; // Додаємо для ледачого завантаження
+import { useIntersectionObserver } from '@vueuse/core';
 
 const props = defineProps({
   latitude: {
@@ -34,19 +34,22 @@ const streetViewContainer = ref(null);
 const errorMessage = ref('');
 const { $loadGoogleMaps } = useNuxtApp();
 const isVisible = ref(false);
+const isInitialized = ref(false); // Додаємо змінну для відстеження ініціалізації
 
 // Використовуємо IntersectionObserver для ледачого завантаження
 useIntersectionObserver(
   streetViewContainer,
   ([{ isIntersecting }]) => {
-    isVisible.value = isIntersecting;
+    if (isIntersecting && !isInitialized.value) {
+      isVisible.value = true;
+    }
   },
   { threshold: 0 },
 );
 
 const initStreetView = async () => {
-  if (!isVisible.value || !streetViewContainer.value) {
-    return; // Ініціалізація лише коли елемент видимий
+  if (!isVisible.value || !streetViewContainer.value || isInitialized.value) {
+    return; // Ініціалізація лише коли елемент видимий і ще не ініціалізований
   }
 
   errorMessage.value = '';
@@ -90,16 +93,21 @@ const initStreetView = async () => {
         streetView.setZoom(0);
       }
     });
+
+    isInitialized.value = true; // Позначаємо, що панорама ініціалізована
   } catch (err) {
     errorMessage.value = 'Не вдалося завантажити панораму: ' + (err.message || 'Невідома помилка');
     console.error('Помилка ініціалізації Street View:', err);
   }
 };
 
+// Відстежуємо лише props, а не isVisible
 watch(
-  () => [props.latitude, props.longitude, props.heading, props.tilt, isVisible.value],
+  () => [props.latitude, props.longitude, props.heading, props.tilt],
   async () => {
-    await initStreetView();
+    if (isVisible.value && !isInitialized.value) {
+      await initStreetView();
+    }
   },
   { immediate: true },
 );
