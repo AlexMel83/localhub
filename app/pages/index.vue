@@ -90,9 +90,7 @@ const appStore = useAppStore();
 const storesStore = useStoresStore();
 
 const { $customApi } = useNuxtApp();
-const storesDataApi = ref([]);
 const searchTerm = computed(() => appStore.searchTerm);
-const isLoading = ref(false);
 
 const likedStores = ref(new Set());
 
