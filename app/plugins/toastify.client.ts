@@ -9,8 +9,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     position: toast.POSITION.TOP_RIGHT,
   });
 
-  console.log('Toastify plugin loaded:', toast);
-
   return {
     provide: {
       toast,

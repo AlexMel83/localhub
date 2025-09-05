@@ -120,11 +120,11 @@ export default defineNuxtConfig({
       }
     },
     build: {
+      sourcemap: true,
       rollupOptions: {
         output: {
           manualChunks: {
             'leaflet': ['leaflet'],
-            'maps': ['@googlemaps/js-api-loader']
           }
         }
       }
@@ -134,9 +134,10 @@ export default defineNuxtConfig({
     payloadExtraction: false,
   },
   build: {
-    transpile: ['@googlemaps/js-api-loader']
+    transpile: []
   },
   image: {
+    provider: 'ipx',
     quality: 80,
     format: ['webp'],
     screens: {
