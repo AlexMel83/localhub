@@ -2,7 +2,10 @@
   "Header": {
     "search": "Пошук",
     "viewMap": "Переглянути на мапі",
-    "viewList": "Переглянути списком"
+    "viewList": "Переглянути списком",
+    "toggleLanguage": "Змінити мову",
+    "toggleTheme": "Змінити тему",
+    "toggleSearch": "Відкрити пошук"
   },
   "Map": {
     "expandMap": "Розгорнути мапу",

@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { useAppStore } from '~/stores/app.store';
+import { computed } from 'vue';
+import { useAppStore } from '../../stores/app.store';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const appStore = useAppStore();
 const route = useRoute();
+const { t } = useI18n();
 
 // Визначаємо, чи є поточна сторінка "головною" з урахуванням локалі
 const isHomePage = computed(() => {

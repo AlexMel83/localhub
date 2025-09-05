@@ -2,7 +2,10 @@
   "Header": {
     "search": "search",
     "viewMap": "View on map",
-    "viewList": "View on list"
+    "viewList": "View on list",
+    "toggleLanguage": "Toggle language",
+    "toggleTheme": "Toggle theme",
+    "toggleSearch": "Toggle search"
   },
   "Map": {
     "expandMap": "Expand map",

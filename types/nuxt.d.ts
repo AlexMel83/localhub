@@ -15,6 +15,7 @@ declare module '#app' {
       clear(): void;
     };
     $t(key: string, values?: Record<string, unknown>): string;
+    $gtag?: (...args: any[]) => void;
   }
 }
 
@@ -30,5 +31,10 @@ declare module '@vue/runtime-core' {
       clear(): void;
     };
     $t(key: string, values?: Record<string, unknown>): string;
+    $gtag?: (...args: any[]) => void;
   }
+}
+
+interface Window {
+  gtag?: (...args: any[]) => void;
 }
