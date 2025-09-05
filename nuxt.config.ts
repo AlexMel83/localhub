@@ -22,7 +22,7 @@ export default defineNuxtConfig({
     '@nuxtjs/robots',
     'nuxt-gtag',
   ],
-  // @ts-ignore
+  // @ts-expect-error need types
   gtag: {
     id: process.env.NUXT_PUBLIC_GTAG_ID || 'G-C4177GTQXR',
     loadingStrategy: 'defer',

@@ -3,8 +3,8 @@ import type { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosRespon
 import axios from 'axios';
 import { useAuthStore } from '../stores/app.store';
 import apiModule from '../api/index';
-// @ts-ignore
-import { defineNuxtPlugin, useRuntimeConfig, navigateTo, useNuxtApp, type NuxtApp } from '#app';
+// @ts-expect-error need types
+import { defineNuxtPlugin, useRuntimeConfig, navigateTo, useNuxtApp } from '#app';
 
 // Типи для API відповідей
 interface TokenData {
@@ -14,18 +14,14 @@ interface TokenData {
 
 interface UserData {
   tokens: TokenData;
-  [key: string]: any;
-}
-
-interface RefreshTokenResponse {
-  tokens: TokenData;
+  [key: string]: unknown;
 }
 
 interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
-export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
+export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig();
   const authStore = useAuthStore();
 
@@ -84,7 +80,6 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
     isRefreshing = true;
 
     try {
-      const originalAuthHeader = axiosInstance.defaults.headers.common['Authorization'];
       delete axiosInstance.defaults.headers.common['Authorization'];
 
       const response = await api.auth.refresh(refreshTokenValue);
@@ -107,11 +102,12 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
       onRefreshed(response.data.tokens.accessToken);
 
       return true;
-    } catch (error: any) {
-      console.error('Помилка при оновленні токену:', error.message);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Невідома помилка';
+      console.error('Помилка при оновленні токену:', errorMessage);
       await authStore.logOut();
       onRefreshed('');
-      if (process.client) {
+      if (import.meta.client) {
         await navigateTo('/login');
       }
       return false;
@@ -165,11 +161,11 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
         }
       }
 
-      if (process.dev) {
+      if (import.meta.dev) {
         console.error(`❌ API Error: ${error.response?.status} ${error.config?.url}`, error.message);
       }
 
-      if (process.client && error.response) {
+      if (import.meta.client && error.response) {
         const { $toast, $t } = useNuxtApp();
         switch (error.response.status) {
           case 400:
@@ -191,7 +187,7 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
     },
   );
 
-  if (process.client) {
+  if (import.meta.client) {
     setAuthHeader();
   }
 

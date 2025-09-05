@@ -1,10 +1,11 @@
-import { ToastContainerOptions } from 'vue3-toastify';
+import type { ToastContainerOptions } from 'vue3-toastify';
 import type { NuxtApp as NuxtAppType } from '#app';
 import type { AxiosInstance } from 'axios';
+import type { ApiModule } from '../api/index';
 
 declare module '#app' {
   interface NuxtApp extends NuxtAppType {
-    $customApi: any; // Замініть на конкретний тип, якщо apiModule має визначений тип
+    $customApi: ApiModule;
     $axios: AxiosInstance;
     $toast: {
       success(message: string, options?: ToastContainerOptions): number;
@@ -13,13 +14,13 @@ declare module '#app' {
       warn(message: string, options?: ToastContainerOptions): number;
       clear(): void;
     };
-    $t(key: string, values?: Record<string, any>): string;
+    $t(key: string, values?: Record<string, unknown>): string;
   }
 }
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
-    $customApi: any; // Замініть на конкретний тип, якщо apiModule має визначений тип
+    $customApi: ApiModule;
     $axios: AxiosInstance;
     $toast: {
       success(message: string, options?: ToastContainerOptions): number;
@@ -28,6 +29,6 @@ declare module '@vue/runtime-core' {
       warn(message: string, options?: ToastContainerOptions): number;
       clear(): void;
     };
-    $t(key: string, values?: Record<string, any>): string;
+    $t(key: string, values?: Record<string, unknown>): string;
   }
 }
