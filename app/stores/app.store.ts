@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia';
 import { useNuxtApp } from 'nuxt/app';
 import type { AuthApi } from '../api/auth';
+// @ts-expect-error need types
 import { useCookie } from '#app';
+import axios from 'axios';
 
 interface User {
   id: number;
@@ -132,6 +134,59 @@ export const useAuthStore = defineStore('auth', {
         }
       } catch (error) {
         console.error('Error during logOut:', error);
+      }
+    },
+  },
+});
+
+export const useStoresStore = defineStore('stores', {
+  state: () => ({
+    stores: [] as unknown[],
+    goodsCache: {} as Record<string, unknown[]>, // ключ — url прайсу
+    isLoading: false,
+    isLoaded: false,
+    goodsLoading: {} as Record<string, boolean>,
+    goodsError: {} as Record<string, string>,
+  }),
+
+  actions: {
+    async fetchStores($customApi: unknown) {
+      if (this.isLoaded) return;
+      this.isLoading = true;
+      try {
+        const response = await $customApi.stores.getStores();
+        this.stores = response.data.map((store: unknown) => ({
+          ...store,
+          rating: store.rating || Math.floor(Math.random() * 5 * 2) / 2 + 0.5,
+        }));
+        this.isLoaded = true;
+      } catch (error) {
+        console.error('Error fetching stores:', error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async fetchGoods(priceUrl: string) {
+      if (!priceUrl) return [];
+
+      // якщо вже є в кеші → віддаємо
+      if (this.goodsCache[priceUrl]) {
+        return this.goodsCache[priceUrl];
+      }
+
+      this.goodsLoading[priceUrl] = true;
+      this.goodsError[priceUrl] = '';
+      try {
+        const { data } = await axios.get(priceUrl);
+        this.goodsCache[priceUrl] = data;
+        return data;
+      } catch (err: unknown) {
+        console.error('Помилка завантаження прайсу:', err);
+        this.goodsError[priceUrl] = 'Помилка завантаження прайсу: ' + (err.message || 'Невідома помилка');
+        return [];
+      } finally {
+        this.goodsLoading[priceUrl] = false;
       }
     },
   },

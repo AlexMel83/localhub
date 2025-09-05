@@ -1,6 +1,6 @@
 <template>
   <div class="mt-8">
-    <h2 class="text-2xl font-semibold my-4 dark:text-white">Наші товари та акції</h2>
+    <h2 class="text-2xl font-semibold my-4">{{ $t('Stores.goods') }}</h2>
     <div v-if="errorMessage" class="text-red-500 text-center p-4 dark:text-white">
       {{ errorMessage }}
     </div>
@@ -10,7 +10,7 @@
           v-model="searchTerm"
           color="neutral"
           class="max-w-sm"
-          placeholder="Пошук по назві"
+          :placeholder="$t('Stores.goodsSearch')"
           :ui="{ icon: { trailing: { pointer: '' } } }"
           aria-label="Search"
           @update:model-value="$emit('update:searchTerm', $event)"
@@ -48,7 +48,7 @@
 
 <script setup>
 import { ref, h, resolveComponent, onMounted, watch } from 'vue';
-import axios from 'axios';
+import { useStoresStore } from '~/stores/app.store';
 
 const props = defineProps({
   price: {
@@ -65,37 +65,27 @@ const props = defineProps({
   },
 });
 
+const storesStore = useStoresStore();
 const emit = defineEmits(['update:searchTerm', 'update:columnFilters']);
 
 const goods = ref([]);
+const errorMessage = computed(() => storesStore.goodsError[props.price] || '');
+
 const UButton = resolveComponent('UButton');
 const UBadge = resolveComponent('UBadge');
 const UIcon = resolveComponent('UIcon');
 const searchTerm = ref(props.searchTerm);
 const table = useTemplateRef('table');
 const columnFilters = ref([...props.columnFilters]);
-const errorMessage = ref('');
 
 const clearSearch = () => {
   searchTerm.value = '';
   emit('update:searchTerm', '');
 };
 
-const loadGoodsData = async (url = '') => {
-  errorMessage.value = ''; // Скидаємо повідомлення про помилку
-  url = props.price || url;
-  if (!url) {
-    errorMessage.value = 'URL прайсу не надано';
-    return;
-  }
-  try {
-    const { data } = await axios.get(url);
-    goods.value = data;
-  } catch (err) {
-    errorMessage.value = 'Помилка завантаження прайсу: ' + (err.message || 'Невідома помилка');
-    console.error('Помилка завантаження прайсу:', err);
-  }
-};
+onMounted(async () => {
+  goods.value = await storesStore.fetchGoods(props.price);
+});
 
 const columns = [
   {
@@ -111,7 +101,7 @@ const columns = [
       return h(UButton, {
         color: 'neutral',
         variant: 'ghost',
-        label: 'Назва товару',
+        label: $t('Stores.goodsName'),
         icon: isSorted
           ? isSorted === 'asc'
             ? 'i-lucide-arrow-up-narrow-wide'
@@ -130,7 +120,7 @@ const columns = [
       return h(UButton, {
         color: 'neutral',
         variant: 'ghost',
-        label: 'Ціна',
+        label: $t('Stores.price'),
         icon: isSorted
           ? isSorted === 'asc'
             ? 'i-lucide-arrow-up-narrow-wide'
@@ -157,7 +147,7 @@ const columns = [
   },
   {
     accessorKey: 'action_status',
-    header: 'Статус',
+    header: $t('Stores.status'),
     cell: ({ row }) => {
       const status = (row.getValue('action_status') || '').toString().toLowerCase();
 
@@ -166,15 +156,15 @@ const columns = [
 
       switch (status) {
         case 'акція':
-          label = 'Акція';
+          label = $t('Stores.promo');
           color = 'primary';
           break;
         case 'закінчилась':
-          label = 'Закінчилась';
+          label = $t('Stores.ended');
           color = 'error';
           break;
         case 'не почалась':
-          label = 'Не почалась';
+          label = $t('Stores.notStarted');
           color = 'neutral';
           break;
         default:
@@ -195,7 +185,7 @@ const columns = [
           onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
         },
         [
-          h('span', { class: 'text-center whitespace-normal break-words min-w-[80px]' }, 'Акційна ціна'),
+          h('span', { class: 'text-center whitespace-normal break-words min-w-[80px]' }, $t('Stores.promoPrice')),
           h(UIcon, {
             name: isSorted
               ? isSorted === 'asc'
@@ -223,7 +213,7 @@ const columns = [
   },
   {
     accessorKey: 'action_start',
-    header: 'Початок акції',
+    header: $t('Stores.startPromo'),
     cell: ({ row }) => {
       const value = row.getValue('action_start');
       if (!value) return '';
@@ -237,7 +227,7 @@ const columns = [
   },
   {
     accessorKey: 'action_over',
-    header: 'Закінчення акції',
+    header: $t('Stores.endPromo'),
     cell: ({ row }) => {
       const value = row.getValue('action_over');
       if (!value) return '';
@@ -251,7 +241,7 @@ const columns = [
   },
   {
     accessorKey: 'photo',
-    header: 'Фото товару',
+    header: $t('Stores.goodsPhoto'),
   },
 ];
 

@@ -44,7 +44,19 @@
     "forward": "Forward",
     "loading": "Loading stores...",
     "type": "Type: ",
-    "rating": "Rating:"
+    "rating": "Rating:",
+    "goods": "Our goods and promotions",
+    "goodsName": "Goods name",
+    "price": "Price",
+    "status": "Status",
+    "promoPrice": "Promo price",
+    "startPromo": "Start of promotion",
+    "endPromo": "End of promotion",
+    "goodsPhoto": "Goods photo",
+    "goodsSearch": "Search by name",
+    "promo": "Promotions",
+    "ended": "Ended",
+    "notStarted": "Not started"
   },
   "Footer": {
     "terms": "Terms of use",
