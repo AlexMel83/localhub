@@ -12,22 +12,10 @@ import { useNuxtApp } from '#app';
 import { useIntersectionObserver } from '@vueuse/core';
 
 const props = defineProps({
-  latitude: {
-    type: [String, Number],
-    required: true,
-  },
-  longitude: {
-    type: [String, Number],
-    required: true,
-  },
-  heading: {
-    type: [String, Number],
-    default: 0,
-  },
-  tilt: {
-    type: [String, Number],
-    default: 0,
-  },
+  latitude: [String, Number],
+  longitude: [String, Number],
+  heading: { type: [String, Number], default: 0 },
+  tilt: { type: [String, Number], default: 0 },
 });
 
 const streetViewContainer = ref(null);
@@ -36,21 +24,20 @@ const { $loadGoogleMaps } = useNuxtApp();
 const isVisible = ref(false);
 const isInitialized = ref(false);
 
-// Використовуємо IntersectionObserver для ледачого завантаження
+let streetView = null;
+let handleFullscreenChange = null;
+
+// IntersectionObserver для ледачого завантаження
 const { stop: stopIntersectionObserver } = useIntersectionObserver(
   streetViewContainer,
   ([{ isIntersecting }]) => {
-    if (isIntersecting) {
-      isVisible.value = true;
-    }
+    if (isIntersecting) isVisible.value = true;
   },
-  { threshold: 0.1 }, // Змінено threshold для надійнішого спрацьовування
+  { threshold: 0.1 },
 );
 
 const initStreetView = async () => {
-  if (!isVisible.value || !streetViewContainer.value || isInitialized.value) {
-    return;
-  }
+  if (!isVisible.value || !streetViewContainer.value || isInitialized.value) return;
 
   errorMessage.value = '';
   const location = {
@@ -60,17 +47,16 @@ const initStreetView = async () => {
 
   if (isNaN(location.lat) || isNaN(location.lng)) {
     errorMessage.value = 'Некоректні координати для панорами.';
-    console.error('Invalid coordinates:', { latitude: props.latitude, longitude: props.longitude });
     return;
   }
 
   try {
     await $loadGoogleMaps();
-    if (!window.google || !window.google.maps) {
+    if (!window.google?.maps) {
       throw new Error('Google Maps API не ініціалізовано.');
     }
 
-    const streetView = new window.google.maps.StreetViewPanorama(streetViewContainer.value, {
+    streetView = new window.google.maps.StreetViewPanorama(streetViewContainer.value, {
       position: location,
       pov: {
         heading: parseFloat(props.heading) || 0,
@@ -86,7 +72,7 @@ const initStreetView = async () => {
       }
     };
 
-    const handleFullscreenChange = () => {
+    handleFullscreenChange = () => {
       if (document.fullscreenElement) {
         streetView.setZoom(0);
       }
@@ -95,12 +81,6 @@ const initStreetView = async () => {
     streetView.addListener('zoom_changed', handleZoomChange);
     document.addEventListener('fullscreenchange', handleFullscreenChange);
 
-    // Очищення слухачів при знищенні компонента
-    onUnmounted(() => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      // Google Maps API не потребує явного очищення слухача 'zoom_changed'
-    });
-
     isInitialized.value = true;
   } catch (err) {
     errorMessage.value = 'Не вдалося завантажити панораму: ' + (err.message || 'Невідома помилка');
@@ -108,25 +88,24 @@ const initStreetView = async () => {
   }
 };
 
-// Викликаємо initStreetView при першому монтуванні, якщо елемент видимий
+// Викликаємо при монтуванні
 onMounted(() => {
-  if (isVisible.value) {
-    initStreetView();
-  }
+  if (isVisible.value) initStreetView();
 });
 
-// Відстежуємо зміни props та isVisible
+// Відстежуємо зміни props + видимість
 watch(
   () => [props.latitude, props.longitude, props.heading, props.tilt, isVisible.value],
-  async () => {
-    await initStreetView();
-  },
+  () => initStreetView(),
   { immediate: true },
 );
 
-// Очищення IntersectionObserver при знищенні компонента
+// Правильне очищення тут (у setup, а не в initStreetView)
 onUnmounted(() => {
   stopIntersectionObserver();
+  if (handleFullscreenChange) {
+    document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }
 });
 </script>
 

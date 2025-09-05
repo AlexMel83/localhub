@@ -69,7 +69,7 @@
         <span class="ml-2 text-sm text-gray-500 dark:text-gray-300">({{ store.rating.toFixed(1) }})</span>
       </div>
 
-      <div class="text-left mb-2 text-sm italic dark:text-gray-300">
+      <div v-if="store.created_at && store.updated_at" class="text-left mb-2 text-sm italic dark:text-gray-300">
         {{ $t('Stores.createdAt') }} {{ formatDate(store.created_at) }}<br />
         {{ $t('Stores.updatedAt') }} {{ formatDate(store.updated_at) }}
       </div>

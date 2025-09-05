@@ -30,7 +30,8 @@ export default defineNuxtConfig({
       page_title: 'LocalHub',
       anonymize_ip: true,
       allow_google_signals: false,
-      allow_ad_personalization_signals: false
+      allow_ad_personalization_signals: false,
+      disable_google_one_tap: true
     }
   },
   robots: {
