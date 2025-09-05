@@ -111,11 +111,11 @@ const UIcon = resolveComponent('UIcon');
 
 const route = useRoute();
 const errorMessage = ref('');
-const { $api } = useNuxtApp();
+const { $customApi } = useNuxtApp();
 
 const { data: store } = useAsyncData('store', async () => {
   try {
-    const storeData = await $api.stores.getStoreBySlug(route.params.slug);
+    const storeData = await $customApi.stores.getStoreBySlug(route.params.slug);
     if (!storeData.data || storeData.data.length === 0) {
       throw new Error('Магазин не знайдено');
     }

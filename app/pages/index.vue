@@ -88,7 +88,7 @@
 import { useAppStore } from '~/stores/app.store';
 const appStore = useAppStore();
 
-const { $api } = useNuxtApp();
+const { $customApi } = useNuxtApp();
 const storesDataApi = ref([]);
 const searchTerm = computed(() => appStore.searchTerm);
 const isLoading = ref(false);
@@ -147,7 +147,7 @@ onMounted(async () => {
 const fetchStores = async () => {
   isLoading.value = true;
   try {
-    const response = await $api.stores.getStores();
+    const response = await $customApi.stores.getStores();
     storesDataApi.value = response.data.map((store) => ({
       ...store,
       rating: store.rating || Math.floor(Math.random() * 5 * 2) / 2 + 0.5, // Приклад випадкового рейтингу від 0.5 до 5 з кроком 0.5

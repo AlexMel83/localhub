@@ -149,5 +149,11 @@
     "graduate": "Congratulations on successful registration!",
     "sendEmail": "Activation letter sent to",
     "via": "Via"
+  },
+  "errors": {
+    "badRequest": "Bad request",
+    "notFound": "Resource not found",
+    "serverError": "Server error",
+    "serviceUnavailable": "Service temporarily unavailable"
   }
 }

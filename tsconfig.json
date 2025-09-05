@@ -1,18 +1,24 @@
 {
-  // https://nuxt.com/docs/guide/concepts/typescript
-  "files": [],
-  "references": [
-    {
-      "path": "./.nuxt/tsconfig.app.json"
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"],
+      "@/*": ["./*"],
+      "#app": ["node_modules/nuxt/dist/app"],
+      "#app/*": ["node_modules/nuxt/dist/app/*"]
     },
-    {
-      "path": "./.nuxt/tsconfig.server.json"
-    },
-    {
-      "path": "./.nuxt/tsconfig.shared.json"
-    },
-    {
-      "path": "./.nuxt/tsconfig.node.json"
-    }
-  ]
+    "types": ["@nuxt/types", "@nuxtjs/i18n", "vue3-toastify", "nuxt/config", "vue-tsc"]
+  },
+  "include": ["types/**/*.d.ts", "plugins/**/*", "components/**/*", "pages/**/*", "stores/**/*", "nuxt.config.ts"],
+  "exclude": ["node_modules", ".nuxt", "dist"]
 }
