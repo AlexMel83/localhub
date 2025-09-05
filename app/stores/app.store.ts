@@ -60,10 +60,6 @@ interface CustomApi {
   stores: StoresApi;
 }
 
-interface Error {
-  message: string;
-}
-
 export const useAppStore = defineStore('app', {
   state: () => {
     const themeCookie = useCookie('theme', { default: () => 'light' }); // Кукі за замовчуванням 'light'
