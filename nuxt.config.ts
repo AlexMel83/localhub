@@ -102,7 +102,7 @@ export default defineNuxtConfig({
     "~/plugins/axios.ts", 
     {src: '~/plugins/toastify.client.ts', mode: 'client'},
     { src: "~/plugins/leaflet.js", mode: 'client' },
-    { src: "~/plugins/google-maps.js", mode: 'client' }
+    { src: "~/plugins/google-maps.js", mode: 'client' },
   ],
   nitro: {
     compressPublicAssets: true,
