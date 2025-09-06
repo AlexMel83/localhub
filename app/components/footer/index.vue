@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import { computed, ref } from 'vue';
 import { useAppStore } from '../../stores/app.store';
 import { useRoute } from 'vue-router';
