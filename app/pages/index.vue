@@ -1,8 +1,8 @@
 <template>
   <div>
     <MetaTags
-      :title="'LocalHub - Старокостянтинів - Платформа пошуку місцевих послуг'"
-      :description="$t('HowToHelp.intro')"
+      :title="'LocalHub - Старокостянтинів - Пошук місцевих послуг'"
+      :description="$t('HowToHelp.intro2')"
       :image="'/panoimg/Mototehnika.jpg'"
     />
     <MapContainer v-if="!appStore.isListView" :stores="filteredStores || []" />
@@ -19,6 +19,7 @@
             <NuxtImg
               :src="store.thumbnail_url"
               alt="Store thumbnail"
+              :title="store.title"
               class="w-full h-full object-cover absolute top-0 left-0 transition-transform duration-500 group-hover:scale-110"
               @mousemove="onParallax($event, $event.currentTarget)"
               @mouseleave="resetParallax($event.currentTarget)"
