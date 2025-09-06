@@ -6,7 +6,7 @@
       :image="'/panoimg/Localhub-logo-320.jpg'"
       :url="'https://localhub.store/info-source'"
       :keywords="'LocalHub, джерела інформації, місцевий бізнес, відкриті дані, Старокостянтинів, підприємці'"
-      :structuredData="{
+      :structured-data="{
         '@context': 'https://schema.org',
         '@type': 'WebPage',
         name: 'Джерела інформації про бізнес у LocalHub',
