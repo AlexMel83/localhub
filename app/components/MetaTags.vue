@@ -47,7 +47,7 @@ const enhancedStructuredData = computed(() => {
   if (!props.structuredData) return null;
   return {
     ...props.structuredData,
-    description: `${props.description || ''}. Ключові послуги: ${props.keywords || ''}`,
+    description: `${props.description || ''}}`,
   };
 });
 

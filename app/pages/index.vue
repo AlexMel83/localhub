@@ -1,7 +1,7 @@
 <template>
   <div>
     <MetaTags
-      :title="'LocalHub - Старокостянтинів'"
+      :title="'LocalHub - Старокостянтинів - Платформа пошуку місцевих послуг'"
       :description="$t('HowToHelp.intro')"
       :image="'/panoimg/Mototehnika.jpg'"
     />
