@@ -4,7 +4,7 @@
 
 <script setup>
 const props = defineProps({
-  title: { type: String, default: 'Store' },
+  title: { type: String, default: '' },
   description: { type: String, default: '' },
   image: { type: String, default: '' },
   url: { type: String, default: '' },
@@ -32,7 +32,7 @@ const urlImage = computed(() => {
 });
 
 const localizedTitle = computed(() => {
-  return locale.value === 'uk' ? `${props.title} - LocalHub` : props.title;
+  return locale.value === 'uk' ? `${props.title}` : props.title;
 });
 
 const localizedDescription = computed(() => {
@@ -61,16 +61,16 @@ useHead({
     { charset: 'utf-8' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     { name: 'robots', content: 'index, follow' },
-    { name: 'description', content: `${props.description || ''}. Ключові послуги: ${props.keywords || ''}` },
+    { name: 'description', content: props.description },
     { name: 'application-name', content: 'IT-Starkon' },
     { name: 'theme-color', content: '#0057b7' },
     { name: 'keywords', content: props.keywords },
-    { name: 'author', content: 'Рада з питань ВПО при Старокостянтинівській міській раді' },
+    { name: 'author', content: 'LocalHub Старокостянтинів' },
     // OpenGraph
     { property: 'og:title', content: localizedTitle.value },
     { property: 'og:description', content: localizedDescription.value },
     { property: 'og:type', content: 'article' },
-    { property: 'og:site_name', content: 'Рада з питань ВПО при Старокостянтинівській міській раді' },
+    { property: 'og:site_name', content: 'LocalHub Старокостянтинів' },
     { property: 'og:image', content: urlImage.value },
     { property: 'og:image:secure_url', content: urlImage.value },
     { property: 'og:image:type', content: 'image/jpg' },

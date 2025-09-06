@@ -1,9 +1,9 @@
 <template>
   <div>
     <MetaTags
-      v-if="store"
-      :title="store?.title + $t('Stores.platform') || 'Store'"
-      :description="store?.description || 'Опис бізнесу'"
+      v-if="store?.title"
+      :title="store?.title + $t('Stores.platform')"
+      :description="store?.description"
       :image="store?.thumbnail_url"
       :url="`https://localhub.store/starkon/${store?.slug || ''}`"
       :structured-data="structuredData"
