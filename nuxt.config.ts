@@ -7,9 +7,9 @@ export default defineNuxtConfig({
     shim: false
   },
   compatibilityDate: "2025-07-15",
-  devtools: { 
-    enabled: process.env.NODE_ENV === 'development' 
-  },
+  // devtools: { 
+  //   enabled: process.env.NODE_ENV === 'development' 
+  // },
   modules: [
     "@nuxt/eslint",
     "@pinia/nuxt", 
@@ -112,25 +112,25 @@ export default defineNuxtConfig({
       '/api/**': { cors: true, headers: { 'cache-control': 's-maxage=60' } },
     }
   },
-  vite: {
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: '@use "~/assets/scss/variables.scss" as *;'
-        }
-      }
-    },
-    build: {
-      sourcemap: true,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'leaflet': ['leaflet'],
-          }
-        }
-      }
-    }
-  },
+  // vite: {
+  //   css: {
+  //     preprocessorOptions: {
+  //       scss: {
+  //         additionalData: '@use "~/assets/scss/variables.scss" as *;'
+  //       }
+  //     }
+  //   },
+  //   build: {
+  //     sourcemap: true,
+  //     rollupOptions: {
+  //       output: {
+  //         manualChunks: {
+  //           'leaflet': ['leaflet'],
+  //         }
+  //       }
+  //     }
+  //   }
+  // },
   experimental: {
     payloadExtraction: false,
   },

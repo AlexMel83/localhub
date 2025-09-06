@@ -59,6 +59,7 @@
     "notStarted": "Not started"
   },
   "Footer": {
+    "title": "LocalHub - Starokostiantyniv",
     "terms": "Terms of use",
     "policy": "Privacy policy",
     "howToHelp": "How to help",
@@ -66,7 +67,16 @@
     "copyright": "© 2025. All rights reserved.",
     "services": "Services",
     "ukraineSupport": "Together we will restore Ukraine",
-    "info": "Information"
+    "info": "Information",
+    "description": "Social platform for the development of local economy, support of business in Ukraine and local residents. Together we build strong communities and restore Ukraine.",
+    "slogan": "Strong business - strong communities",
+    "navigation": "Navigation",
+    "home": "Home",
+    "businesses": "Businesses",
+    "support": "Support",
+    "sourceInfo": "Where LocalHub takes information",
+    "followUs": "Follow us:",
+    "howToAddInfo": "How to add information"
   },
   "ShareButtons": {
     "sharedSocial": "Sharing throug social media"
@@ -174,5 +184,45 @@
     "notFound": "Resource not found",
     "serverError": "Server error",
     "serviceUnavailable": "Service temporarily unavailable"
+  },
+  "infoSource": {
+    "title": "How does LocalHub collect and use information about local businesses?",
+    "paragraph1": "Even if you haven't personally added your business information to LocalHub, it may already be on the platform. Below we explain why this happens and where this information comes from.",
+    "subTitle1": "Why do we collect information?",
+    "paragraph2": "Our goal is to provide local residents and visitors to the community with the most complete and up-to-date information about services, entrepreneurs, craftsmen, and manufacturers in their city. To achieve this, LocalHub regularly updates data using various publicly available sources.",
+    "subTitle2": "What sources do we use?",
+    "paragraph3": "Public sources and public information, the distribution of which is not restricted by the legislation of Ukraine. According to the Law of Ukraine 'On Information', mass information is information intended for an unlimited circle of persons. That is, if the name of your company, field of activity, work schedule, contacts or other data are indicated on a sign, website, in advertising materials - LocalHub has the right to reproduce them.",
+    "subTitle3": "If you want to change or delete data",
+    "paragraph4": "If some information about your business is posted in error or for any other legitimate reason should be removed, you can submit a request via the LocalHub feedback form. We will definitely consider it.",
+    "paragraph5": "For more information about how we handle personal data in the context of business profiles, please see our ",
+    "listItem1": "Publicly available materials: official company website, storefronts, advertising flyers, price lists, etc.",
+    "listItem2": "Information from users: for example, addresses, phone numbers, photos, or reviews.",
+    "listItem3": "Data from business owners who independently verify and edit their pages."
+  },
+  "HowToAddInfo": {
+    "title": "How to add information to LocalHub?",
+    "subTitle1": "What is LocalHub?",
+    "paragraph1": "We carefully review all locations in the city and district to provide the user with the most up-to-date information.",
+    "subTitle2": "What is LocalHub useful for businesses?",
+    "paragraph2": "You will receive a personal web page with prices, services and ordering in one click. Our platform is built on the latest technologies and has all the tools for online promotion, sharing via social networks and tracking views. Your customers no longer search 'on the street' - they search on the Internet, and they will find you.",
+    "subTitle3": "Features of LocalHub",
+    "paragraph3": "Our ranking algorithm takes into account the interests of both users and businesses. This creates a mutually beneficial ecosystem for community development. The system of reviews and ratings encourages businesses to be attractive, and users consciously choose among the best. We use the most modern technologies to reduce most processes to one click.",
+    "subTitle4": "Is LocalHub free?",
+    "paragraph4": "Want even more customers? You can connect additional paid services. We will use the funds received to develop the platform and support IDPs.",
+    "subTitle5": "How effective is it?",
+    "callToAction": "Go to registration",
+    "contactUs": ["Have any questions?", "Write to us - and we will be happy to help!"],
+    "paragraph5": ["Two simple steps:", "log in", "add a company", "and", "get new customers"],
+    "paragraph6": " is a service that helps residents find the services and goods they need nearby, and businesses gain new regular customers.",
+    "paragraph7": [
+      "You can add a business to LocalHub",
+      "it's absolutely free",
+      "You get advertising and customers at no cost."
+    ],
+    "paragraph8": [
+      "Online advertising today is the most powerful tool for small and medium-sized businesses. LocalHub allows you to target even at the level of",
+      "street or neighborhood",
+      ", which makes it a unique solution. Forget about queues and high costs for advertising in pedestrian areas. Your page is already optimized for promotion on the Internet. You can share it with a short link, and customized meta tags will do everything for you. Our platform is open for orders for your services and goods 24/7, and does not require expenses for supporting the work of an office or store"
+    ]
   }
 }
