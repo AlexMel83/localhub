@@ -61,6 +61,7 @@ useHead({
     { charset: 'utf-8' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     { name: 'robots', content: 'index, follow' },
+    { name: 'canonical', content: currentUrl.value },
     { name: 'description', content: props.description },
     { name: 'application-name', content: 'IT-Starkon' },
     { name: 'theme-color', content: '#0057b7' },

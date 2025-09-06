@@ -150,15 +150,6 @@ const toggleAbout = () => {
             <span class="text-sm">{{ t('Footer.howToHelp') }}</span>
           </NuxtLink>
         </div>
-
-        <!-- Компактний патріотичний акцент -->
-        <!-- <div class="mt-1 pt-1 border-t border-white/20 text-center">
-          <p class="text-xs flex items-center justify-center gap-1">
-            <span class="text-blue-600">💙</span>
-            {{ t('Footer.ukraineSupport', 'Разом відновимо Україну') }}
-            <span class="text-yellow-600">💛</span>
-          </p>
-        </div> -->
       </div>
     </div>
 
@@ -206,6 +197,7 @@ const toggleAbout = () => {
             <NuxtImg
               src="/Localhub-logo-320.jpg"
               alt="LocalHub"
+              title="LocalHub"
               class="h-full max-h-[40px] sm:max-h-[60px] object-contain"
             />
             <h2 class="text-lg font-semibold">{{ t('Footer.title') }}</h2>
