@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { computed, ref } from 'vue';
 import { useAppStore } from '../../stores/app.store';
 import { useRoute } from 'vue-router';
@@ -10,6 +11,7 @@ const { t } = useI18n();
 
 // Стан розгортання меню
 const isMenuOpen = ref(false);
+const showAbout = ref(false);
 
 // Визначаємо, чи є поточна сторінка "головною"
 const isHomePage = computed(() => {
@@ -32,6 +34,10 @@ const toggleMenu = () => {
 const closeMenu = () => {
   isMenuOpen.value = false;
 };
+
+const toggleAbout = () => {
+  showAbout.value = !showAbout.value;
+};
 </script>
 
 <template>
@@ -45,6 +51,43 @@ const closeMenu = () => {
       <div class="p-2">
         <!-- Компактний список лінків -->
         <div class="space-y-1">
+          <!-- Про платформу -->
+          <button
+            class="flex items-center gap-1 p-1 rounded hover:bg-white/10 transition-colors group w-full text-left"
+            @click="toggleAbout"
+          >
+            <svg
+              class="w-4 h-4 text-purple-600 group-hover:text-purple-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M12 18.5a6.5 6.5 0 110-13 6.5 6.5 0 010 13z"
+              />
+            </svg>
+            <span class="text-sm">{{ t('Footer.about') }}</span>
+          </button>
+
+          <!-- Акордеон блок -->
+          <transition name="slide-fade">
+            <div v-if="showAbout" class="p-2 text-xs leading-relaxed rounded-sm">
+              <h1 class="font-semibold mb-1">{{ t('Footer.akordeonTitle') }}</h1>
+              <p class="mb-1">
+                {{ t('Footer.akordeonText1') }}
+              </p>
+              <p class="mb-1">
+                {{ t('Footer.akordeonText2') }}
+              </p>
+              <p>
+                {{ t('Footer.akordeonText3') }}
+              </p>
+            </div>
+          </transition>
+
           <NuxtLink
             to="/donation-terms"
             class="flex items-center gap-1 p-1 rounded hover:bg-white/10 transition-colors group"
@@ -282,6 +325,20 @@ const closeMenu = () => {
 </template>
 
 <style scoped>
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  max-height: 500px;
+  opacity: 1;
+}
 /* Додаткові анімації для плавності */
 .transition-all {
   transition-property: all;

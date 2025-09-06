@@ -56,7 +56,8 @@
     "goodsSearch": "Search by name",
     "promo": "Promotions",
     "ended": "Ended",
-    "notStarted": "Not started"
+    "notStarted": "Not started",
+    "platform": " - LocalHub Starokostiantyniv"
   },
   "Footer": {
     "title": "LocalHub - Starokostiantyniv",
@@ -76,7 +77,12 @@
     "support": "Support",
     "sourceInfo": "Where LocalHub takes information",
     "followUs": "Follow us:",
-    "howToAddInfo": "How to add information"
+    "howToAddInfo": "How to add information",
+    "about": "About",
+    "akordeonTitle": "Site of LocalHub Starokostiantyniv",
+    "akordeonText1": "This is an innovative hyperlocal platform for residents and entrepreneurs of the city and Khmelnytskyi region.",
+    "akordeonText2": "It helps residents quickly find the services they need nearby, and businesses gain new customers. Part of the income from paid services goes to social projects to support internally displaced persons.",
+    "akordeonText3": "LocalHub combines modern technology, analytics, and social responsibility, creating a unified ecosystem for the community."
   },
   "ShareButtons": {
     "sharedSocial": "Sharing throug social media"

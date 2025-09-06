@@ -2,7 +2,7 @@
   <div>
     <MetaTags
       v-if="store"
-      :title="store?.title || 'Store'"
+      :title="store?.title + $t('Stores.platform') || 'Store'"
       :description="store?.description || 'Опис бізнесу'"
       :image="store?.thumbnail_url"
       :url="`https://localhub.store/starkon/${store?.slug || ''}`"
@@ -26,7 +26,7 @@
     <!-- Інформація про магазин -->
     <div v-if="store" class="store-container max-w-[800px] mx-auto px-2">
       <h1 class="text-3xl font-bold text-gray-900 text-left my-2 dark:text-white">
-        {{ store.title }}
+        {{ store.title }} {{ $t('Stores.platform') }}
       </h1>
 
       <div v-if="store.address" class="text-left mb-2 dark:text-white">
