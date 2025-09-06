@@ -47,8 +47,8 @@ const closeMenu = () => {
         <div class="space-y-1">
           <NuxtLink
             to="/donation-terms"
-            @click="closeMenu"
             class="flex items-center gap-1 p-1 rounded hover:bg-white/10 transition-colors group"
+            @click="closeMenu"
           >
             <svg
               class="w-4 h-4 text-blue-600 group-hover:text-blue-300"
@@ -68,8 +68,8 @@ const closeMenu = () => {
 
           <NuxtLink
             to="/privacy-policy"
-            @click="closeMenu"
             class="flex items-center gap-1 p-1 rounded hover:bg-white/10 transition-colors group"
+            @click="closeMenu"
           >
             <svg
               class="w-4 h-4 text-green-600 group-hover:text-green-300"
@@ -89,8 +89,8 @@ const closeMenu = () => {
 
           <NuxtLink
             to="/howtohelp"
-            @click="closeMenu"
             class="flex items-center gap-1 p-1 rounded hover:bg-white/10 transition-colors group"
+            @click="closeMenu"
           >
             <svg
               class="w-4 h-4 text-yellow-600 group-hover:text-yellow-300"
@@ -135,9 +135,9 @@ const closeMenu = () => {
 
       <!-- Кнопка меню (додаткова опція) -->
       <button
-        @click="toggleMenu"
         class="text-black hover:text-blue-600 transition-colors flex items-center gap-1 text-xs"
         :class="{ 'text-blue-600': isMenuOpen }"
+        @click="toggleMenu"
       >
         <svg
           class="w-5 h-5 transition-transform duration-200"
