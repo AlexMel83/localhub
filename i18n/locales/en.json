@@ -192,7 +192,7 @@
     "serverError": "Server error",
     "serviceUnavailable": "Service temporarily unavailable"
   },
-  "infoSource": {
+  "InfoSource": {
     "title": "How does LocalHub collect and use information about local businesses?",
     "paragraph1": "Even if you haven't personally added your business information to LocalHub, it may already be on the platform. Below we explain why this happens and where this information comes from.",
     "subTitle1": "Why do we collect information?",
