@@ -44,7 +44,7 @@ const toggleAbout = () => {
   <footer v-if="showFixedFooter" class="fixed bottom-0 left-0 w-full z-50 pointer-events-auto">
     <!-- Компактний випадаючий блок з правого боку -->
     <div
-      v-if="isMenuOpen"
+      v-show="isMenuOpen"
       class="absolute bottom-full right-4 mb-2 text-black bg-black/20 rounded-xs shadow-lg transition-all duration-300 ease-out min-w-38"
     >
       <div class="p-2">
@@ -73,7 +73,7 @@ const toggleAbout = () => {
 
           <!-- Акордеон блок -->
           <transition name="slide-fade">
-            <div v-if="showAbout" class="p-2 text-xs leading-relaxed rounded-sm">
+            <div v-show="showAbout" class="p-2 text-xs leading-relaxed rounded-sm">
               <h1 class="font-semibold mb-1">{{ t('Footer.akordeonTitle') }}</h1>
               <p class="mb-1">
                 {{ t('Footer.akordeonText1') }}
