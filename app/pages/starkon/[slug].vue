@@ -1,6 +1,7 @@
 <template>
   <div>
     <MetaTags
+      v-if="store.title"
       :url="`https://localhub.ua/business/${store.slug}`"
       :title="store.title"
       :description="store.description"
