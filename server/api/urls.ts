@@ -37,7 +37,7 @@ export default defineSitemapEventHandler(async () => {
 
   try {
     // Усуваємо подвійний слеш і логуємо URL
-    const storesEndpoint = `${apiBase.replace(/\/+$/, '')}/stores`;
+    const storesEndpoint = `${apiBase.replace(/\/+$/, '')}/business`;
     console.log('Fetching stores from:', storesEndpoint);
 
     const storesRes = await fetch(storesEndpoint, {
