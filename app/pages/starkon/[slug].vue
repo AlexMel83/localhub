@@ -126,7 +126,7 @@
 </template>
 
 <script setup>
-import { ref, computed, defineAsyncComponent } from 'vue';
+import { ref, defineAsyncComponent } from 'vue';
 import { useAppStore, useStoresStore } from '@/stores/app.store';
 import { useRoute } from 'vue-router';
 
@@ -181,37 +181,6 @@ const formatDate = (dateString) => {
   };
   return new Date(dateString).toLocaleString('uk-UA', options);
 };
-
-const structuredData = computed(() => {
-  if (!store.value) return null;
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: store.value.title || 'Магазин',
-    description: store.value.description || 'Опис магазину',
-    url: `https://radavpo.starkon.pp.ua/blogs/${store.value.slug}`,
-    image: store.value.thumbnail_url,
-    datePublished: store.value.created_at ? new Date(store.value.created_at).toISOString() : undefined,
-    dateModified: store.value.updated_at ? new Date(store.value.updated_at).toISOString() : undefined,
-    author: {
-      '@type': 'Organization',
-      name: 'Рада з питань ВПО при Старокостянтинівській міській раді',
-      url: 'https://radavpo.starkon.pp.ua',
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Рада з питань ВПО при Старокостянтинівській міській раді',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://radavpo.starkon.pp.ua/cfhope-logo-transparent.png',
-      },
-    },
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `https://localhub.store/starkon/${store.value.slug}`,
-    },
-  };
-});
 </script>
 
 <style scoped>
