@@ -47,7 +47,7 @@ export interface StoresApi {
 export default function (instance: AxiosInstance) {
   return {
     async getStores(queryParams: QueryParams) {
-      let url = '/stores';
+      let url = '/business';
       if (queryParams && Object.keys(queryParams).length) {
         const queryString = new URLSearchParams(queryParams).toString();
         url += `?${queryString}`;
@@ -55,10 +55,10 @@ export default function (instance: AxiosInstance) {
       return await instance.get(url);
     },
     async getStoreById(id: number) {
-      return await instance.get(`/stores?id=${id}`);
+      return await instance.get(`/business?id=${id}`);
     },
     async getStoreBySlug(slug: string) {
-      return await instance.get(`/stores?slug=${slug}`);
+      return await instance.get(`/business?slug=${slug}`);
     },
   };
 }

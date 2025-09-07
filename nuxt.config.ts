@@ -154,10 +154,9 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
+      title: 'LocalHub Старокостянтинів',
       meta: [
-        { name: 'format-detection', content: 'telephone=no' },
-        { name: 'msapplication-TileColor', content: '#ffffff' },
-        { name: 'theme-color', content: '#ffffff' }
+        { name: 'description', content: 'LocalHub Старокостянтинів — платформа для підтримки місцевої економіки, об’єднання громади та нових можливостей для бізнесу' },
       ]
     }
   }

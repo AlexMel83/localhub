@@ -1,13 +1,40 @@
 <template>
   <div>
     <MetaTags
-      v-if="store?.title"
-      :title="store?.title + $t('Stores.platform')"
-      :description="store?.description"
-      :image="store?.thumbnail_url"
-      :url="`https://localhub.store/starkon/${store?.slug || ''}`"
-      :structured-data="structuredData"
+      :url="`https://localhub.ua/business/${store.slug}`"
+      :title="store.title"
+      :description="store.description"
+      :image="store.image"
+      :keywords="store.keywords"
+      business-type="AutoRepair"
+      :business-name="store.title"
+      :business-description="store.description"
+      :business-phone="store.phone"
+      :business-email="store.email"
+      :business-url="`https://localhub.ua/business/${store.slug}`"
+      :business-logo="store.logo"
+      :business-address="{
+        streetAddress: store.address,
+        addressLocality: 'Старокостянтинів',
+        addressRegion: 'Хмельницька область',
+        postalCode: store.postalCode,
+        addressCountry: 'UA',
+      }"
+      :business-geo="{
+        latitude: store.latitude,
+        longitude: store.longitude,
+      }"
+      :business-opening-hours="store.openingHours"
+      :faq="[
+        {
+          question: 'Які послуги надає ваше СТО?',
+          answer: 'Ми ремонтуємо ходову, двигун, проводимо діагностику та ТО.',
+        },
+        { question: 'Чи можна записатися онлайн?', answer: 'Так, ви можете записатися через сайт або подзвонити нам.' },
+        { question: 'Які години роботи?', answer: 'Пн–Пт: 09:00–18:00, Сб: 10:00–15:00.' },
+      ]"
     />
+
     <!-- Ледаче завантаження панорами -->
     <component
       :is="loadPanorama"

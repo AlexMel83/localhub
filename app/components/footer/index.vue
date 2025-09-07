@@ -214,9 +214,9 @@ const toggleAbout = () => {
 
         <!-- Навігація -->
         <div>
-          <h4 class="text-sm font-semibold mb-4">
+          <h3 class="text-sm font-semibold mb-4">
             {{ t('Footer.navigation') }}
-          </h4>
+          </h3>
           <ul class="space-y-3">
             <li>
               <NuxtLink to="/" class="text-sm hover:text-blue-600 transition-colors">
@@ -238,9 +238,9 @@ const toggleAbout = () => {
 
         <!-- Info -->
         <div>
-          <h4 class="text-sm font-semibold mb-4">
+          <h3 class="text-sm font-semibold mb-4">
             {{ t('Footer.info') }}
-          </h4>
+          </h3>
           <ul class="space-y-3">
             <li>
               <NuxtLink to="/info-source" class="text-sm hover:text-blue-600 transition-colors">
