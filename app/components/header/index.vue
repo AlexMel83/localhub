@@ -23,7 +23,7 @@
             :class="buttonClasses"
             color="neutral"
             size="sm"
-            variant="ghost"
+            variant="subtle"
             :aria-label="$t('Header.toggleViewMode')"
             @click="appStore.toggleListView"
           >

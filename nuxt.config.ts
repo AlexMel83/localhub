@@ -93,6 +93,7 @@ export default defineNuxtConfig({
     public: {
       apiKeyMapbox: process.env.APIKEY_MAPBOX,
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+      bingMapsApiKey: process.env.BING_MAPS_APIKEY,
       gtagId: process.env.NUXT_PUBLIC_GTAG_ID || "G-C4177GTQXR",
       apiBase: process.env.API_BASE_URL || "http://localhost:4040",
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store'

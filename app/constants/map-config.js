@@ -1,5 +1,5 @@
 const config = useRuntimeConfig();
-const mapboxApiKey = config.public.apiKeyMapbox;
+const { apiKeyMapbox } = config.public;
 
 export const MAP_CONFIG = {
   CENTER: [49.7548762, 27.1951962],
@@ -19,17 +19,17 @@ export const TILE_PROVIDERS = [
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
   },
   {
-    name: 'Mapbox satellite',
+    name: 'Google Streets',
     visible: false,
-    maxZoom: 19,
-    url: `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=${mapboxApiKey}`,
-    attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 20,
+    url: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+    attribution: '&copy; <a href="https://www.google.com/maps">Google</a>',
   },
   {
-    name: 'Mapbox hybrid',
+    name: 'Google Hybrid',
     visible: false,
-    maxZoom: 19,
-    url: `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/{z}/{x}/{y}?access_token=${mapboxApiKey}`,
-    attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 20,
+    url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+    attribution: '&copy; <a href="https://www.google.com/maps">Google</a>',
   },
 ];

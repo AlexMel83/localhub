@@ -1,16 +1,5 @@
 <template>
   <div class="prose dark:prose-invert max-w-3xl mx-auto py-8 px-4">
-    <!-- Google Tag Manager (noscript) -->
-    <noscript
-      ><iframe
-        src="https://www.googletagmanager.com/ns.html?id=GTM-T7KGQV76"
-        height="0"
-        width="0"
-        style="display: none; visibility: hidden"
-      ></iframe
-    ></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-
     <MetaTags
       :title="'Джерела інформації про бізнес у LocalHub'"
       :description="'LocalHub збирає дані про місцевий бізнес із відкритих джерел, матеріалів користувачів та власників компаній. Якщо певна інформація некоректна — ви можете надіслати запит на її зміну або видалення.'"
@@ -35,20 +24,6 @@
         },
       }"
     />
-    <!-- Google Tag Manager -->
-    <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', 'GTM-T7KGQV76');
-    </script>
-    <!-- End Google Tag Manager -->
     <h1 class="text-2xl text-center font-bold mb-6">{{ $t('InfoSource.title') }}</h1>
 
     <p>

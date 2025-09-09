@@ -7,7 +7,7 @@
         :class="buttonClasses"
         color="neutral"
         size="sm"
-        variant="ghost"
+        variant="subtle"
         :aria-label="$t('Header.toggleLanguage')"
         @click="toggleLanguage"
       >
@@ -28,7 +28,7 @@
         :class="buttonClasses"
         color="neutral"
         size="sm"
-        variant="ghost"
+        variant="subtle"
         :aria-label="$t('Header.toggleTheme')"
         @click="toggleTheme"
       >
@@ -50,7 +50,7 @@
         :class="[buttonClasses, { 'text-primary-500': isSearchActive }]"
         color="neutral"
         size="sm"
-        variant="ghost"
+        variant="subtle"
         :aria-label="$t('Header.toggleSearch')"
         :aria-pressed="isSearchActive"
         @click="toggleSearch"
