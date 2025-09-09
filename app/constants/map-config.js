@@ -1,6 +1,3 @@
-const config = useRuntimeConfig();
-const { apiKeyMapbox } = config.public;
-
 export const MAP_CONFIG = {
   CENTER: [49.7548762, 27.1951962],
   ZOOM: 14,

@@ -1,5 +1,5 @@
 export default defineNuxtPlugin((nuxtApp) => {
-  if (!process.client) return;
+  if (!import.meta.client) return;
 
   const killOverlays = () => {
     const selectors = [
