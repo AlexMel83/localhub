@@ -1,6 +1,6 @@
 <template>
   <div class="links">
-    <NuxtLink to="" @click.native="showCookiePrefs" class="cursor-pointer"><slot></slot></NuxtLink>
+    <NuxtLink to="" class="cursor-pointer" @click="showCookiePrefs"><slot /></NuxtLink>
   </div>
 </template>
 

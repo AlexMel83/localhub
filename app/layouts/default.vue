@@ -34,7 +34,7 @@ useHead({
   },
 });
 
-const { cookiesEnabled, cookiesEnabledIds, isConsentGiven, isModalActive, moduleOptions } = useCookieControl();
+const { cookiesEnabledIds } = useCookieControl();
 
 // example: react to a cookie being accepted
 watch(

@@ -1,9 +1,9 @@
 import 'vanilla-cookieconsent';
 
 export default defineNuxtPlugin(() => {
-  if (process.client) {
+  if (import.meta.client) {
     // бібліотека виносить API сюди
-    const cc = (window as any).CookieConsent?.initCookieConsent();
+    const cc = (window as unknown).CookieConsent?.initCookieConsent();
 
     if (!cc) {
       console.error('CookieConsent не ініціалізувався');

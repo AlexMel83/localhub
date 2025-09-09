@@ -16,7 +16,7 @@ export default defineNuxtPlugin(() => {
 
     window.dataLayer = window.dataLayer || [];
     function gtag() {
-      window.dataLayer.push(arguments);
+      window.dataLayer.push(rest);
     }
     gtag('js', new Date());
     gtag('config', useRuntimeConfig().public.gtagId, {
