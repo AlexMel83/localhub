@@ -12,7 +12,7 @@ export default defineNuxtConfig({
   // },
   modules: [
     "@nuxt/eslint",
-    "@pinia/nuxt", 
+    "@pinia/nuxt",
     "@nuxt/image",
     "@nuxt/ui",
     "@nuxt/icon",
@@ -20,19 +20,53 @@ export default defineNuxtConfig({
     "@nuxtjs/leaflet",
     '@nuxtjs/sitemap',
     '@nuxtjs/robots',
-    'nuxt-gtag',
+    // 'nuxt-gtag',
+    '@dargmuesli/nuxt-cookie-control',
   ],
   // @ts-expect-error need types
-  gtag: {
-    id: process.env.NUXT_PUBLIC_GTAG_ID || 'G-C4177GTQXR',
-    loadingStrategy: 'defer',
-    config: {
-      page_title: 'LocalHub',
-      anonymize_ip: true,
-      allow_google_signals: false,
-      allow_ad_personalization_signals: false,
-      disable_google_one_tap: true
-    }
+  // gtag: {
+  //   id: process.env.NUXT_PUBLIC_GTAG_ID || 'G-C4177GTQXR',
+  //   loadingStrategy: 'defer',
+  //   config: {
+  //     page_title: 'LocalHub',
+  //     anonymize_ip: true,
+  //     allow_google_signals: false,
+  //     allow_ad_personalization_signals: false,
+  //     disable_google_one_tap: true
+  //   }
+  // },
+  cookieControl: {
+      controlButton: false,
+      barPosition: 'bottom-left',
+      closeModalOnClickOutside: true,
+      text: {
+        barTitle: 'Cookies on LocalHub',
+        barDescription: 'Ми використовуємо файли cookie, щоб покращити ваш досвід. Ви можете прийняти або відхилити їх.',
+        acceptAll: 'Прийняти всі',
+        declineAll: 'Відхилити всі',
+        save: 'Зберегти',
+        close: 'Закрити',
+        manageCookies: 'Налаштувати',
+      },
+    },
+  cookies: {
+    necessary: [
+      {
+        name: 'Site essentials',
+        description: 'Потрібні для роботи сайту',
+        cookies: ['cookie_control_consent', 'cookie_control_enabled_cookies'],
+      },
+    ],
+    optional: [
+      {
+        name: 'Google Analytics',
+        identifier: 'google-analytics',
+        description: 'Дозволяє нам бачити статистику відвідувань',
+        initialState: false,
+        cookies: ['_ga', '_gid'],
+        // тут без викликів сторонніх функцій
+      },
+    ],
   },
   robots: {
     allow: '/',
@@ -101,6 +135,8 @@ export default defineNuxtConfig({
   },
   plugins: [
     "~/plugins/axios.ts", 
+    {src: '~/plugins/cookie-consent.client.ts', mode: 'client'},
+    {src: '~/plugins/analytics.client.ts', mode: 'client'},
     {src: '~/plugins/toastify.client.ts', mode: 'client'},
     { src: "~/plugins/leaflet.js", mode: 'client' },
     { src: "~/plugins/google-maps.js", mode: 'client' },
@@ -113,25 +149,6 @@ export default defineNuxtConfig({
       '/api/**': { cors: true, headers: { 'cache-control': 's-maxage=60' } },
     }
   },
-  // vite: {
-  //   css: {
-  //     preprocessorOptions: {
-  //       scss: {
-  //         additionalData: '@use "~/assets/scss/variables.scss" as *;'
-  //       }
-  //     }
-  //   },
-  //   build: {
-  //     sourcemap: true,
-  //     rollupOptions: {
-  //       output: {
-  //         manualChunks: {
-  //           'leaflet': ['leaflet'],
-  //         }
-  //       }
-  //     }
-  //   }
-  // },
   experimental: {
     payloadExtraction: false,
   },

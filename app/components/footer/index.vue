@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { useAppStore } from '../../stores/app.store';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import CookiePrefsLink from '../CookiePrefsLink.vue';
 
 const appStore = useAppStore();
 const route = useRoute();
@@ -165,6 +166,8 @@ const toggleAbout = () => {
           {{ t('Footer.developer') }} {{ t('Footer.copyright') }}
         </NuxtLink>
       </div>
+
+      <CookiePrefsLink>Show cookie preferences</CookiePrefsLink>
 
       <!-- Кнопка меню (додаткова опція) -->
       <button
