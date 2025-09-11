@@ -1,6 +1,6 @@
-import { defineNuxtRouteMiddleware, useNuxtApp } from 'nuxt/app';
+import { useNuxtApp, defineNuxtRouteMiddleware } from 'nuxt/app';
 
-export default defineNuxtRouteMiddleware(() => {
+export default defineNuxtRouteMiddleware((to, from) => {
   if (import.meta.client) {
     // Функція для отримання cookie consent
     const getCookieConsent = () => {
@@ -10,7 +10,6 @@ export default defineNuxtRouteMiddleware(() => {
         try {
           return JSON.parse(decodeURIComponent(cookieValue.split('=')[1]));
         } catch (e) {
-          console.warn('Failed to parse cookie consent:', e);
           return null;
         }
       }
@@ -18,7 +17,7 @@ export default defineNuxtRouteMiddleware(() => {
     };
 
     const consent = getCookieConsent();
-    const categories = consent?.cookie?.categories || consent?.categories || [];
+    const categories = consent?.categories || [];
 
     // Якщо згода на i18n не надана, відключаємо автоматичне перенаправлення
     if (!categories.includes('i18n')) {

@@ -61,7 +61,6 @@ export default defineNuxtConfig({
   ui: {
     theme: {
       colors: ["primary", "error"],
-      dark: false,
     },
   },
 

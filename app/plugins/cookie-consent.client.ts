@@ -312,12 +312,12 @@ export default defineNuxtPlugin((nuxtApp: any) => {
         console.log('Consent given:', cookie);
 
         // Отримуємо категорії з правильної структури
-        const categories = cookie?.cookie?.categories || cookie?.categories || [];
+        const categories = cookie?.categories || [];
         console.log('Categories:', categories);
 
         // Analytics - тільки якщо дозволено
         if (categories.includes('analytics')) {
-          loadGoogleAnalytics(gtagId as unknown as string);
+          loadGoogleAnalytics(gtagId as string);
         } else {
           // Відключаємо аналітику якщо була завантажена
           window.dataLayer = window.dataLayer || [];
@@ -352,7 +352,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
       },
 
       // Обробка зміни налаштувань
-      // @ts-expect-error need types
+      // @ts-expect-error error type
       onChange: (cookie: unknown, changedCategories: string[]) => {
         console.log('Consent changed:', cookie, 'Changed categories:', changedCategories);
 

@@ -15,11 +15,11 @@ export const hasAnalyticsConsent = (): boolean => {
 
   const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('cc_cookie='));
 
-  if (cookieValue as unknown) {
+  if (cookieValue) {
     try {
-      const consent = JSON.parse(decodeURIComponent(cookieValue?.split('=')[1] ?? ''));
-      // Перевіряємо обидві можливі структури
-      const categories = consent?.cookie?.categories || consent?.categories || [];
+      const consent = JSON.parse(decodeURIComponent(cookieValue.split('=')[1] ?? ''));
+      // Використовуємо правильну структуру
+      const categories = consent?.categories || [];
       return categories.includes('analytics');
     } catch (e) {
       console.warn('Failed to parse cookie consent:', e);

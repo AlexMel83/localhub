@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showDebug" class="cookie-debug">
+  <div class="cookie-debug" v-if="showDebug">
     <h3>🍪 Cookie Consent Debug</h3>
 
     <div class="debug-section">
@@ -23,38 +23,113 @@
     </div>
 
     <div class="debug-actions">
-      <button class="debug-btn" @click="showPreferences">Відкрити налаштування</button>
-      <button class="debug-btn" @click="refreshData">Оновити дані</button>
-      <button class="debug-btn danger" @click="showDebug = false">Закрити debug</button>
+      <button @click="openPreferences" class="debug-btn">Відкрити налаштування</button>
+      <button @click="refreshData" class="debug-btn">Оновити дані</button>
+      <button @click="showDebug = false" class="debug-btn danger">Закрити debug</button>
     </div>
   </div>
 
   <!-- Кнопка для показу debug панелі -->
-  <button v-if="!showDebug" class="debug-toggle" title="Показати cookie debug" @click="showDebug = true">
+  <button v-if="!showDebug" @click="showDebug = true" class="debug-toggle" title="Показати cookie debug">
     🍪 Debug
   </button>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
 import { useCookieConsent } from '../composables/useCookieConsent';
+import { ref, onMounted, watch } from 'vue';
 
 const showDebug = ref(false);
 
-const {
-  getCookieConsentData,
-  hasAnalyticsConsent,
-  hasI18nConsent,
-  hasThemeConsent,
-  showPreferences,
-  getAllCategories,
-} = useCookieConsent();
+const { getCookieConsentData, hasAnalyticsConsent, hasI18nConsent, hasThemeConsent, getAllCategories } =
+  useCookieConsent();
 
-const consentData = ref(null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const consentData: any = ref(null);
 
 const refreshData = () => {
-  // @ts-expect-error error type
   consentData.value = getCookieConsentData();
+};
+
+const openPreferences = () => {
+  // Декілька способів відкрити налаштування
+  const methods = [
+    // Метод 1: Через глобальний об'єкт
+    () => {
+      if ((window as any).CC?.openPreferences) {
+        (window as any).CC.openPreferences();
+        return true;
+      }
+      return false;
+    },
+
+    // Метод 2: Через CookieConsent
+    () => {
+      if ((window as any).CookieConsent?.openPreferences) {
+        (window as any).CookieConsent.openPreferences();
+        return true;
+      }
+      return false;
+    },
+
+    // Метод 3: Через подію
+    () => {
+      try {
+        const event = new CustomEvent('cc:show-preferencesModal');
+        window.dispatchEvent(event);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+
+    // Метод 4: Через пошук кнопки
+    () => {
+      const button = document.querySelector('[data-cc="show-preferencesModal"]') as HTMLElement;
+      if (button) {
+        button.click();
+        return true;
+      }
+      return false;
+    },
+  ];
+
+  let success = false;
+  for (const method of methods) {
+    if (method()) {
+      success = true;
+      break;
+    }
+  }
+
+  if (!success) {
+    console.warn('Could not open cookie preferences modal');
+    alert('Неможливо відкрити налаштування cookies. Спробуйте перезавантажити сторінку.');
+  }
+};
+
+const clearAllCookies = () => {
+  // Очищуємо cookie consent
+  document.cookie = 'cc_cookie=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+
+  // Очищуємо theme
+  localStorage.removeItem('theme');
+  document.documentElement.removeAttribute('data-theme');
+
+  // Очищуємо i18n
+  document.cookie = 'i18n_redirected=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+
+  // Очищуємо analytics cookies
+  const analyticsCookies = ['_ga', '_ga_', '_gid', '_gat'];
+  analyticsCookies.forEach((cookieName) => {
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+  });
+
+  refreshData();
+
+  setTimeout(() => {
+    window.location.reload();
+  }, 1000);
 };
 
 // Оновлюємо дані при монтуванні
@@ -64,9 +139,9 @@ onMounted(() => {
 
 // Слухаємо зміни в cookies
 watch(
-  () => import.meta.client && document.cookie,
+  () => process.client && document.cookie,
   () => {
-    if (import.meta.client) {
+    if (process.client) {
       refreshData();
     }
   },
