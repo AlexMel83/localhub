@@ -1,10 +1,10 @@
+import { useNuxtApp, defineNuxtRouteMiddleware } from 'nuxt/app';
+
 declare global {
   interface Window {
     gtag: (command: string, ...args: unknown[]) => void;
   }
 }
-
-import { useNuxtApp, defineNuxtRouteMiddleware } from 'nuxt/app';
 
 export default defineNuxtRouteMiddleware(() => {
   if (import.meta.client) {
