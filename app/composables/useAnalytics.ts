@@ -3,7 +3,7 @@ import { nextTick } from 'vue';
 
 export const useAnalytics = () => {
   const { trackEvent, trackPageView, trackConversion, setUserProperties, hasAnalyticsConsent } = {
-    trackEvent: async (eventName: string, parameters?: any) => {
+    trackEvent: async (eventName: string, parameters?: unknown) => {
       if (import.meta.client) {
         const { trackEvent } = await import('~/utils/gtag');
         trackEvent(eventName, parameters);
@@ -24,7 +24,7 @@ export const useAnalytics = () => {
       }
     },
 
-    setUserProperties: async (properties: Record<string, any>) => {
+    setUserProperties: async (properties: Record<string, unknown>) => {
       if (import.meta.client) {
         const { setUserProperties } = await import('~/utils/gtag');
         setUserProperties(properties);

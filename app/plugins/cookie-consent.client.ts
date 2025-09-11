@@ -1,12 +1,11 @@
 import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app';
 import 'vanilla-cookieconsent/dist/cookieconsent.css';
 import * as CookieConsent from 'vanilla-cookieconsent';
-import { unpackMeta } from '@unhead/vue/utils';
 
 declare global {
   interface Window {
     dataLayer: unknown[];
-    gtag?: (...args: any[]) => void;
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -20,7 +19,7 @@ function loadGoogleAnalytics(gtagId: string) {
 
   // Ініціалізуємо gtag
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function (...args: any[]) {
+  window.gtag = function (...args: unknown[]) {
     window.dataLayer.push(args);
   };
 

@@ -35,14 +35,11 @@ export default defineNuxtPlugin(() => {
 
       // Ініціалізуємо gtag
       window.dataLayer = window.dataLayer || [];
-      // @ts-ignore
-      window.gtag = function (...args: any[]) {
+      window.gtag = function (...args: unknown[]) {
         window.dataLayer.push(args);
       };
 
-      // @ts-ignore
       window.gtag('js', new Date());
-      // @ts-ignore
       window.gtag('config', gtagId, {
         page_title: 'LocalHub',
         anonymize_ip: true,

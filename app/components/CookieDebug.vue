@@ -1,5 +1,5 @@
 <template>
-  <div class="cookie-debug" v-if="showDebug">
+  <div v-if="showDebug" class="cookie-debug">
     <h3>🍪 Cookie Consent Debug</h3>
 
     <div class="debug-section">
@@ -23,14 +23,14 @@
     </div>
 
     <div class="debug-actions">
-      <button @click="showPreferences" class="debug-btn">Відкрити налаштування</button>
-      <button @click="refreshData" class="debug-btn">Оновити дані</button>
-      <button @click="showDebug = false" class="debug-btn danger">Закрити debug</button>
+      <button class="debug-btn" @click="showPreferences">Відкрити налаштування</button>
+      <button class="debug-btn" @click="refreshData">Оновити дані</button>
+      <button class="debug-btn danger" @click="showDebug = false">Закрити debug</button>
     </div>
   </div>
 
   <!-- Кнопка для показу debug панелі -->
-  <button v-if="!showDebug" @click="showDebug = true" class="debug-toggle" title="Показати cookie debug">
+  <button v-if="!showDebug" class="debug-toggle" title="Показати cookie debug" @click="showDebug = true">
     🍪 Debug
   </button>
 </template>
@@ -53,6 +53,7 @@ const {
 const consentData = ref(null);
 
 const refreshData = () => {
+  // @ts-expect-error error type
   consentData.value = getCookieConsentData();
 };
 
@@ -63,9 +64,9 @@ onMounted(() => {
 
 // Слухаємо зміни в cookies
 watch(
-  () => process.client && document.cookie,
+  () => import.meta.client && document.cookie,
   () => {
-    if (process.client) {
+    if (import.meta.client) {
       refreshData();
     }
   },

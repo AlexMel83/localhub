@@ -2,8 +2,8 @@ import { useRuntimeConfig } from 'nuxt/app';
 
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
-    dataLayer: any[];
+    gtag?: (...args: unknown[]) => void;
+    dataLayer: unknown[];
   }
 }
 
@@ -32,7 +32,7 @@ export const hasAnalyticsConsent = (): boolean => {
 /**
  * Безпечний виклик gtag тільки якщо є згода
  */
-export const safeGtag = (...args: any[]): void => {
+export const safeGtag = (...args: unknown[]): void => {
   if (typeof window === 'undefined') return;
 
   if (hasAnalyticsConsent() && window.gtag) {
@@ -45,7 +45,7 @@ export const safeGtag = (...args: any[]): void => {
 /**
  * Трекінг події тільки з згодою
  */
-export const trackEvent = (eventName: string, parameters?: any): void => {
+export const trackEvent = (eventName: string, parameters?: unknown): void => {
   safeGtag('event', eventName, parameters);
 };
 
@@ -74,7 +74,7 @@ export const trackConversion = (conversionId: string, value?: number, currency?:
 /**
  * Встановлення користувацьких параметрів
  */
-export const setUserProperties = (properties: Record<string, any>): void => {
+export const setUserProperties = (properties: Record<string, unknown>): void => {
   safeGtag('config', useRuntimeConfig().public.gtagId, {
     custom_map: properties,
   });

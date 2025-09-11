@@ -1,5 +1,5 @@
 export const useCookieConsent = () => {
-  const getCookieConsentData = (): any | null => {
+  const getCookieConsentData = (): unknown | null => {
     if (typeof window === 'undefined') return null;
 
     const cookieValue: unknown = document.cookie.split('; ').find((row) => row.startsWith('cc_cookie='));
@@ -17,9 +17,9 @@ export const useCookieConsent = () => {
   };
 
   const hasConsent = (category: string): boolean => {
-    const consent = getCookieConsentData();
+    const consent = getCookieConsentData() as { cookie: { categories: string[] } | null };
     // Перевіряємо обидві можливі структури
-    const categories = consent?.cookie?.categories || consent?.categories || [];
+    const categories = consent?.cookie?.categories || [];
     return categories.includes(category);
   };
 
@@ -52,8 +52,8 @@ export const useCookieConsent = () => {
   };
 
   const getAllCategories = (): string[] => {
-    const consent = getCookieConsentData();
-    return consent?.cookie?.categories || consent?.categories || [];
+    const consent = getCookieConsentData() as { cookie?: { categories: string[] } } | null;
+    return consent?.cookie?.categories || [];
   };
 
   return {
@@ -75,7 +75,7 @@ declare global {
     CC?: {
       showPreferences(): void;
       acceptCategory(category: string): void;
-      run(config: any): void;
+      run(config: unknown): void;
     };
   }
 }

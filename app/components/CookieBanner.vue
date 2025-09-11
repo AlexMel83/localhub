@@ -3,9 +3,9 @@
     <!-- Кнопка для відкриття налаштувань -->
     <button
       v-if="!isConsentRequired()"
-      @click="showPreferences"
       class="cookie-settings-btn"
       :title="$t('cookieSettings')"
+      @click="showPreferences"
     >
       <Icon name="lucide:cookie" size="20" />
     </button>
