@@ -4,6 +4,7 @@
       <Header class="flex-0" />
       <NuxtPage class="flex-1" />
       <Footer />
+      <CookieDebug />
     </div>
   </UApp>
 </template>
@@ -11,8 +12,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { computed } from 'vue';
-import { useHead } from '@unhead/vue';
-import type { HtmlAttributes } from '@unhead/vue';
+import { useHead } from 'nuxt/app';
 
 interface Locale {
   lang: string;
@@ -30,7 +30,7 @@ const currentLocale = computed<Locale>(() => {
 });
 
 useHead({
-  htmlAttrs: computed<HtmlAttributes>(() => ({
+  htmlAttrs: computed(() => ({
     lang: currentLocale.value.lang,
     dir: currentLocale.value.dir,
   })),

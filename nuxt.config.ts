@@ -1,11 +1,6 @@
 import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
-  // typescript: {
-  //   strict: true,
-  //   typeCheck: true,
-  //   shim: false
-  // },
   compatibilityDate: "2025-07-15",
   modules: [
     "@nuxt/eslint",
@@ -19,9 +14,12 @@ export default defineNuxtConfig({
     '@nuxtjs/robots',
     'nuxt-gtag',
   ],
+
+  // GTAG налаштування - відключено за замовчуванням
   // @ts-expect-error need types
   gtag: {
     id: process.env.NUXT_PUBLIC_GTAG_ID || 'G-C4177GTQXR',
+    enabled: false, // Відключаємо за замовчуванням
     loadingStrategy: 'defer',
     config: {
       page_title: 'LocalHub',
@@ -31,11 +29,13 @@ export default defineNuxtConfig({
       disable_google_one_tap: true
     }
   },
+
   robots: {
     allow: '/',
-    disallow: ['/admin',],
+    disallow: ['/admin'],
     sitemap: `${process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store'}/sitemap_index.xml`,
   },
+
   sitemap: {
     siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store',
     autoI18n: false,
@@ -48,46 +48,50 @@ export default defineNuxtConfig({
     },
     cacheMaxAgeSeconds: process.env.NODE_ENV === 'production' ? 3600 : 0
   },
-  css: ["~/assets/css/main.css", 'vanilla-cookieconsent/dist/cookieconsent.css',],
+
+  css: [
+    "~/assets/css/main.css", 
+    'vanilla-cookieconsent/dist/cookieconsent.css'
+  ],
+
   leaflet: {
     markerCluster: true,
   },
+
   ui: {
     theme: {
       colors: ["primary", "error"],
       dark: false,
     },
   },
+
+  // I18N налаштування - відключаємо автодетект
   i18n: {
     locales: [
-      { 
-        code: "uk", 
+      {
+        code: "uk",
         name: "UA", 
         file: "uk.json",
         iso: 'uk-UA'
       },
-      { 
-        code: "en", 
-        name: "EN", 
-        file: "en.json",
+      {
+        code: "en",
+        name: "EN",
+        file: "en.json", 
         iso: 'en-US'
       },
     ],
     vueI18n: 'i18n.config.ts',
     strategy: "prefix_except_default",
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'i18n_redirected',
-      redirectOn: 'root'
-    },
+    // Відключаємо автодетект браузерної мови
+    detectBrowserLanguage: false,
     defaultLocale: "uk",
     langDir: "locales",
     baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store'
   },
+
   runtimeConfig: {
-    // Приватні ключі (доступні тільки на сервері)
     apiSecret: process.env.API_SECRET,
-    // Публічні ключі
     public: {
       apiKeyMapbox: process.env.APIKEY_MAPBOX,
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
@@ -96,13 +100,18 @@ export default defineNuxtConfig({
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store'
     },
   },
+
   plugins: [
-    "~/plugins/axios.ts", 
-    {src: '~/plugins/cookie-consent.client.ts', mode: 'client'},
-    {src: '~/plugins/toastify.client.ts', mode: 'client'},
+    "~/plugins/axios.ts",
+    // Cookie consent має бути першим для правильної ініціалізації
+    { src: '~/plugins/cookie-consent.client.ts', mode: 'client' },
+    { src: '~/plugins/conditional-gtag.client.ts', mode: 'client' }, // Новий плагін
+    { src: '~/plugins/conditional-i18n.client.ts', mode: 'client' }, // Новий плагін
+    { src: '~/plugins/toastify.client.ts', mode: 'client' },
     { src: "~/plugins/leaflet.js", mode: 'client' },
     { src: "~/plugins/google-maps.client.js", mode: 'client' },
   ],
+
   nitro: {
     compressPublicAssets: true,
     routeRules: {
@@ -111,12 +120,15 @@ export default defineNuxtConfig({
       '/api/**': { cors: true, headers: { 'cache-control': 's-maxage=60' } },
     }
   },
+
   experimental: {
     payloadExtraction: false,
   },
+
   build: {
     transpile: []
   },
+
   image: {
     provider: 'ipx',
     quality: 80,
@@ -130,13 +142,14 @@ export default defineNuxtConfig({
       xxl: 1536
     }
   },
+
   app: {
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
       title: 'LocalHub Старокостянтинів',
       meta: [
-        { name: 'description', content: 'LocalHub Старокостянтинів — платформа для підтримки місцевої економіки, об’єднання громади та нових можливостей для бізнесу' },
+        { name: 'description', content: "LocalHub Старокостянтинів — платформа для підтримки місцевої економіки, об'єднання громади та нових можливостей для бізнесу" },
       ]
     }
   }
