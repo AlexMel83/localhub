@@ -6,7 +6,7 @@ declare module 'vanilla-cookieconsent' {
 
   export interface LanguageOptions {
     default: string;
-    translations: Record<string, any>;
+    translations: Record<string, unknown>;
   }
 
   export interface CategoryOptions {
@@ -22,8 +22,8 @@ declare module 'vanilla-cookieconsent' {
     };
     categories: Record<string, CategoryOptions>;
     language: LanguageOptions;
-    onAccept?: (cookie: any) => void;
-    onChange?: (cookie: any) => void;
+    onAccept?: (cookie: unknown) => void;
+    onChange?: (cookie: unknown) => void;
   }
 
   export function run(config: Config): void;

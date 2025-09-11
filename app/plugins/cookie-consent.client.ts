@@ -3,7 +3,7 @@ import { defineNuxtPlugin } from '#imports';
 import * as CookieConsent from 'vanilla-cookieconsent';
 
 export default defineNuxtPlugin((nuxtApp) => {
-  if (process.client) {
+  if (import.meta.client) {
     CookieConsent.run({
       guiOptions: {
         consentModal: {
