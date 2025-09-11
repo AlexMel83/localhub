@@ -1,12 +1,12 @@
 // app/plugins/auto-show-consent.client.ts
 export default defineNuxtPlugin((nuxtApp) => {
-  if (!process.client) return;
+  if (!import.meta.client) return;
 
   const waitForCookieConsent = (timeout = 5000) =>
     new Promise<void>((resolve) => {
       const start = Date.now();
       const tick = () => {
-        const CC = (window as any).CookieConsent;
+        const CC = (window as unknown).CookieConsent;
         if (CC && (typeof CC.show === 'function' || typeof CC.showSettings === 'function')) return resolve();
         if (Date.now() - start > timeout) return resolve();
         setTimeout(tick, 100);
@@ -16,7 +16,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   nuxtApp.hook('app:mounted', async () => {
     await waitForCookieConsent(5000);
-    const CC = (window as any).CookieConsent;
+    const CC = (window as unknown).CookieConsent;
     try {
       if (!CC) return;
       const hasValid = typeof CC.validConsent === 'function' ? CC.validConsent() : false;

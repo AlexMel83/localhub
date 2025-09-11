@@ -6,16 +6,16 @@
       <Footer />
       <!-- Cookie Settings Button -->
       <UButton
-        @click="showCookieSettings"
         variant="ghost"
         size="sm"
         icon="i-heroicons-cog-6-tooth"
         class="hidden sm:flex"
         :title="$t('cookieSettings')"
+        @click="showCookieSettings"
       />
       <button
-        @click="showCookieSettings"
         class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 text-sm text-left"
+        @click="showCookieSettings"
       >
         {{ $t('cookieSettings') }}
       </button>

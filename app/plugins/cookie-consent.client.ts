@@ -1,7 +1,7 @@
 import CookieConsent from 'vanilla-cookieconsent';
 
 export default defineNuxtPlugin(() => {
-  if (!process.client) return;
+  if (!import.meta.client) return;
 
   const cc = CookieConsent();
 

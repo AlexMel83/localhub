@@ -49,7 +49,7 @@
         </div>
 
         <div class="flex justify-center">
-          <UButton @click="showCookieSettings" variant="outline" size="lg" icon="i-heroicons-cog-6-tooth">
+          <UButton variant="outline" size="lg" icon="i-heroicons-cog-6-tooth" @click="showCookieSettings">
             {{ $t('manageCookieSettings') }}
           </UButton>
         </div>

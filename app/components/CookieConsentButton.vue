@@ -3,12 +3,12 @@
     <!-- Кнопка для відкриття налаштувань куків -->
     <UButton
       v-if="process.client"
-      @click="showCookieSettings"
       variant="outline"
       size="sm"
       icon="i-heroicons-cog-6-tooth"
       :title="$t('cookieSettings')"
       aria-label="Cookie settings"
+      @click="showCookieSettings"
     />
 
     <!-- Індикатор статусу згоди -->

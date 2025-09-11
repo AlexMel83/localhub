@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 
 export const useCookieConsent = () => {
-  const getCC = () => (process.client ? (window as any).CookieConsent : undefined);
+  const getCC = () => (import.meta.client ? (window as unknown).CookieConsent : undefined);
 
   const acceptedCategory = (category: string): boolean => {
     const CC = getCC();

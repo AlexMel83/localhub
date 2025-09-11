@@ -2,13 +2,13 @@
 import { watch } from 'vue';
 
 export default defineNuxtPlugin((nuxtApp) => {
-  if (!process.client) return;
+  if (!import.meta.client) return;
 
   const waitForCookieConsent = (timeout = 5000) =>
     new Promise<void>((resolve) => {
       const start = Date.now();
       const tick = () => {
-        const CC = (window as any).CookieConsent;
+        const CC = (window as unknown).CookieConsent;
         if (CC && typeof CC.acceptedCategory === 'function') return resolve();
         if (Date.now() - start > timeout) return resolve();
         setTimeout(tick, 100);
@@ -20,10 +20,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     await waitForCookieConsent(5000);
 
     const nuxt = useNuxtApp();
-    const i18n = (nuxt as any).$i18n || nuxt.vueApp?.config?.globalProperties?.$i18n;
+    const i18n = (nuxt as unknown).$i18n || nuxt.vueApp?.config?.globalProperties?.$i18n;
     if (!i18n) return;
 
-    const CC = (window as any).CookieConsent;
+    const CC = (window as unknown).CookieConsent;
     const COOKIE_NAME = 'i18n_redirected';
     const MAX_AGE = 60 * 60 * 24 * 365; // 1 year
 

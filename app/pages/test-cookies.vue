@@ -26,10 +26,10 @@
       <div class="space-y-4">
         <h2 class="text-xl font-semibold">Actions</h2>
         <div class="flex flex-wrap gap-3">
-          <UButton @click="showCookieConsent" variant="outline"> Show Consent Modal </UButton>
-          <UButton @click="showCookieSettings" variant="outline"> Show Settings </UButton>
-          <UButton @click="resetConsent" variant="outline" color="red"> Reset Consent </UButton>
-          <UButton @click="logCookieData" variant="outline"> Log Cookie Data </UButton>
+          <UButton variant="outline" @click="showCookieConsent"> Show Consent Modal </UButton>
+          <UButton variant="outline" @click="showCookieSettings"> Show Settings </UButton>
+          <UButton variant="outline" color="red" @click="resetConsent"> Reset Consent </UButton>
+          <UButton variant="outline" @click="logCookieData"> Log Cookie Data </UButton>
         </div>
       </div>
 
@@ -43,8 +43,8 @@
       <div class="space-y-4">
         <h2 class="text-xl font-semibold">Test Functions</h2>
         <div class="flex flex-wrap gap-3">
-          <UButton @click="testAnalytics" :disabled="!isAnalyticsAccepted"> Test Analytics </UButton>
-          <UButton @click="testFunctionality" :disabled="!isFunctionalityAccepted"> Test Functionality </UButton>
+          <UButton :disabled="!isAnalyticsAccepted" @click="testAnalytics"> Test Analytics </UButton>
+          <UButton :disabled="!isFunctionalityAccepted" @click="testFunctionality"> Test Functionality </UButton>
         </div>
       </div>
     </div>
@@ -67,7 +67,7 @@ const showCookieSettings = () => {
 
 const resetConsent = () => {
   // Видаляємо cookie згоди
-  if (process.client) {
+  if (import.meta.client) {
     document.cookie = 'cc_cookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     location.reload();
   }
