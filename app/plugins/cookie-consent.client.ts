@@ -1,16 +1,21 @@
-// app/plugins/cookie-consent.client.ts
+// @ts-ignore
 import { defineNuxtPlugin } from '#app';
 import 'vanilla-cookieconsent/dist/cookieconsent.css';
 import * as CookieConsent from 'vanilla-cookieconsent';
 
-export default defineNuxtPlugin((nuxtApp) => {
+declare global {
+  interface Window {
+    dataLayer: any[];
+  }
+}
+
+export default defineNuxtPlugin((nuxtApp: any) => {
   if (import.meta.client) {
     CookieConsent.run({
       guiOptions: {
         consentModal: {
           layout: 'box',
           position: 'bottom center',
-          equalWeightButtons: true,
         },
       },
       categories: {
@@ -20,54 +25,12 @@ export default defineNuxtPlugin((nuxtApp) => {
         },
         analytics: {
           enabled: false,
-          autoRun: false,
-          services: {
-            gtag: {
-              label: 'Google Analytics',
-              onAccept: () => {
-                // Активуємо gtag
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({ gtagConsent: 'granted' });
-                console.log('Google Analytics enabled');
-              },
-              onReject: () => {
-                // Деактивуємо gtag
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({ gtagConsent: 'denied' });
-                console.log('Google Analytics disabled');
-              },
-            },
-          },
         },
         i18n: {
           enabled: false,
-          autoRun: false,
-          onAccept: () => {
-            // Дозволяємо i18n зберігати мову
-            document.cookie = 'i18n_redirected=1; path=/';
-            console.log('i18n language tracking enabled');
-          },
-          onReject: () => {
-            // Деактивуємо i18n
-            document.cookie = 'i18n_redirected=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-            console.log('i18n language tracking disabled');
-          },
         },
         theme: {
           enabled: false,
-          autoRun: false,
-          onAccept: () => {
-            // Активуємо тему (наприклад, зберігаємо вибір світлої/темної теми)
-            localStorage.setItem('theme', 'light'); // або 'dark'
-            document.documentElement.setAttribute('data-theme', 'light');
-            console.log('Theme tracking enabled');
-          },
-          onReject: () => {
-            // Деактивуємо тему
-            localStorage.removeItem('theme');
-            document.documentElement.removeAttribute('data-theme');
-            console.log('Theme tracking disabled');
-          },
         },
       },
       language: {
@@ -81,32 +44,16 @@ export default defineNuxtPlugin((nuxtApp) => {
               acceptNecessaryBtn: 'Прийняти необхідні',
               showPreferencesBtn: 'Налаштувати',
             },
-            settingsModal: {
+            preferencesModal: {
               title: 'Налаштування файлів cookie',
-              saveBtn: 'Зберегти',
+              savePreferencesBtn: 'Зберегти налаштування',
               acceptAllBtn: 'Прийняти всі',
               acceptNecessaryBtn: 'Прийняти необхідні',
               sections: [
-                {
-                  title: 'Необхідні файли cookie',
-                  description: 'Ці файли cookie необхідні для роботи сайту.',
-                  linkedCategory: 'necessary',
-                },
-                {
-                  title: 'Аналітика',
-                  description: 'Дозволяє збирати дані для Google Analytics.',
-                  linkedCategory: 'analytics',
-                },
-                {
-                  title: 'Мова',
-                  description: 'Дозволяє зберігати обрану мову.',
-                  linkedCategory: 'i18n',
-                },
-                {
-                  title: 'Тема',
-                  description: 'Дозволяє зберігати обрану тему сайту.',
-                  linkedCategory: 'theme',
-                },
+                { title: 'Необхідні', description: 'Потрібні для роботи сайту.', linkedCategory: 'necessary' },
+                { title: 'Аналітика', description: 'Google Analytics.', linkedCategory: 'analytics' },
+                { title: 'Мова', description: 'Зберігає вибір мови.', linkedCategory: 'i18n' },
+                { title: 'Тема', description: 'Зберігає вибір теми.', linkedCategory: 'theme' },
               ],
             },
           },
@@ -118,42 +65,61 @@ export default defineNuxtPlugin((nuxtApp) => {
               acceptNecessaryBtn: 'Accept necessary',
               showPreferencesBtn: 'Customize',
             },
-            settingsModal: {
+            preferencesModal: {
               title: 'Cookie settings',
-              saveBtn: 'Save',
+              savePreferencesBtn: 'Save settings',
               acceptAllBtn: 'Accept all',
               acceptNecessaryBtn: 'Accept necessary',
               sections: [
-                {
-                  title: 'Necessary cookies',
-                  description: 'These cookies are essential for the site to work.',
-                  linkedCategory: 'necessary',
-                },
-                {
-                  title: 'Analytics',
-                  description: 'Allows data collection for Google Analytics.',
-                  linkedCategory: 'analytics',
-                },
-                {
-                  title: 'Language',
-                  description: 'Allows saving the selected language.',
-                  linkedCategory: 'i18n',
-                },
-                {
-                  title: 'Theme',
-                  description: 'Allows saving the selected site theme.',
-                  linkedCategory: 'theme',
-                },
+                { title: 'Necessary', description: 'Required for site to work.', linkedCategory: 'necessary' },
+                { title: 'Analytics', description: 'Google Analytics.', linkedCategory: 'analytics' },
+                { title: 'Language', description: 'Saves language preference.', linkedCategory: 'i18n' },
+                { title: 'Theme', description: 'Saves theme preference.', linkedCategory: 'theme' },
               ],
             },
           },
         },
       },
-      onAccept: (cookie) => {
-        console.log('All cookies accepted:', cookie);
+
+      // Глобальні події
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onConsent: (cookie: any) => {
+        console.log('Consent given:', cookie);
+
+        // Analytics
+        if (cookie.categories.includes('analytics')) {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ gtagConsent: 'granted' });
+          console.log('Google Analytics enabled ✅');
+        } else {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ gtagConsent: 'denied' });
+          console.log('Google Analytics disabled ❌');
+        }
+
+        // i18n
+        if (cookie.categories.includes('i18n')) {
+          document.cookie = 'i18n_redirected=1; path=/';
+          console.log('i18n enabled ✅');
+        } else {
+          document.cookie = 'i18n_redirected=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+          console.log('i18n disabled ❌');
+        }
+
+        // Theme
+        if (cookie.categories.includes('theme')) {
+          localStorage.setItem('theme', 'light');
+          document.documentElement.setAttribute('data-theme', 'light');
+          console.log('Theme enabled ✅');
+        } else {
+          localStorage.removeItem('theme');
+          document.documentElement.removeAttribute('data-theme');
+          console.log('Theme disabled ❌');
+        }
       },
+
       onChange: (cookie) => {
-        console.log('Cookie preferences changed:', cookie);
+        console.log('Consent changed:', cookie);
       },
     });
 

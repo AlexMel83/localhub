@@ -1,8 +1,18 @@
+<template>
+  <UApp v-if="locale" :locale="currentLocale">
+    <div class="flex flex-col min-h-screen">
+      <Header class="flex-0" />
+      <NuxtPage class="flex-1" />
+      <Footer />
+    </div>
+  </UApp>
+</template>
+
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { computed } from 'vue'; // Видалено onMounted
+import { computed } from 'vue';
 import { useHead } from '@unhead/vue';
-import type { ResolvableProperties, HtmlAttr } from '@unhead/vue';
+import type { HtmlAttributes } from '@unhead/vue';
 
 interface Locale {
   lang: string;
@@ -10,6 +20,7 @@ interface Locale {
   name?: string;
 }
 
+// Отримання поточної локалі через useI18n
 const { locale } = useI18n();
 
 const currentLocale = computed<Locale>(() => {
@@ -19,7 +30,7 @@ const currentLocale = computed<Locale>(() => {
 });
 
 useHead({
-  htmlAttrs: computed<ResolvableProperties<HtmlAttr>>(() => ({
+  htmlAttrs: computed<HtmlAttributes>(() => ({
     lang: currentLocale.value.lang,
     dir: currentLocale.value.dir,
   })),
