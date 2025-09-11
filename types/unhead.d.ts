@@ -1,11 +1,11 @@
-import { Ref } from 'vue';
+import type { Ref } from 'vue';
 
 declare module 'unhead' {
   export interface Head {
     htmlAttrs?: {
       lang?: Ref<string> | string;
       dir?: Ref<string> | string;
-      [key: string]: any;
+      [key: string]: unknown;
     };
   }
 }

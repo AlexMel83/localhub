@@ -52,7 +52,6 @@ const props = defineProps({
   },
   pageObject: {
     type: [Object, null],
-    required: true,
     default: null,
   },
 });
