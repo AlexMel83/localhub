@@ -1,14 +1,14 @@
-// @ts-ignore
+// @ts-expect-error need types
 import { defineNuxtPlugin } from '#app';
 import 'vanilla-cookieconsent/dist/cookieconsent.css';
 import * as CookieConsent from 'vanilla-cookieconsent';
 
 declare global {
   interface Window {
-    dataLayer: any[];
+    dataLayer: unknown[];
   }
 }
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default defineNuxtPlugin((nuxtApp: any) => {
   if (import.meta.client) {
     CookieConsent.run({
