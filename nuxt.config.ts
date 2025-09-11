@@ -51,7 +51,7 @@ export default defineNuxtConfig({
     },
     cacheMaxAgeSeconds: process.env.NODE_ENV === 'production' ? 3600 : 0
   },
-  css: ["~/assets/css/main.css"],
+  css: ["~/assets/css/main.css", 'vanilla-cookieconsent/dist/cookieconsent.css',],
   leaflet: {
     markerCluster: true,
   },
@@ -100,9 +100,10 @@ export default defineNuxtConfig({
   },
   plugins: [
     "~/plugins/axios.ts", 
+    {src: '~/plugins/cookie-consent.client.ts', mode: 'client'},
     {src: '~/plugins/toastify.client.ts', mode: 'client'},
     { src: "~/plugins/leaflet.js", mode: 'client' },
-    { src: "~/plugins/google-maps.js", mode: 'client' },
+    { src: "~/plugins/google-maps.client.js", mode: 'client' },
   ],
   nitro: {
     compressPublicAssets: true,

@@ -7,6 +7,7 @@
     "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -14,10 +15,18 @@
     "paths": {
       "~/*": ["./*"],
       "@/*": ["./*"],
-      "#app": ["node_modules/nuxt/dist/app"],
-      "#app/*": ["node_modules/nuxt/dist/app/*"]
+      "#app": ["node_modules/@nuxt/types"],
+      "#app/*": ["node_modules/nuxt/dist/app/*"],
+      "#imports": ["node_modules/@nuxtjs/composition-api"]
     },
-    "types": ["@nuxt/types", "@nuxtjs/i18n", "vue3-toastify", "nuxt/config", "vue-tsc"]
+    "types": [
+      "@nuxt/types",
+      "@nuxtjs/i18n",
+      "vue3-toastify",
+      "nuxt/config",
+      "vue-tsc",
+      "./types/vanilla-cookieconsent.d.ts"
+    ]
   },
   "include": ["types/**/*.d.ts", "plugins/**/*", "components/**/*", "pages/**/*", "stores/**/*", "nuxt.config.ts"],
   "exclude": ["node_modules", ".nuxt", "dist"]
