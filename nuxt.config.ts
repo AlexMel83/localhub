@@ -23,6 +23,8 @@ export default defineNuxtConfig({
   gtag: {
     id: process.env.NUXT_PUBLIC_GTAG_ID || 'G-C4177GTQXR',
     loadingStrategy: 'defer',
+    // Вимикаємо автозавантаження - будемо керувати через cookie consent
+    enabled: false,
     config: {
       page_title: 'LocalHub',
       anonymize_ip: true,
@@ -59,23 +61,23 @@ export default defineNuxtConfig({
   },
   i18n: {
     locales: [
-      { 
-        code: "uk", 
-        name: "UA", 
-        file: "uk.json",
+      {
+         code: "uk",
+         name: "UA",
+         file: "uk.json",
         iso: 'uk-UA'
       },
-      { 
-        code: "en", 
-        name: "EN", 
-        file: "en.json",
+      {
+         code: "en",
+         name: "EN",
+         file: "en.json",
         iso: 'en-US'
       },
     ],
     vueI18n: 'i18n.config.ts',
     strategy: "prefix_except_default",
     detectBrowserLanguage: {
-      useCookie: true,
+      useCookie: false,
       cookieKey: 'i18n_redirected',
       redirectOn: 'root'
     },
@@ -101,6 +103,8 @@ export default defineNuxtConfig({
     {src: '~/plugins/toastify.client.ts', mode: 'client'},
     { src: "~/plugins/leaflet.js", mode: 'client' },
     { src: "~/plugins/google-maps.js", mode: 'client' },
+    { src: "~/plugins/cookie-consent.client.ts", mode: 'client' },
+    { src: "~/plugins/auto-show-consent.client.ts", mode: 'client' },
   ],
   nitro: {
     compressPublicAssets: true,
@@ -135,7 +139,7 @@ export default defineNuxtConfig({
       viewport: 'width=device-width, initial-scale=1',
       title: 'LocalHub Старокостянтинів',
       meta: [
-        { name: 'description', content: 'LocalHub Старокостянтинів — платформа для підтримки місцевої економіки, об’єднання громади та нових можливостей для бізнесу' },
+        { name: 'description', content: "LocalHub Старокостянтинів — платформа для підтримки місцевої економіки, об'єднання громади та нових можливостей для бізнесу" },
       ]
     }
   }

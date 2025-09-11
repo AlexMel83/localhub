@@ -1,0 +1,218 @@
+/* Кастомізація стилів cookie consent */
+:root {
+  --cc-bg: #fff;
+  --cc-text: #2d3748;
+  --cc-btn-primary-bg: #3182ce;
+  --cc-btn-primary-text: #fff;
+  --cc-btn-primary-hover-bg: #2c5aa0;
+  --cc-btn-secondary-bg: #e2e8f0;
+  --cc-btn-secondary-text: #4a5568;
+  --cc-btn-secondary-hover-bg: #cbd5e0;
+  --cc-overlay-bg: rgba(0, 0, 0, 0.5);
+  --cc-webkit-scrollbar-bg: #f7fafc;
+  --cc-webkit-scrollbar-bg-hover: #e2e8f0;
+}
+
+/* Темна тема */
+[data-theme='dark'] {
+  --cc-bg: #1a202c;
+  --cc-text: #e2e8f0;
+  --cc-btn-primary-bg: #4299e1;
+  --cc-btn-primary-text: #1a202c;
+  --cc-btn-primary-hover-bg: #3182ce;
+  --cc-btn-secondary-bg: #2d3748;
+  --cc-btn-secondary-text: #e2e8f0;
+  --cc-btn-secondary-hover-bg: #4a5568;
+  --cc-overlay-bg: rgba(0, 0, 0, 0.7);
+  --cc-webkit-scrollbar-bg: #2d3748;
+  --cc-webkit-scrollbar-bg-hover: #4a5568;
+}
+
+/* Модальне вікно згоди */
+#cc-main .cm {
+  background: var(--cc-bg) !important;
+  color: var(--cc-text) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(203, 213, 224, 0.5) !important;
+}
+
+/* Заголовок */
+#cc-main .cm__title {
+  color: var(--cc-text) !important;
+  font-weight: 600 !important;
+  font-size: 1.125rem !important;
+}
+
+/* Опис */
+#cc-main .cm__desc {
+  color: var(--cc-text) !important;
+  opacity: 0.8;
+  line-height: 1.5 !important;
+}
+
+/* Кнопки */
+#cc-main .cm__btn {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  padding: 8px 16px !important;
+  transition: all 0.2s ease !important;
+}
+
+#cc-main .cm__btn.btn--primary {
+  background: var(--cc-btn-primary-bg) !important;
+  color: var(--cc-btn-primary-text) !important;
+  border: none !important;
+}
+
+#cc-main .cm__btn.btn--primary:hover {
+  background: var(--cc-btn-primary-hover-bg) !important;
+  transform: translateY(-1px) !important;
+}
+
+#cc-main .cm__btn.btn--secondary {
+  background: var(--cc-btn-secondary-bg) !important;
+  color: var(--cc-btn-secondary-text) !important;
+  border: 1px solid rgba(203, 213, 224, 0.5) !important;
+}
+
+#cc-main .cm__btn.btn--secondary:hover {
+  background: var(--cc-btn-secondary-hover-bg) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Модальне вікно налаштувань */
+#cc-main .pm {
+  background: var(--cc-bg) !important;
+  color: var(--cc-text) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(203, 213, 224, 0.5) !important;
+}
+
+#cc-main .pm__header {
+  border-bottom: 1px solid rgba(203, 213, 224, 0.3) !important;
+  padding-bottom: 1rem !important;
+}
+
+#cc-main .pm__title {
+  color: var(--cc-text) !important;
+  font-weight: 600 !important;
+}
+
+#cc-main .pm__section {
+  border-bottom: 1px solid rgba(203, 213, 224, 0.2) !important;
+}
+
+#cc-main .pm__section:last-child {
+  border-bottom: none !important;
+}
+
+#cc-main .section__title {
+  color: var(--cc-text) !important;
+  font-weight: 600 !important;
+}
+
+#cc-main .section__desc {
+  color: var(--cc-text) !important;
+  opacity: 0.8;
+}
+
+/* Перемикачі */
+#cc-main .section__toggle {
+  margin-top: 0.5rem !important;
+}
+
+#cc-main .toggle__input:checked + .toggle__icon {
+  background: var(--cc-btn-primary-bg) !important;
+}
+
+#cc-main .toggle__icon {
+  background: var(--cc-btn-secondary-bg) !important;
+  border-radius: 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+#cc-main .toggle__icon::before {
+  background: white !important;
+  border-radius: 50% !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Таблиця куків */
+#cc-main .cookie-table {
+  border: 1px solid rgba(203, 213, 224, 0.3) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  margin-top: 1rem !important;
+}
+
+#cc-main .cookie-table__header {
+  background: var(--cc-btn-secondary-bg) !important;
+  color: var(--cc-text) !important;
+  font-weight: 600 !important;
+}
+
+#cc-main .cookie-table__row {
+  border-top: 1px solid rgba(203, 213, 224, 0.2) !important;
+}
+
+#cc-main .cookie-table__cell {
+  color: var(--cc-text) !important;
+  padding: 0.75rem !important;
+}
+
+/* Посилання */
+#cc-main .cc-link {
+  color: var(--cc-btn-primary-bg) !important;
+  text-decoration: underline !important;
+  font-weight: 500 !important;
+}
+
+#cc-main .cc-link:hover {
+  color: var(--cc-btn-primary-hover-bg) !important;
+}
+
+/* Анімації */
+@keyframes cc-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+#cc-main .cm,
+#cc-main .pm {
+  animation: cc-fade-in 0.3s ease-out !important;
+}
+
+/* Мобільна адаптивність */
+@media (max-width: 768px) {
+  #cc-main .cm {
+    margin: 1rem !important;
+    width: calc(100% - 2rem) !important;
+  }
+
+  #cc-main .pm {
+    margin: 1rem !important;
+    width: calc(100% - 2rem) !important;
+    height: calc(100vh - 2rem) !important;
+  }
+
+  #cc-main .cm__btns {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  #cc-main .cm__btn {
+    width: 100% !important;
+  }
+}

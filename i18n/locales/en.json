@@ -231,5 +231,32 @@
       "street or neighborhood",
       ", which makes it a unique solution. Forget about queues and high costs for advertising in pedestrian areas. Your page is already optimized for promotion on the Internet. You can share it with a short link, and customized meta tags will do everything for you. Our platform is open for orders for your services and goods 24/7, and does not require expenses for supporting the work of an office or store"
     ]
-  }
+  },
+  "cookieSettings": "Cookie Settings",
+  "privacyPolicy": "Privacy Policy",
+  "cookieUsage": "Cookie Usage",
+  "cookieUsageDescription": "We use cookies to ensure the best experience on our website. Cookies help us remember your preferences, analyze traffic, and improve website functionality.",
+  "cookieCategories": "Cookie Categories",
+  "necessaryCookies": "Necessary Cookies",
+  "necessaryCookiesDesc": "These cookies are essential for the website to function and cannot be disabled.",
+  "functionalCookies": "Functional Cookies",
+  "functionalCookiesDesc": "These cookies allow the website to remember your settings and preferences.",
+  "analyticsCookies": "Analytics Cookies",
+  "analyticsCookiesDesc": "These cookies help us understand how visitors interact with the website by collecting and reporting information anonymously.",
+  "languageCookie": "Stores selected interface language",
+  "themeCookie": "Stores theme preference settings",
+  "googleAnalyticsCookie": "Main Google Analytics cookie for tracking unique users",
+  "googleAnalyticsAdditional": "Additional Google Analytics cookies for collecting detailed statistics",
+  "manageCookieSettings": "Manage Cookie Settings",
+  "dataCollection": "Data Collection",
+  "dataCollectionDescription": "We collect minimal personal data necessary for platform functionality. All data is processed in accordance with applicable Ukrainian personal data protection legislation.",
+  "contactInformation": "Contact Information",
+  "contactDescription": "If you have questions about our privacy policy or cookie usage, please contact us:",
+  "home": "Home",
+  "businesses": "Businesses",
+  "footerDescription": "Platform for local business development in Starokostiantyniv",
+  "links": "Links",
+  "contact": "Contact",
+  "allRightsReserved": "All rights reserved.",
+  "toggleTheme": "Toggle theme"
 }
