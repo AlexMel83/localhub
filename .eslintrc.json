@@ -7,10 +7,7 @@
     "__dirname": "readonly",
     "process": "readonly"
   },
-  "extends": [
-    "plugin:vue/vue3-recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
+  "extends": ["plugin:vue/vue3-recommended", "plugin:@typescript-eslint/recommended"],
   "parser": "vue-eslint-parser",
   "parserOptions": {
     "parser": "@typescript-eslint/parser",
@@ -18,14 +15,8 @@
     "sourceType": "module"
   },
   "rules": {
-    "vue/multi-word-component-names": "off"
+    "vue/multi-word-component-names": "off",
+    "@typescript-eslint/no-explicit-any": "warn"
   },
-  "ignorePatterns": [
-    ".nuxt/**",
-    "dist/**",
-    "node_modules/**",
-    ".husky/**",
-    ".wrangler/**",
-    ".output/**"
-  ]
+  "ignorePatterns": [".nuxt/**", "dist/**", "node_modules/**", ".husky/**", ".wrangler/**", ".output/**"]
 }
