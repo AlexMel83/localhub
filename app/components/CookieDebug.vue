@@ -1,5 +1,5 @@
 <template>
-  <div class="cookie-debug" v-if="showDebug">
+  <div v-if="showDebug" class="cookie-debug">
     <h3>🍪 Cookie Consent Debug</h3>
 
     <div class="debug-section">
@@ -23,14 +23,15 @@
     </div>
 
     <div class="debug-actions">
-      <button @click="openPreferences" class="debug-btn">Відкрити налаштування</button>
-      <button @click="refreshData" class="debug-btn">Оновити дані</button>
-      <button @click="showDebug = false" class="debug-btn danger">Закрити debug</button>
+      <button class="debug-btn" @click="openPreferences">Відкрити налаштування</button>
+      <button class="debug-btn" @click="refreshData">Оновити дані</button>
+      <button class="debug-btn danger" @click="clearAllCookies">Очистити всі cookies</button>
+      <button class="debug-btn danger" @click="showDebug = false">Закрити debug</button>
     </div>
   </div>
 
   <!-- Кнопка для показу debug панелі -->
-  <button v-if="!showDebug" @click="showDebug = true" class="debug-toggle" title="Показати cookie debug">
+  <button v-if="!showDebug" class="debug-toggle" title="Показати cookie debug" @click="showDebug = true">
     🍪 Debug
   </button>
 </template>
@@ -39,13 +40,20 @@
 import { useCookieConsent } from '../composables/useCookieConsent';
 import { ref, onMounted, watch } from 'vue';
 
+declare global {
+  interface Window {
+    CookieConsent: {
+      openPreferences: () => void;
+    };
+  }
+}
+
 const showDebug = ref(false);
 
 const { getCookieConsentData, hasAnalyticsConsent, hasI18nConsent, hasThemeConsent, getAllCategories } =
   useCookieConsent();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const consentData: any = ref(null);
+const consentData = ref<unknown | null>(null);
 
 const refreshData = () => {
   consentData.value = getCookieConsentData();
@@ -56,8 +64,8 @@ const openPreferences = () => {
   const methods = [
     // Метод 1: Через глобальний об'єкт
     () => {
-      if ((window as any).CC?.openPreferences) {
-        (window as any).CC.openPreferences();
+      if (window.CC?.showPreferences) {
+        window.CC.showPreferences();
         return true;
       }
       return false;
@@ -65,8 +73,8 @@ const openPreferences = () => {
 
     // Метод 2: Через CookieConsent
     () => {
-      if ((window as any).CookieConsent?.openPreferences) {
-        (window as any).CookieConsent.openPreferences();
+      if (window.CookieConsent?.openPreferences) {
+        window.CookieConsent.openPreferences();
         return true;
       }
       return false;
@@ -79,6 +87,7 @@ const openPreferences = () => {
         window.dispatchEvent(event);
         return true;
       } catch (e) {
+        console.warn('Failed to dispatch cc:show-preferencesModal event:', e);
         return false;
       }
     },
@@ -139,9 +148,9 @@ onMounted(() => {
 
 // Слухаємо зміни в cookies
 watch(
-  () => process.client && document.cookie,
+  () => import.meta.client && document.cookie,
   () => {
-    if (process.client) {
+    if (import.meta.client) {
       refreshData();
     }
   },

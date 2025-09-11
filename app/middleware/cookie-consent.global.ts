@@ -1,6 +1,12 @@
+declare global {
+  interface Window {
+    gtag: (command: string, ...args: unknown[]) => void;
+  }
+}
+
 import { useNuxtApp, defineNuxtRouteMiddleware } from 'nuxt/app';
 
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware(() => {
   if (import.meta.client) {
     // Функція для отримання cookie consent
     const getCookieConsent = () => {
@@ -10,6 +16,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
         try {
           return JSON.parse(decodeURIComponent(cookieValue.split('=')[1]));
         } catch (e) {
+          console.warn('Failed to parse cookie consent:', e);
           return null;
         }
       }
