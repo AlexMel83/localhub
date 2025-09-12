@@ -49,15 +49,18 @@ export default defineNuxtRouteMiddleware(() => {
 
       // Відключаємо gtag якщо він існує
       if (window.gtag) {
-        window.gtag('consent', 'update', {
+        window.gtag?.('consent', 'update', {
           analytics_storage: 'denied',
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied',
         });
       }
     }
 
     // Якщо згода на theme не надана, очищуємо localStorage
     if (!categories.includes('theme')) {
-      localStorage.removeItem('theme');
+      document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; // Зміна: кукі замість local
       document.documentElement.removeAttribute('data-theme');
     }
   }

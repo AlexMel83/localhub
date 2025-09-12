@@ -84,9 +84,13 @@ export default defineNuxtConfig({
     strategy: "prefix_except_default",
     // Відключаємо автодетект браузерної мови
     detectBrowserLanguage: false,
-    defaultLocale: "uk",
-    langDir: "locales",
-    baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store'
+  defaultLocale: "uk",
+  langDir: "locales",
+  baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store',
+  customRoutes: 'config',
+  differentDomains: false,
+  skipSettingLocaleOnNavigate: false,
+  defaultLocaleRouteNameSuffix: 'default'
   },
 
   runtimeConfig: {
@@ -102,10 +106,7 @@ export default defineNuxtConfig({
 
   plugins: [
     "~/plugins/axios.ts",
-    // Cookie consent має бути першим для правильної ініціалізації
     { src: '~/plugins/cookie-consent.client.ts', mode: 'client' },
-    { src: '~/plugins/conditional-gtag.client.ts', mode: 'client' }, // Новий плагін
-    { src: '~/plugins/conditional-i18n.client.ts', mode: 'client' }, // Новий плагін
     { src: '~/plugins/toastify.client.ts', mode: 'client' },
     { src: "~/plugins/leaflet.js", mode: 'client' },
     { src: "~/plugins/google-maps.client.js", mode: 'client' },

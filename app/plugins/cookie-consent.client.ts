@@ -16,30 +16,43 @@ interface CookieConsentLib {
 // === Утиліти (відкладений запуск сервісів) ===
 function loadGoogleAnalytics(gtagId: string) {
   if (!gtagId) return;
-  // Якщо скрипт вже підключений — не підключаємо вдруге
   if (document.querySelector(`script[src*="googletagmanager.com/gtag/js?id=${gtagId}"]`)) {
     console.log('GTAG script already present');
-  } else {
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${gtagId}`;
-    document.head.appendChild(script);
+    return;
   }
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = function (...args: unknown[]) {
-    (window.dataLayer as unknown[]).push(args);
+    window.dataLayer?.push(args);
+    console.log('dataLayer pushed:', args);
   };
 
-  window.gtag?.('js', new Date());
-  window.gtag?.('config', gtagId, {
-    anonymize_ip: true,
-    allow_google_signals: false,
-    allow_ad_personalization_signals: false,
-    disable_google_one_tap: true,
+  window.gtag('consent', 'update', {
+    analytics_storage: 'granted',
+    ad_storage: 'granted',
+    ad_user_data: 'granted',
+    ad_personalization: 'granted',
   });
 
-  console.log('Google Analytics loaded (via consent)');
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${gtagId}`;
+  script.onload = () => {
+    console.log('GTAG script loaded');
+    setTimeout(() => {
+      window.gtag?.('js', new Date());
+      window.gtag?.('config', gtagId, {
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+        disable_google_one_tap: true,
+      });
+      console.log('gtag config applied');
+    }, 300); // Збільшено до 300мс
+  };
+  document.head.appendChild(script);
+
+  console.log('Google Analytics loading initiated');
 }
 
 function setupI18nDetection() {
@@ -48,7 +61,12 @@ function setupI18nDetection() {
     const supportedLangs = ['uk', 'en'];
     const detectedLang = supportedLangs.includes(browserLang) ? browserLang : 'uk';
     document.cookie = `i18n_redirected=${detectedLang}; path=/; max-age=31536000`;
-    console.log('i18n detection enabled ✅', detectedLang);
+    console.log(
+      'i18n detection enabled ✅, set i18n_redirected to:',
+      detectedLang,
+      'current cookies:',
+      document.cookie,
+    );
   } catch (e) {
     console.warn('i18n detection failed', e);
   }
@@ -58,7 +76,7 @@ function setupTheme() {
   try {
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     const theme = prefersDark ? 'dark' : 'light';
-    localStorage.setItem('theme', theme);
+    document.cookie = `theme=${theme}; path=/; max-age=31536000`;
     document.documentElement.setAttribute('data-theme', theme);
     console.log('Theme detection enabled ✅', theme);
   } catch (e) {
@@ -66,18 +84,16 @@ function setupTheme() {
   }
 }
 
-// === Патч: якщо consent ще немає — видалимо тему одразу, щоб вона не застосовувалась до згоди ===
 function clearThemeIfNoConsent() {
   try {
     const ccCookie = document.cookie.split('; ').find((r) => r.startsWith('cc_cookie='));
     if (!ccCookie) {
-      localStorage.removeItem('theme');
+      document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
       document.documentElement.removeAttribute('data-theme');
       console.log('No cookie-consent yet — theme cleared to prevent pre-consent application');
     }
   } catch (e) {
     console.warn('Theme setup failed', e);
-    // не фейлимо ініціалізацію
   }
 }
 
@@ -87,18 +103,27 @@ export default defineNuxtPlugin((nuxtApp: any) => {
 
   clearThemeIfNoConsent();
 
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function (...args: unknown[]) {
+    window.dataLayer?.push(args);
+    console.log('dataLayer initial push:', args);
+  };
+  window.gtag('consent', 'default', {
+    analytics_storage: 'denied',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+  });
+
   const CookieConsent: typeof CookieConsentLib = CookieConsentLib as typeof CookieConsentLib;
 
   const runtimeConfig = useRuntimeConfig();
   const gtagId = runtimeConfig.public.gtagId;
-
   CookieConsent.run({
     guiOptions: {
       consentModal: {
         layout: 'box',
         position: 'bottom center',
-        // Якщо TypeScript типи не містять ці опції — кастимо весь обʼєкт на any,
-        // тому тут немає errors під час збірки.
       },
       preferencesModal: {
         layout: 'box',
@@ -209,7 +234,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
                     {
                       name: 'theme',
                       domain: location.hostname,
-                      desc: 'Зберігає налаштування теми (localStorage)',
+                      desc: 'Зберігає налаштування теми',
                     },
                   ],
                 },
@@ -312,7 +337,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
                     {
                       name: 'theme',
                       domain: location.hostname,
-                      desc: 'Stores theme preferences (localStorage)',
+                      desc: 'Stores theme preferences',
                     },
                   ],
                 },
@@ -326,35 +351,34 @@ export default defineNuxtPlugin((nuxtApp: any) => {
     // Використай правильну сигнатуру callbacks згідно з документацією:
     onConsent: ({ cookie }: { cookie: unknown & { categories?: string[] } }) => {
       console.log('onConsent fired', cookie);
-      // cookie.categories — масив назв дозволених категорій (якщо є)
       const categories: string[] = cookie?.categories || [];
 
-      // Analytics
-      if (categories.includes('analytics') || CookieConsent.acceptedCategory?.('analytics')) {
+      if (categories.includes('analytics')) {
         loadGoogleAnalytics(gtagId as string);
       } else {
-        // якщо аналітика відмовлена — оновимо consent для GA, почистимо cookies
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push(['consent', 'update', { analytics_storage: 'denied' }]);
+        window.gtag?.('consent', 'update', {
+          analytics_storage: 'denied',
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied',
+        });
         ['_ga', '_gid', '_gat'].forEach((name) => {
           document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
         });
         console.log('Analytics denied or removed');
       }
 
-      // i18n
-      if (categories.includes('i18n') || CookieConsent.acceptedCategory?.('i18n')) {
+      if (categories.includes('i18n')) {
         setupI18nDetection();
       } else {
         document.cookie = 'i18n_redirected=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
         console.log('i18n not allowed');
       }
 
-      // theme
-      if (categories.includes('theme') || CookieConsent.acceptedCategory?.('theme')) {
+      if (categories.includes('theme')) {
         setupTheme();
       } else {
-        localStorage.removeItem('theme');
+        document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
         document.documentElement.removeAttribute('data-theme');
         console.log('theme not allowed');
       }
@@ -365,17 +389,24 @@ export default defineNuxtPlugin((nuxtApp: any) => {
 
       const changes = changedCategories || [];
 
-      // Якщо користувач увімкнув аналітику — підвантажуємо GA
       if (changes.includes('analytics')) {
         if (CookieConsent.acceptedCategory('analytics')) {
           loadGoogleAnalytics(gtagId as string);
         } else {
-          // якщо відключив — оновлюємо consent і очищаємо
-          window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push(['consent', 'update', { analytics_storage: 'denied' }]);
+          window.dataLayer?.push([
+            'consent',
+            'update',
+            {
+              analytics_storage: 'denied',
+              ad_storage: 'denied',
+              ad_user_data: 'denied',
+              ad_personalization: 'denied',
+            },
+          ]);
           ['_ga', '_gid', '_gat'].forEach((name) => {
             document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
           });
+          console.log('Analytics denied or removed');
         }
       }
 
@@ -387,14 +418,14 @@ export default defineNuxtPlugin((nuxtApp: any) => {
       if (changes.includes('theme')) {
         if (CookieConsent.acceptedCategory('theme')) setupTheme();
         else {
-          localStorage.removeItem('theme');
+          // Зміна: очищуємо кукі
+          document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
           document.documentElement.removeAttribute('data-theme');
         }
       }
 
-      // Якщо зміни критичні — можеш перезавантажити сторінку (тільки якщо потрібно)
-      if (changes.some((c) => ['analytics', 'i18n'].includes(c))) {
-        // не обов'язково перезавантажувати — але якщо тобі потрібно застосувати redirect/gtag — це варіант:
+      // Якщо зміни критичні — reload (залишено, але тільки для i18n якщо потрібно редірект)
+      if (changes.some((c) => ['i18n'].includes(c))) {
         setTimeout(() => window.location.reload(), 400);
       }
     },
