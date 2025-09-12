@@ -5,7 +5,7 @@ import * as CookieConsent from 'vanilla-cookieconsent';
 declare global {
   interface Window {
     dataLayer: unknown[];
-    gtag?: (...args: unknown[]) => void;
+    gtag?: ((command: string, ...args: unknown[]) => void) | undefined;
   }
 }
 
