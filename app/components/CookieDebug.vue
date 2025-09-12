@@ -40,14 +40,6 @@
 import { useCookieConsent } from '../composables/useCookieConsent';
 import { ref, onMounted, watch } from 'vue';
 
-declare global {
-  interface Window {
-    CookieConsent: {
-      openPreferences: () => void;
-    };
-  }
-}
-
 const showDebug = ref(false);
 
 const { getCookieConsentData, hasAnalyticsConsent, hasI18nConsent, hasThemeConsent, getAllCategories } =
@@ -73,8 +65,8 @@ const openPreferences = () => {
 
     // Метод 2: Через CookieConsent
     () => {
-      if (window.CookieConsent?.openPreferences) {
-        window.CookieConsent.openPreferences();
+      if (window.CookieConsent?.showPreferences) {
+        window.CookieConsent.showPreferences();
         return true;
       }
       return false;

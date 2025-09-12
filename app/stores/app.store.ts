@@ -84,13 +84,14 @@ export const useAppStore = defineStore('app', {
       this.isDark = !this.isDark;
 
       const consent = useCookie('cc_cookie');
-      if (consent.value) {
+      const consentData = consent.value ? JSON.parse(consent.value) : null;
+      const allowed = consentData?.categories?.includes('theme');
+
+      if (allowed) {
         const themeCookie = useCookie('theme');
         themeCookie.value = this.isDark ? 'dark' : 'light';
-      }
-
-      if (import.meta.client) {
-        document.documentElement.classList.toggle('dark', this.isDark);
+      } else {
+        localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
       }
     },
     toggleListView() {
