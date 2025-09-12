@@ -1,374 +1,399 @@
 import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app';
 import 'vanilla-cookieconsent/dist/cookieconsent.css';
-import * as CookieConsent from 'vanilla-cookieconsent';
+import * as CookieConsentLib from 'vanilla-cookieconsent';
 
 declare global {
   interface Window {
-    dataLayer: unknown[];
+    dataLayer?: unknown[];
     gtag?: ((command: string, ...args: unknown[]) => void) | undefined;
   }
 }
 
-// Функція для завантаження Google Analytics
+// === Утиліти (відкладений запуск сервісів) ===
 function loadGoogleAnalytics(gtagId: string) {
-  // Завантажуємо скрипт Google Analytics
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${gtagId}`;
-  document.head.appendChild(script);
+  if (!gtagId) return;
+  // Якщо скрипт вже підключений — не підключаємо вдруге
+  if (document.querySelector(`script[src*="googletagmanager.com/gtag/js?id=${gtagId}"]`)) {
+    console.log('GTAG script already present');
+  } else {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${gtagId}`;
+    document.head.appendChild(script);
+  }
 
-  // Ініціалізуємо gtag
   window.dataLayer = window.dataLayer || [];
   window.gtag = function (...args: unknown[]) {
-    window.dataLayer.push(args);
+    (window.dataLayer as unknown[]).push(args);
   };
 
-  window.gtag('js', new Date());
-  window.gtag('config', gtagId, {
-    page_title: 'LocalHub',
+  window.gtag?.('js', new Date());
+  window.gtag?.('config', gtagId, {
     anonymize_ip: true,
     allow_google_signals: false,
     allow_ad_personalization_signals: false,
     disable_google_one_tap: true,
   });
 
-  console.log('Google Analytics loaded ✅');
+  console.log('Google Analytics loaded (via consent)');
 }
 
-// Функція для налаштування i18n
 function setupI18nDetection() {
-  // Тут можна додати логіку для детекції мови браузера
-  const browserLang = navigator.language.split('-')[0];
-  const supportedLangs = ['uk', 'en'];
-  const detectedLang = supportedLangs.includes(browserLang) ? browserLang : 'uk';
-
-  // Встановлюємо куку для i18n
-  document.cookie = `i18n_redirected=${detectedLang}; path=/; max-age=31536000`; // 1 рік
-  console.log('i18n detection enabled ✅, detected language:', detectedLang);
+  try {
+    const browserLang = navigator.language?.split('-')[0] || 'uk';
+    const supportedLangs = ['uk', 'en'];
+    const detectedLang = supportedLangs.includes(browserLang) ? browserLang : 'uk';
+    document.cookie = `i18n_redirected=${detectedLang}; path=/; max-age=31536000`;
+    console.log('i18n detection enabled ✅', detectedLang);
+  } catch (e) {
+    console.warn('i18n detection failed', e);
+  }
 }
 
-// Функція для налаштування теми
 function setupTheme() {
-  // Детектуємо системні налаштування теми
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const theme = prefersDark ? 'dark' : 'light';
+  try {
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = prefersDark ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+    console.log('Theme detection enabled ✅', theme);
+  } catch (e) {
+    console.warn('Theme setup failed', e);
+  }
+}
 
-  localStorage.setItem('theme', theme);
-  document.documentElement.setAttribute('data-theme', theme);
-  console.log('Theme detection enabled ✅, detected theme:', theme);
+// === Патч: якщо consent ще немає — видалимо тему одразу, щоб вона не застосовувалась до згоди ===
+function clearThemeIfNoConsent() {
+  try {
+    const ccCookie = document.cookie.split('; ').find((r) => r.startsWith('cc_cookie='));
+    if (!ccCookie) {
+      localStorage.removeItem('theme');
+      document.documentElement.removeAttribute('data-theme');
+      console.log('No cookie-consent yet — theme cleared to prevent pre-consent application');
+    }
+  } catch (e) {
+    // не фейлимо ініціалізацію
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default defineNuxtPlugin((nuxtApp: any) => {
-  if (import.meta.client) {
-    const runtimeConfig = useRuntimeConfig();
-    const gtagId = runtimeConfig.public.gtagId;
+  if (!import.meta.client) return;
 
-    CookieConsent.run({
-      guiOptions: {
-        consentModal: {
-          layout: 'box',
-          position: 'bottom center',
-          equalWeightButtons: true,
-          flipButtons: false,
-        },
-        preferencesModal: {
-          layout: 'box',
-          position: 'right',
-          equalWeightButtons: true,
-          flipButtons: false,
-        },
+  clearThemeIfNoConsent();
+
+  const CookieConsent: any = (CookieConsentLib as any).default || (CookieConsentLib as any);
+
+  const runtimeConfig = useRuntimeConfig();
+  const gtagId = runtimeConfig.public.gtagId;
+
+  CookieConsent.run({
+    guiOptions: {
+      consentModal: {
+        layout: 'box',
+        position: 'bottom center',
+        // Якщо TypeScript типи не містять ці опції — кастимо весь обʼєкт на any,
+        // тому тут немає errors під час збірки.
       },
-      categories: {
-        necessary: {
-          enabled: true,
-          readOnly: true,
-        },
-        analytics: {
-          enabled: false,
-        },
-        i18n: {
-          enabled: false,
-        },
-        theme: {
-          enabled: false,
-        },
+      preferencesModal: {
+        layout: 'box',
+        position: 'right',
       },
-      language: {
-        default: nuxtApp.$i18n?.locale?.value || 'uk',
-        translations: {
-          uk: {
-            consentModal: {
-              title: 'Ми використовуємо файли cookie',
-              description:
-                'Ми використовуємо файли cookie для аналітики, вибору мови та теми сайту. Ваша приватність важлива для нас.',
-              acceptAllBtn: 'Прийняти всі',
-              acceptNecessaryBtn: 'Тільки необхідні',
-              showPreferencesBtn: 'Налаштувати',
-              footer: `
+    },
+    categories: {
+      necessary: { enabled: true, readOnly: true },
+      analytics: { enabled: false },
+      i18n: { enabled: false },
+      theme: { enabled: false },
+    },
+    language: {
+      default: nuxtApp.$i18n?.locale?.value || 'uk',
+      translations: {
+        uk: {
+          consentModal: {
+            title: 'Ми використовуємо файли cookie',
+            description:
+              'Ми використовуємо файли cookie для аналітики, вибору мови та теми сайту. Ваша приватність важлива для нас.',
+            acceptAllBtn: 'Прийняти всі',
+            acceptNecessaryBtn: 'Тільки необхідні',
+            showPreferencesBtn: 'Налаштувати',
+            footer: `
                 <a href="/privacy-policy">Політика конфіденційності</a>
               `,
-            },
-            preferencesModal: {
-              title: 'Налаштування файлів cookie',
-              acceptAllBtn: 'Прийняти всі',
-              acceptNecessaryBtn: 'Тільки необхідні',
-              savePreferencesBtn: 'Зберегти налаштування',
-              closeIconLabel: 'Закрити',
-              sections: [
-                {
-                  title: 'Використання файлів cookie',
-                  description:
-                    'Ми використовуємо файли cookie для покращення функціональності сайту. Ви можете налаштувати свої вподобання нижче.',
-                },
-                {
-                  title: 'Необхідні файли cookie',
-                  description: 'Ці файли cookie необхідні для правильної роботи сайту і не можуть бути відключені.',
-                  linkedCategory: 'necessary',
-                  cookieTable: {
-                    headers: {
-                      name: 'Назва',
-                      domain: 'Домен',
-                      desc: 'Опис',
-                    },
-                    body: [
-                      {
-                        name: 'cc_cookie',
-                        domain: location.hostname,
-                        desc: 'Зберігає налаштування cookie consent',
-                      },
-                    ],
-                  },
-                },
-                {
-                  title: 'Аналітика',
-                  description: 'Ці файли cookie допомагають нам зрозуміти, як відвідувачі взаємодіють з сайтом.',
-                  linkedCategory: 'analytics',
-                  cookieTable: {
-                    headers: {
-                      name: 'Назва',
-                      domain: 'Домен',
-                      desc: 'Опис',
-                    },
-                    body: [
-                      {
-                        name: '_ga, _ga_*',
-                        domain: '.google.com',
-                        desc: 'Google Analytics для збору статистики відвідувань',
-                      },
-                    ],
-                  },
-                },
-                {
-                  title: 'Мова',
-                  description: 'Зберігає ваш вибір мови інтерфейсу.',
-                  linkedCategory: 'i18n',
-                  cookieTable: {
-                    headers: {
-                      name: 'Назва',
-                      domain: 'Домен',
-                      desc: 'Опис',
-                    },
-                    body: [
-                      {
-                        name: 'i18n_redirected',
-                        domain: location.hostname,
-                        desc: 'Зберігає вибір мови користувача',
-                      },
-                    ],
-                  },
-                },
-                {
-                  title: 'Тема',
-                  description: 'Зберігає ваш вибір теми оформлення сайту.',
-                  linkedCategory: 'theme',
-                  cookieTable: {
-                    headers: {
-                      name: 'Назва',
-                      domain: 'Домен',
-                      desc: 'Опис',
-                    },
-                    body: [
-                      {
-                        name: 'theme',
-                        domain: location.hostname,
-                        desc: 'Зберігає налаштування теми (localStorage)',
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
           },
-          en: {
-            consentModal: {
-              title: 'We use cookies',
-              description:
-                'We use cookies for analytics, language selection, and theme preferences. Your privacy matters to us.',
-              acceptAllBtn: 'Accept all',
-              acceptNecessaryBtn: 'Necessary only',
-              showPreferencesBtn: 'Customize',
-              footer: `
+          preferencesModal: {
+            title: 'Налаштування файлів cookie',
+            acceptAllBtn: 'Прийняти всі',
+            acceptNecessaryBtn: 'Тільки необхідні',
+            savePreferencesBtn: 'Зберегти налаштування',
+            closeIconLabel: 'Закрити',
+            sections: [
+              {
+                title: 'Використання файлів cookie',
+                description:
+                  'Ми використовуємо файли cookie для покращення функціональності сайту. Ви можете налаштувати свої вподобання нижче.',
+              },
+              {
+                title: 'Необхідні файли cookie',
+                description: 'Ці файли cookie необхідні для правильної роботи сайту і не можуть бути відключені.',
+                linkedCategory: 'necessary',
+                cookieTable: {
+                  headers: {
+                    name: 'Назва',
+                    domain: 'Домен',
+                    desc: 'Опис',
+                  },
+                  body: [
+                    {
+                      name: 'cc_cookie',
+                      domain: location.hostname,
+                      desc: 'Зберігає налаштування cookie consent',
+                    },
+                  ],
+                },
+              },
+              {
+                title: 'Аналітика',
+                description: 'Ці файли cookie допомагають нам зрозуміти, як відвідувачі взаємодіють з сайтом.',
+                linkedCategory: 'analytics',
+                cookieTable: {
+                  headers: {
+                    name: 'Назва',
+                    domain: 'Домен',
+                    desc: 'Опис',
+                  },
+                  body: [
+                    {
+                      name: '_ga, _ga_*',
+                      domain: '.google.com',
+                      desc: 'Google Analytics для збору статистики відвідувань',
+                    },
+                  ],
+                },
+              },
+              {
+                title: 'Мова',
+                description: 'Зберігає ваш вибір мови інтерфейсу.',
+                linkedCategory: 'i18n',
+                cookieTable: {
+                  headers: {
+                    name: 'Назва',
+                    domain: 'Домен',
+                    desc: 'Опис',
+                  },
+                  body: [
+                    {
+                      name: 'i18n_redirected',
+                      domain: location.hostname,
+                      desc: 'Зберігає вибір мови користувача',
+                    },
+                  ],
+                },
+              },
+              {
+                title: 'Тема',
+                description: 'Зберігає ваш вибір теми оформлення сайту.',
+                linkedCategory: 'theme',
+                cookieTable: {
+                  headers: {
+                    name: 'Назва',
+                    domain: 'Домен',
+                    desc: 'Опис',
+                  },
+                  body: [
+                    {
+                      name: 'theme',
+                      domain: location.hostname,
+                      desc: 'Зберігає налаштування теми (localStorage)',
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+        en: {
+          consentModal: {
+            title: 'We use cookies',
+            description:
+              'We use cookies for analytics, language selection, and theme preferences. Your privacy matters to us.',
+            acceptAllBtn: 'Accept all',
+            acceptNecessaryBtn: 'Necessary only',
+            showPreferencesBtn: 'Customize',
+            footer: `
                 <a href="/en/privacy-policy">Privacy Policy</a>
               `,
-            },
-            preferencesModal: {
-              title: 'Cookie preferences',
-              acceptAllBtn: 'Accept all',
-              acceptNecessaryBtn: 'Necessary only',
-              savePreferencesBtn: 'Save preferences',
-              closeIconLabel: 'Close',
-              sections: [
-                {
-                  title: 'Cookie usage',
-                  description:
-                    'We use cookies to enhance website functionality. You can customize your preferences below.',
-                },
-                {
-                  title: 'Necessary cookies',
-                  description: 'These cookies are essential for proper website functioning and cannot be disabled.',
-                  linkedCategory: 'necessary',
-                  cookieTable: {
-                    headers: {
-                      name: 'Name',
-                      domain: 'Domain',
-                      desc: 'Description',
-                    },
-                    body: [
-                      {
-                        name: 'cc_cookie',
-                        domain: location.hostname,
-                        desc: 'Stores cookie consent preferences',
-                      },
-                    ],
+          },
+          preferencesModal: {
+            title: 'Cookie preferences',
+            acceptAllBtn: 'Accept all',
+            acceptNecessaryBtn: 'Necessary only',
+            savePreferencesBtn: 'Save preferences',
+            closeIconLabel: 'Close',
+            sections: [
+              {
+                title: 'Cookie usage',
+                description:
+                  'We use cookies to enhance website functionality. You can customize your preferences below.',
+              },
+              {
+                title: 'Necessary cookies',
+                description: 'These cookies are essential for proper website functioning and cannot be disabled.',
+                linkedCategory: 'necessary',
+                cookieTable: {
+                  headers: {
+                    name: 'Name',
+                    domain: 'Domain',
+                    desc: 'Description',
                   },
-                },
-                {
-                  title: 'Analytics',
-                  description: 'These cookies help us understand how visitors interact with our website.',
-                  linkedCategory: 'analytics',
-                  cookieTable: {
-                    headers: {
-                      name: 'Name',
-                      domain: 'Domain',
-                      desc: 'Description',
+                  body: [
+                    {
+                      name: 'cc_cookie',
+                      domain: location.hostname,
+                      desc: 'Stores cookie consent preferences',
                     },
-                    body: [
-                      {
-                        name: '_ga, _ga_*',
-                        domain: '.google.com',
-                        desc: 'Google Analytics for collecting visit statistics',
-                      },
-                    ],
-                  },
+                  ],
                 },
-                {
-                  title: 'Language',
-                  description: 'Stores your interface language preference.',
-                  linkedCategory: 'i18n',
-                  cookieTable: {
-                    headers: {
-                      name: 'Name',
-                      domain: 'Domain',
-                      desc: 'Description',
+              },
+              {
+                title: 'Analytics',
+                description: 'These cookies help us understand how visitors interact with our website.',
+                linkedCategory: 'analytics',
+                cookieTable: {
+                  headers: {
+                    name: 'Name',
+                    domain: 'Domain',
+                    desc: 'Description',
+                  },
+                  body: [
+                    {
+                      name: '_ga, _ga_*',
+                      domain: '.google.com',
+                      desc: 'Google Analytics for collecting visit statistics',
                     },
-                    body: [
-                      {
-                        name: 'i18n_redirected',
-                        domain: location.hostname,
-                        desc: 'Stores user language preference',
-                      },
-                    ],
-                  },
+                  ],
                 },
-                {
-                  title: 'Theme',
-                  description: 'Stores your website theme preference.',
-                  linkedCategory: 'theme',
-                  cookieTable: {
-                    headers: {
-                      name: 'Name',
-                      domain: 'Domain',
-                      desc: 'Description',
+              },
+              {
+                title: 'Language',
+                description: 'Stores your interface language preference.',
+                linkedCategory: 'i18n',
+                cookieTable: {
+                  headers: {
+                    name: 'Name',
+                    domain: 'Domain',
+                    desc: 'Description',
+                  },
+                  body: [
+                    {
+                      name: 'i18n_redirected',
+                      domain: location.hostname,
+                      desc: 'Stores user language preference',
                     },
-                    body: [
-                      {
-                        name: 'theme',
-                        domain: location.hostname,
-                        desc: 'Stores theme preferences (localStorage)',
-                      },
-                    ],
-                  },
+                  ],
                 },
-              ],
-            },
+              },
+              {
+                title: 'Theme',
+                description: 'Stores your website theme preference.',
+                linkedCategory: 'theme',
+                cookieTable: {
+                  headers: {
+                    name: 'Name',
+                    domain: 'Domain',
+                    desc: 'Description',
+                  },
+                  body: [
+                    {
+                      name: 'theme',
+                      domain: location.hostname,
+                      desc: 'Stores theme preferences (localStorage)',
+                    },
+                  ],
+                },
+              },
+            ],
           },
         },
       },
+    },
 
-      // Обробка згоди
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onConsent: (cookie: any) => {
-        console.log('Consent given:', cookie);
+    // Використай правильну сигнатуру callbacks згідно з документацією:
+    onConsent: ({ cookie }: { cookie: any }) => {
+      console.log('onConsent fired', cookie);
+      // cookie.categories — масив назв дозволених категорій (якщо є)
+      const categories: string[] = cookie?.categories || [];
 
-        // Отримуємо категорії з правильної структури
-        const categories = cookie?.categories || [];
-        console.log('Categories:', categories);
+      // Analytics
+      if (categories.includes('analytics') || CookieConsent.acceptedCategory?.('analytics')) {
+        loadGoogleAnalytics(gtagId as string);
+      } else {
+        // якщо аналітика відмовлена — оновимо consent для GA, почистимо cookies
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push(['consent', 'update', { analytics_storage: 'denied' }]);
+        ['_ga', '_gid', '_gat'].forEach((name) => {
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+        });
+        console.log('Analytics denied or removed');
+      }
 
-        // Analytics - тільки якщо дозволено
-        if (categories.includes('analytics')) {
+      // i18n
+      if (categories.includes('i18n') || CookieConsent.acceptedCategory?.('i18n')) {
+        setupI18nDetection();
+      } else {
+        document.cookie = 'i18n_redirected=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+        console.log('i18n not allowed');
+      }
+
+      // theme
+      if (categories.includes('theme') || CookieConsent.acceptedCategory?.('theme')) {
+        setupTheme();
+      } else {
+        localStorage.removeItem('theme');
+        document.documentElement.removeAttribute('data-theme');
+        console.log('theme not allowed');
+      }
+    },
+
+    onChange: ({ cookie, changedCategories }: { cookie: any; changedCategories: string[] }) => {
+      console.log('onChange', changedCategories, cookie);
+
+      const changes = changedCategories || [];
+
+      // Якщо користувач увімкнув аналітику — підвантажуємо GA
+      if (changes.includes('analytics')) {
+        if (CookieConsent.acceptedCategory('analytics')) {
           loadGoogleAnalytics(gtagId as string);
         } else {
-          // Відключаємо аналітику якщо була завантажена
+          // якщо відключив — оновлюємо consent і очищаємо
           window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push([
-            'consent',
-            'update',
-            {
-              analytics_storage: 'denied',
-            },
-          ]);
-          console.log('Google Analytics disabled ❌');
+          window.dataLayer.push(['consent', 'update', { analytics_storage: 'denied' }]);
+          ['_ga', '_gid', '_gat'].forEach((name) => {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+          });
         }
+      }
 
-        // i18n - тільки якщо дозволено
-        if (categories.includes('i18n')) {
-          setupI18nDetection();
-        } else {
-          // Видаляємо куку i18n
-          document.cookie = 'i18n_redirected=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-          console.log('i18n detection disabled ❌');
-        }
+      if (changes.includes('i18n')) {
+        if (CookieConsent.acceptedCategory('i18n')) setupI18nDetection();
+        else document.cookie = 'i18n_redirected=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+      }
 
-        // Theme - тільки якщо дозволено
-        if (categories.includes('theme')) {
-          setupTheme();
-        } else {
-          // Видаляємо налаштування теми
+      if (changes.includes('theme')) {
+        if (CookieConsent.acceptedCategory('theme')) setupTheme();
+        else {
           localStorage.removeItem('theme');
           document.documentElement.removeAttribute('data-theme');
-          console.log('Theme detection disabled ❌');
         }
-      },
+      }
 
-      // Обробка зміни налаштувань
-      // @ts-expect-error error type
-      onChange: (cookie: unknown, changedCategories: string[]) => {
-        console.log('Consent changed:', cookie, 'Changed categories:', changedCategories);
+      // Якщо зміни критичні — можеш перезавантажити сторінку (тільки якщо потрібно)
+      if (changes.some((c) => ['analytics', 'i18n'].includes(c))) {
+        // не обов'язково перезавантажувати — але якщо тобі потрібно застосувати redirect/gtag — це варіант:
+        setTimeout(() => window.location.reload(), 400);
+      }
+    },
+  });
 
-        // Безпечна перевірка changedCategories
-        const changes = changedCategories || [];
-        console.log('Processed changed categories:', changes);
-
-        // Перезавантажуємо сторінку якщо змінилися критичні налаштування
-        if (Array.isArray(changes) && changes.some((cat) => ['analytics', 'i18n'].includes(cat))) {
-          setTimeout(() => {
-            window.location.reload();
-          }, 500);
-        }
-      },
-    });
-
-    console.log('CookieConsent initialized ✅');
-  }
+  console.log('CookieConsent initialized (patched) ✅');
 });

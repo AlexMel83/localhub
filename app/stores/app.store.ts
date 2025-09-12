@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import { useNuxtApp } from 'nuxt/app';
 import type { AuthApi } from '../api/auth';
-// @ts-expect-error need types
 import { useCookie } from '#app';
 import axios from 'axios';
 
@@ -62,7 +61,7 @@ interface CustomApi {
 
 export const useAppStore = defineStore('app', {
   state: () => {
-    const themeCookie = useCookie('theme', { default: () => 'light' }); // Кукі за замовчуванням 'light'
+    const themeCookie = useCookie<string | null>('theme', { default: () => null });
     const isDark = themeCookie.value === 'dark';
 
     return {
@@ -83,14 +82,15 @@ export const useAppStore = defineStore('app', {
     },
     toggleDarkMode() {
       this.isDark = !this.isDark;
-      const themeCookie = useCookie('theme');
-      themeCookie.value = this.isDark ? 'dark' : 'light'; // Оновлюємо кукі
+
+      const consent = useCookie('cc_cookie');
+      if (consent.value) {
+        const themeCookie = useCookie('theme');
+        themeCookie.value = this.isDark ? 'dark' : 'light';
+      }
+
       if (import.meta.client) {
-        if (this.isDark) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+        document.documentElement.classList.toggle('dark', this.isDark);
       }
     },
     toggleListView() {
