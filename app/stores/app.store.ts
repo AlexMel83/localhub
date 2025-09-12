@@ -94,6 +94,18 @@ export const useAppStore = defineStore('app', {
         localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
       }
     },
+    setLanguage(lang: string) {
+      const consent = useCookie('cc_cookie');
+      const consentData = consent.value ? JSON.parse(consent.value) : null;
+      const allowed = consentData?.categories?.includes('i18n');
+
+      if (allowed) {
+        const langCookie = useCookie('i18n_redirected');
+        langCookie.value = lang;
+      } else {
+        localStorage.setItem('i18n_redirected', lang);
+      }
+    },
     toggleListView() {
       this.isListView = !this.isListView;
     },
