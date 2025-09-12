@@ -117,7 +117,9 @@ export const useAppStore = defineStore('app', {
         langCookie.value = lang;
         console.log('setLanguage updated i18n_redirected to:', lang); // Дебаг
         const { $i18n } = useNuxtApp();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ($i18n && typeof ($i18n as any).setLocale === 'function') {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ($i18n as any).setLocale(lang);
           console.log('setLocale called with:', lang); // Дебаг
         }
