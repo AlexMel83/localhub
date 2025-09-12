@@ -9,6 +9,10 @@ declare global {
   }
 }
 
+interface CookieConsentLib {
+  default: typeof CookieConsentLib;
+}
+
 // === Утиліти (відкладений запуск сервісів) ===
 function loadGoogleAnalytics(gtagId: string) {
   if (!gtagId) return;
@@ -72,6 +76,7 @@ function clearThemeIfNoConsent() {
       console.log('No cookie-consent yet — theme cleared to prevent pre-consent application');
     }
   } catch (e) {
+    console.warn('Theme setup failed', e);
     // не фейлимо ініціалізацію
   }
 }
@@ -82,7 +87,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
 
   clearThemeIfNoConsent();
 
-  const CookieConsent: any = (CookieConsentLib as any).default || (CookieConsentLib as any);
+  const CookieConsent: typeof CookieConsentLib = CookieConsentLib as typeof CookieConsentLib;
 
   const runtimeConfig = useRuntimeConfig();
   const gtagId = runtimeConfig.public.gtagId;
@@ -319,7 +324,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
     },
 
     // Використай правильну сигнатуру callbacks згідно з документацією:
-    onConsent: ({ cookie }: { cookie: any }) => {
+    onConsent: ({ cookie }: { cookie: unknown & { categories?: string[] } }) => {
       console.log('onConsent fired', cookie);
       // cookie.categories — масив назв дозволених категорій (якщо є)
       const categories: string[] = cookie?.categories || [];
@@ -355,7 +360,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
       }
     },
 
-    onChange: ({ cookie, changedCategories }: { cookie: any; changedCategories: string[] }) => {
+    onChange: ({ cookie, changedCategories }: { cookie: unknown; changedCategories: string[] }) => {
       console.log('onChange', changedCategories, cookie);
 
       const changes = changedCategories || [];
