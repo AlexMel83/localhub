@@ -6,7 +6,6 @@ import * as CookieConsentLib from 'vanilla-cookieconsent';
 declare global {
   interface Window {
     gtag?: (command: string, ...args: unknown[]) => void;
-    // @ts-expect-error types error
     dataLayer?: unknown[];
     CC?: unknown;
   }
@@ -68,8 +67,8 @@ function initializeGTM(gtmId: string, gtagId?: string): void {
   // Ініціалізуємо gtag функцію ПЕРЕД всім іншим
   window.gtag =
     window.gtag ||
-    function (...args: unknown[]) {
-      window.dataLayer!.push(arguments);
+    function (..._args: unknown[]) {
+      window.dataLayer!.push(..._args);
     };
 
   // Встановлюємо початковий consent на denied
@@ -159,7 +158,7 @@ function clearThemeIfNoConsent(): void {
   }
 }
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(() => {
   if (!import.meta.client) return;
 
   const config = useRuntimeConfig().public;
