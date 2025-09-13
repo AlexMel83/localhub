@@ -106,20 +106,6 @@ export default defineNuxtPlugin((nuxtApp: any) => {
 
   window.dataLayer = window.dataLayer || [];
 
-  // Визначаємо gtag для consent mode
-  // @ts-expect-error: gtag type
-  window.gtag = function () {
-    window.dataLayer.push(arguments);
-  };
-
-  // Встановлюємо default consent 'denied' на початку (перед будь-яким завантаженням скриптів)
-  window.gtag('consent', 'default', {
-    ad_storage: 'denied',
-    analytics_storage: 'denied',
-    ad_user_data: 'denied',
-    ad_personalization: 'denied',
-  });
-
   const CookieConsent: typeof CookieConsentLib = CookieConsentLib as typeof CookieConsentLib;
 
   CookieConsent.run({
