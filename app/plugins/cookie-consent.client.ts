@@ -69,6 +69,7 @@ function initializeGTM(gtmId: string, gtagId?: string): void {
   window.gtag =
     window.gtag ||
     function (..._args: unknown[]) {
+      // eslint-disable-next-line prefer-rest-params
       window.dataLayer!.push(arguments);
     };
 
