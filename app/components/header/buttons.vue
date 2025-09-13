@@ -7,7 +7,7 @@
         :class="buttonClasses"
         color="neutral"
         size="sm"
-        variant="ghost"
+        variant="soft"
         :aria-label="$t('Header.toggleLanguage')"
         @click="toggleLanguage"
       >
@@ -28,7 +28,7 @@
         :class="buttonClasses"
         color="neutral"
         size="sm"
-        variant="ghost"
+        variant="soft"
         :aria-label="$t('Header.toggleTheme')"
         @click="toggleTheme"
       >
@@ -50,7 +50,7 @@
         :class="[buttonClasses, { 'text-primary-500': isSearchActive }]"
         color="neutral"
         size="sm"
-        variant="ghost"
+        variant="soft"
         :aria-label="$t('Header.toggleSearch')"
         :aria-pressed="isSearchActive"
         @click="toggleSearch"
@@ -118,7 +118,7 @@ const buttonClasses = computed(() => {
 
   // Якщо це головна сторінка з мапою, фіксуємо світлий hover фон
   if (isHomePage.value && !appStore.isListView) {
-    return [...baseClasses, 'hover:bg-white/80'];
+    return [...baseClasses, 'hover:bg-white/80 hover:dark:bg-gray-800/80'];
   }
 
   // В інших випадках використовуємо оригінальний hover
@@ -126,16 +126,16 @@ const buttonClasses = computed(() => {
 });
 
 const iconClasses = computed(() => {
-  if (isHomePage.value && !appStore.isListView) {
-    return ['text-gray-900'];
-  }
+  // if (isHomePage.value && !appStore.isListView) {
+  //   return ['text-gray-900'];
+  // }
   return [appStore.isDark ? 'text-white' : 'text-gray-900'];
 });
 
 const textClasses = computed(() => {
-  if (isHomePage.value && !appStore.isListView) {
-    return ['text-gray-900'];
-  }
+  // if (isHomePage.value && !appStore.isListView) {
+  //   return ['text-gray-900'];
+  // }
   return [appStore.isDark ? 'text-white' : 'text-gray-900'];
 });
 
