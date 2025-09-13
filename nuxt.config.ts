@@ -19,15 +19,25 @@ export default defineNuxtConfig({
   // @ts-expect-error need types
   gtag: {
     id: process.env.NUXT_PUBLIC_GTAG_ID || 'G-C4177GTQXR',
-    enabled: false, // Відключаємо за замовчуванням
-    loadingStrategy: 'defer',
     config: {
-      page_title: 'LocalHub',
       anonymize_ip: true,
+      send_page_view: false, // Виключаємо автоматичний page_view, якщо хочете контролювати вручну
       allow_google_signals: false,
       allow_ad_personalization_signals: false,
-      disable_google_one_tap: true
-    }
+    },
+    consent: {
+      enabled: true, // Увімкнення Consent Mode
+      cookieKey: 'cc_cookie', // Повинно відповідати ключу вашого CookieConsent
+      onConsentChange: (consent) => {
+        if (consent.analytics) {
+          console.log('Analytics consent granted');
+          // Викликаємо enableAnalytics, якщо потрібно
+        } else {
+          console.log('Analytics consent denied');
+          // Викликаємо disableAnalytics, якщо потрібно
+        }
+      },
+    },
   },
 
   robots: {

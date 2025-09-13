@@ -14,47 +14,6 @@ interface CookieConsentLib {
 }
 
 // === Утиліти (відкладений запуск сервісів) ===
-function loadGoogleAnalytics(gtagId: string) {
-  if (!gtagId) return;
-  if (document.querySelector(`script[src*="googletagmanager.com/gtag/js?id=${gtagId}"]`)) {
-    console.log('GTAG script already present');
-    return;
-  }
-
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function (...args: unknown[]) {
-    window.dataLayer?.push(args);
-    console.log('dataLayer pushed:', args);
-  };
-
-  window.gtag('consent', 'update', {
-    analytics_storage: 'granted',
-    ad_storage: 'granted',
-    ad_user_data: 'granted',
-    ad_personalization: 'granted',
-  });
-
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${gtagId}`;
-  script.onload = () => {
-    console.log('GTAG script loaded');
-    setTimeout(() => {
-      window.gtag?.('js', new Date());
-      window.gtag?.('config', gtagId, {
-        anonymize_ip: true,
-        allow_google_signals: false,
-        allow_ad_personalization_signals: false,
-        disable_google_one_tap: true,
-      });
-      console.log('gtag config applied');
-    }, 300); // Збільшено до 300мс
-  };
-  document.head.appendChild(script);
-
-  console.log('Google Analytics loading initiated');
-}
-
 function setupI18nDetection() {
   try {
     const browserLang = navigator.language?.split('-')[0] || 'uk';
@@ -105,20 +64,14 @@ export default defineNuxtPlugin((nuxtApp: any) => {
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = function (...args: unknown[]) {
-    window.dataLayer?.push(args);
+    window.dataLayer.push(args);
     console.log('dataLayer initial push:', args);
   };
-  window.gtag('consent', 'default', {
-    analytics_storage: 'denied',
-    ad_storage: 'denied',
-    ad_user_data: 'denied',
-    ad_personalization: 'denied',
-  });
 
   const CookieConsent: typeof CookieConsentLib = CookieConsentLib as typeof CookieConsentLib;
 
   const runtimeConfig = useRuntimeConfig();
-  const gtagId = runtimeConfig.public.gtagId;
+
   CookieConsent.run({
     guiOptions: {
       consentModal: {
@@ -354,14 +307,19 @@ export default defineNuxtPlugin((nuxtApp: any) => {
       const categories: string[] = cookie?.categories || [];
 
       if (categories.includes('analytics')) {
-        loadGoogleAnalytics(gtagId as string);
+        console.log('Analytics consent granted, handled by nuxt-gtag');
+        // nuxt-gtag автоматично обробить це
       } else {
-        window.gtag?.('consent', 'update', {
-          analytics_storage: 'denied',
-          ad_storage: 'denied',
-          ad_user_data: 'denied',
-          ad_personalization: 'denied',
-        });
+        window.dataLayer.push([
+          'consent',
+          'update',
+          {
+            analytics_storage: 'denied',
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+          },
+        ]);
         ['_ga', '_gid', '_gat'].forEach((name) => {
           document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
         });
