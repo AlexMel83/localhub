@@ -6,6 +6,7 @@
       <div class="p-4 bg-blue-100 rounded">
         <h2 class="font-bold">GTM Status</h2>
         <p>GTM ID: {{ config.googleTagManagerId }}</p>
+        <p>GTAG ID: {{ config.gtagId }}</p>
         <p>dataLayer exists: {{ !!dataLayer }}</p>
         <p>gtag exists: {{ !!gtag }}</p>
         <p>Analytics consent: {{ analyticsConsent }}</p>
@@ -14,13 +15,13 @@
       <div class="p-4 bg-green-100 rounded">
         <h2 class="font-bold mb-2">Test Events</h2>
         <div class="space-x-4">
-          <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" @click="sendTestEvent">
+          <button @click="sendTestEvent" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
             Send Test Event
           </button>
-          <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" @click="sendPageView">
+          <button @click="sendPageView" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
             Send Page View
           </button>
-          <button class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600" @click="checkGTM">
+          <button @click="checkGTM" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
             Check GTM Status
           </button>
         </div>
@@ -29,10 +30,10 @@
       <div class="p-4 bg-yellow-100 rounded">
         <h2 class="font-bold mb-2">Cookie Consent</h2>
         <div class="space-x-4">
-          <button class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600" @click="showPreferences">
+          <button @click="showPreferences" class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">
             Show Cookie Preferences
           </button>
-          <button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" @click="checkConsent">
+          <button @click="checkConsent" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
             Check Current Consent
           </button>
         </div>
@@ -93,12 +94,23 @@ function sendTestEvent() {
 
 function sendPageView() {
   if (window.gtag) {
+    // Відправляємо до GTM
     window.gtag('event', 'page_view', {
       page_title: document.title,
       page_location: window.location.href,
       send_to: config.googleTagManagerId,
     });
-    console.log('📄 Page view sent');
+
+    // Відправляємо до GTAG якщо є
+    if (config.gtagId) {
+      window.gtag('event', 'page_view', {
+        page_title: document.title,
+        page_location: window.location.href,
+        send_to: config.gtagId,
+      });
+    }
+
+    console.log('📄 Page view sent to GTM:', config.googleTagManagerId, 'and GTAG:', config.gtagId);
   } else {
     console.warn('❌ gtag not available');
   }

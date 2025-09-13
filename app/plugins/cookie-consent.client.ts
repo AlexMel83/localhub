@@ -6,6 +6,7 @@ import * as CookieConsentLib from 'vanilla-cookieconsent';
 declare global {
   interface Window {
     gtag?: (command: string, ...args: unknown[]) => void;
+    // @ts-expect-error types error
     dataLayer?: unknown[];
     CC?: unknown;
   }
@@ -60,15 +61,15 @@ function setupTheme(): void {
   }
 }
 
-function initializeGTM(gtmId: string): void {
+function initializeGTM(gtmId: string, gtagId?: string): void {
   // Ініціалізуємо dataLayer якщо його немає
   window.dataLayer = window.dataLayer || [];
 
-  // Ініціалізуємо gtag функцію
+  // Ініціалізуємо gtag функцію ПЕРЕД всім іншим
   window.gtag =
     window.gtag ||
     function (...args: unknown[]) {
-      window.dataLayer!.push(args);
+      window.dataLayer!.push(arguments);
     };
 
   // Встановлюємо початковий consent на denied
@@ -80,16 +81,48 @@ function initializeGTM(gtmId: string): void {
     wait_for_update: 500,
   });
 
+  // Додаємо початкову конфігурацію GTM
+  window.gtag('js', new Date());
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('🔧 GTM dataLayer and gtag initialized');
+  }
+
   // Завантажуємо GTM скрипт
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
-  script.onload = () => {
+  const gtmScript = document.createElement('script');
+  gtmScript.async = true;
+  gtmScript.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
+  gtmScript.onload = () => {
     if (process.env.NODE_ENV !== 'production') {
       console.log('✅ GTM script loaded');
     }
   };
-  document.head.appendChild(script);
+  document.head.appendChild(gtmScript);
+
+  // Якщо є gtagId, завантажуємо також Google Analytics
+  if (gtagId) {
+    const gtagScript = document.createElement('script');
+    gtagScript.async = true;
+    gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${gtagId}`;
+    gtagScript.onload = () => {
+      // Конфігуруємо Google Analytics
+      window.gtag!('config', gtagId, {
+        send_page_view: false, // Відключаємо автоматичний page view
+        anonymize_ip: true,
+        allow_google_signals: false,
+      });
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('✅ Google Analytics script loaded and configured');
+      }
+    };
+    document.head.appendChild(gtagScript);
+  }
+
+  // Також конфігуруємо GTM
+  window.gtag('config', gtmId, {
+    send_page_view: false, // Відключаємо автоматичний page view
+  });
 
   // Додаємо noscript fallback
   const noscript = document.createElement('noscript');
@@ -100,28 +133,14 @@ function initializeGTM(gtmId: string): void {
   iframe.style.display = 'none';
   iframe.style.visibility = 'hidden';
   noscript.appendChild(iframe);
-  document.body.insertBefore(noscript, document.body.firstChild);
-}
 
-function updateGTMConsent(allowed: boolean): void {
-  if (!window.gtag) return;
-
-  const consentState = allowed ? 'granted' : 'denied';
-
-  window.gtag('consent', 'update', {
-    ad_storage: consentState,
-    analytics_storage: consentState,
-    ad_user_data: consentState,
-    ad_personalization: consentState,
-  });
-
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`✅ GTM consent updated: ${consentState}`);
-  }
-
-  // Якщо згода відкликана, очищуємо cookies
-  if (!allowed) {
-    setTimeout(() => clearAllGoogleAnalyticsCookies(), 100);
+  // Додаємо noscript після завантаження DOM
+  if (document.body) {
+    document.body.insertBefore(noscript, document.body.firstChild);
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.insertBefore(noscript, document.body.firstChild);
+    });
   }
 }
 
@@ -144,20 +163,78 @@ export default defineNuxtPlugin((nuxtApp) => {
   if (!import.meta.client) return;
 
   const config = useRuntimeConfig().public;
-  const gtmId = config.googleTagManagerId;
+  const gtmId = config.googleTagManagerId as string;
+  const gtagId = config.gtagId as string;
 
   if (!gtmId) {
     console.warn('❌ GTM ID not found in runtime config');
     return;
   }
 
-  // Ініціалізуємо GTM відразу
-  initializeGTM(gtmId);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('🚀 Initializing analytics with GTM:', gtmId, 'and GTAG:', gtagId);
+  }
+
+  // Ініціалізуємо GTM і Google Analytics
+  initializeGTM(gtmId, gtagId);
 
   // Очищуємо тему якщо немає згоди
   clearThemeIfNoConsent();
 
   const CookieConsent = CookieConsentLib;
+
+  // Функція для оновлення GTM consent з доступом до config
+  const updateGTMConsentWithConfig = (allowed: boolean) => {
+    if (!window.gtag) {
+      console.warn('❌ gtag not available for consent update');
+      return;
+    }
+
+    const consentState = allowed ? 'granted' : 'denied';
+
+    window.gtag('consent', 'update', {
+      ad_storage: consentState,
+      analytics_storage: consentState,
+      ad_user_data: consentState,
+      ad_personalization: consentState,
+    });
+
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`✅ GTM consent updated: ${consentState}`);
+    }
+
+    // Якщо згода надана, відправляємо page_view подію
+    if (allowed) {
+      setTimeout(() => {
+        if (window.gtag) {
+          // Відправляємо до GTM
+          window.gtag('event', 'page_view', {
+            page_title: document.title,
+            page_location: window.location.href,
+            send_to: gtmId,
+          });
+
+          // Якщо є gtagId, відправляємо також до Google Analytics
+          if (config.gtagId) {
+            window.gtag('event', 'page_view', {
+              page_title: document.title,
+              page_location: window.location.href,
+              send_to: config.gtagId,
+            });
+          }
+
+          if (process.env.NODE_ENV !== 'production') {
+            console.log('📊 GTM page_view event sent to:', gtmId, config.gtagId ? `and ${config.gtagId}` : '');
+          }
+        }
+      }, 100);
+    }
+
+    // Якщо згода відкликана, очищуємо cookies
+    if (!allowed) {
+      setTimeout(() => clearAllGoogleAnalyticsCookies(), 100);
+    }
+  };
 
   CookieConsent.run({
     revision: 1,
@@ -179,7 +256,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       theme: { enabled: false },
     },
     language: {
-      default: (nuxtApp.$i18n as unknown)?.locale?.value || 'uk',
+      default: 'uk',
       translations: {
         uk: {
           consentModal: {
@@ -363,7 +440,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
       // Керування аналітикою
       const analyticsAllowed = categories.includes('analytics');
-      updateGTMConsent(analyticsAllowed);
+      updateGTMConsentWithConfig(analyticsAllowed);
 
       // Керування i18n
       if (categories.includes('i18n')) {
@@ -392,7 +469,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       // Оновлюємо аналітику якщо змінилась згода
       if (changedCategories.includes('analytics')) {
         const analyticsAllowed = categories.includes('analytics');
-        updateGTMConsent(analyticsAllowed);
+        updateGTMConsentWithConfig(analyticsAllowed);
       }
 
       // Керування i18n
