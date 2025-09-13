@@ -1,13 +1,7 @@
-import { defineNuxtPlugin } from 'nuxt/app';
+import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app';
 import 'vanilla-cookieconsent/dist/cookieconsent.css';
 import * as CookieConsentLib from 'vanilla-cookieconsent';
-
-declare global {
-  interface Window {
-    dataLayer?: unknown[];
-    gtag?: ((command: string, ...args: unknown[]) => void) | undefined;
-  }
-}
+import { useGtm } from '@gtm-support/vue-gtm';
 
 interface CookieConsentLib {
   default: typeof CookieConsentLib;
@@ -43,6 +37,40 @@ function setupTheme() {
   }
 }
 
+function setupGtm(allowed: boolean) {
+  const gtm = useGtm();
+  if (!gtm) return;
+
+  const gtmId = useRuntimeConfig().public.googleTagManagerId;
+  console.log('GTM ID:', gtmId);
+
+  if (allowed) {
+    console.log('✅ GTM enabled by consent');
+
+    // Додаємо скрипт у DOM, якщо його ще немає
+    if (!document.getElementById('gtm-script')) {
+      const script = document.createElement('script');
+      script.id = 'gtm-script';
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
+      document.head.appendChild(script);
+    }
+
+    // Вмикаємо GTM у vue-gtm
+    gtm.enable();
+  } else {
+    console.log('❌ GTM disabled by consent');
+
+    gtm.disable();
+
+    // Видаляємо GTM-скрипт, якщо юзер відкликав згоду
+    const script = document.getElementById('gtm-script');
+    if (script) {
+      script.remove();
+    }
+  }
+}
+
 function clearThemeIfNoConsent() {
   try {
     const ccCookie = document.cookie.split('; ').find((r) => r.startsWith('cc_cookie='));
@@ -63,10 +91,6 @@ export default defineNuxtPlugin((nuxtApp: any) => {
   clearThemeIfNoConsent();
 
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function (...args: unknown[]) {
-    window.dataLayer?.push(args);
-    console.log('dataLayer initial push:', args);
-  };
 
   const CookieConsent: typeof CookieConsentLib = CookieConsentLib as typeof CookieConsentLib;
 
@@ -75,6 +99,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
       consentModal: {
         layout: 'box',
         position: 'bottom center',
+        flipButtons: false,
       },
       preferencesModal: {
         layout: 'box',
@@ -304,25 +329,8 @@ export default defineNuxtPlugin((nuxtApp: any) => {
       console.log('onConsent fired', cookie);
       const categories: string[] = cookie?.categories || [];
 
-      if (categories.includes('analytics')) {
-        console.log('Analytics consent granted, handled by nuxt-gtag');
-        // nuxt-gtag автоматично обробить це
-      } else {
-        window.dataLayer?.push([
-          'consent',
-          'update',
-          {
-            analytics_storage: 'denied',
-            ad_storage: 'denied',
-            ad_user_data: 'denied',
-            ad_personalization: 'denied',
-          },
-        ]);
-        ['_ga', '_gid', '_gat'].forEach((name) => {
-          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-        });
-        console.log('Analytics denied or removed');
-      }
+      const analyticsAllowed = categories.includes('analytics');
+      setupGtm(analyticsAllowed);
 
       if (categories.includes('i18n')) {
         setupI18nDetection();
@@ -345,26 +353,8 @@ export default defineNuxtPlugin((nuxtApp: any) => {
 
       const changes = changedCategories || [];
 
-      if (changes.includes('analytics')) {
-        if (CookieConsent.acceptedCategory('analytics')) {
-          loadGoogleAnalytics(gtagId as string);
-        } else {
-          window.dataLayer?.push([
-            'consent',
-            'update',
-            {
-              analytics_storage: 'denied',
-              ad_storage: 'denied',
-              ad_user_data: 'denied',
-              ad_personalization: 'denied',
-            },
-          ]);
-          ['_ga', '_gid', '_gat'].forEach((name) => {
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-          });
-          console.log('Analytics denied or removed');
-        }
-      }
+      const analyticsAllowed = changes.includes('analytics');
+      setupGtm(analyticsAllowed);
 
       if (changes.includes('i18n')) {
         if (CookieConsent.acceptedCategory('i18n')) setupI18nDetection();
@@ -378,6 +368,12 @@ export default defineNuxtPlugin((nuxtApp: any) => {
           document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
           document.documentElement.removeAttribute('data-theme');
         }
+      }
+
+      if (changedCategories.includes('analytics')) {
+        setupGtm(true); // <-- додаємо GTM
+      } else {
+        setupGtm(false); // <-- блокуємо GTM
       }
 
       // Якщо зміни критичні — reload (залишено, але тільки для i18n якщо потрібно редірект)

@@ -16,6 +16,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@gtm-support/vue-gtm": "^3.1.0",
     "@nuxt/eslint": "^1.9.0",
     "@nuxt/icon": "^2.0.0",
     "@nuxt/image": "^1.11.0",
