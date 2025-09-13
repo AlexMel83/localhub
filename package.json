@@ -16,6 +16,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@gtm-support/vue-gtm": "^3.1.0",
     "@nuxt/eslint": "^1.9.0",
     "@nuxt/icon": "^2.0.0",
     "@nuxt/image": "^1.11.0",
@@ -31,7 +32,6 @@
     "better-sqlite3": "^12.2.0",
     "leaflet.markercluster": "^1.5.3",
     "nuxt": "^4.1.1",
-    "nuxt-gtag": "^4.0.0",
     "pinia": "^3.0.3",
     "vanilla-cookieconsent": "^3.1.0",
     "vue": "^3.5.20",

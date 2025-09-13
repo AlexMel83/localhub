@@ -1,3 +1,4 @@
+
 import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
@@ -12,34 +13,7 @@ export default defineNuxtConfig({
     "@nuxtjs/leaflet",
     '@nuxtjs/sitemap',
     '@nuxtjs/robots',
-    'nuxt-gtag',
-  ],
-
-  // GTAG налаштування - відключено за замовчуванням
-  // @ts-expect-error need types
-  gtag: {
-    id: process.env.NUXT_PUBLIC_GTAG_ID || 'G-C4177GTQXR',
-    config: {
-      anonymize_ip: true,
-      send_page_view: false, // Виключаємо автоматичний page_view, якщо хочете контролювати вручну
-      allow_google_signals: false,
-      allow_ad_personalization_signals: false,
-    },
-    consent: {
-      enabled: true, // Увімкнення Consent Mode
-      cookieKey: 'cc_cookie', // Повинно відповідати ключу вашого CookieConsent
-      onConsentChange: (consent) => {
-        if (consent.analytics) {
-          console.log('Analytics consent granted');
-          // Викликаємо enableAnalytics, якщо потрібно
-        } else {
-          console.log('Analytics consent denied');
-          // Викликаємо disableAnalytics, якщо потрібно
-        }
-      },
-    },
-  },
-
+  ], 
   robots: {
     allow: '/',
     disallow: ['/admin'],
@@ -67,14 +41,6 @@ export default defineNuxtConfig({
   leaflet: {
     markerCluster: true,
   },
-
-  ui: {
-    theme: {
-      colors: ["primary", "error"],
-    },
-  },
-
-  // I18N налаштування - відключаємо автодетект
   i18n: {
     locales: [
       {
@@ -92,7 +58,6 @@ export default defineNuxtConfig({
     ],
     vueI18n: 'i18n.config.ts',
     strategy: "prefix_except_default",
-    // Відключаємо автодетект браузерної мови
     detectBrowserLanguage: false,
   defaultLocale: "uk",
   langDir: "locales",
@@ -110,12 +75,16 @@ export default defineNuxtConfig({
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
       gtagId: process.env.NUXT_PUBLIC_GTAG_ID || "G-C4177GTQXR",
       apiBase: process.env.API_BASE_URL || "http://localhost:4040",
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store'
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store',
+      googleTagManagerId: process.env.GOOGLE_TAG_MANAGER_ID, 
+      googleTagManagerEnabled: process.env.GOOGLE_TAG_MANAGER_ENABLED === 'true',
+      googleTagManagerDebug: process.env.GOOGLE_TAG_MANAGER_DEBUG === 'true',
     },
   },
 
   plugins: [
     "~/plugins/axios.ts",
+    "~/plugins/vue-gtm.client.js",
     { src: '~/plugins/cookie-consent.client.ts', mode: 'client' },
     { src: '~/plugins/toastify.client.ts', mode: 'client' },
     { src: "~/plugins/leaflet.js", mode: 'client' },

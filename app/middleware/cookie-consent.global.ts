@@ -28,39 +28,41 @@ export default defineNuxtRouteMiddleware(() => {
 
     // Якщо згода на i18n не надана, відключаємо автоматичне перенаправлення
     if (!categories.includes('i18n')) {
-      // Логіка для відключення автоматичної локалізації
       const nuxtApp = useNuxtApp();
       if (nuxtApp.$i18n) {
-        // Блокуємо автоматичне визначення мови якщо немає згоди
         console.log('i18n auto-detection blocked - no user consent');
       }
     }
 
-    // Якщо згода на analytics не надана, блокуємо gtag
-    if (!categories.includes('analytics')) {
+    // Керування analytics consent
+    const analyticsAllowed = categories.includes('analytics');
+    if (window.gtag) {
+      window.gtag('consent', 'update', {
+        analytics_storage: analyticsAllowed ? 'granted' : 'denied',
+        ad_storage: analyticsAllowed ? 'granted' : 'denied',
+        ad_user_data: analyticsAllowed ? 'granted' : 'denied',
+        ad_personalization: analyticsAllowed ? 'granted' : 'denied',
+      });
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Middleware consent update:', analyticsAllowed ? 'granted' : 'denied');
+      }
+    } else if (process.env.NODE_ENV !== 'production') {
+      console.warn('gtag not available in middleware');
+    }
+
+    if (!analyticsAllowed) {
       // Видаляємо всі cookies Google Analytics
       const analyticsCookies = ['_ga', '_ga_', '_gid', '_gat'];
       analyticsCookies.forEach((cookieName) => {
-        // Видаляємо cookies на поточному домені
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.${window.location.hostname}`;
       });
-
-      // Відключаємо gtag якщо він існує
-      if (window.gtag) {
-        window.gtag?.('consent', 'update', {
-          analytics_storage: 'denied',
-          ad_storage: 'denied',
-          ad_user_data: 'denied',
-          ad_personalization: 'denied',
-        });
-      }
     }
 
-    // Якщо згода на theme не надана, очищуємо localStorage
+    // Якщо згода на theme не надана, очищуємо cookie
     if (!categories.includes('theme')) {
-      document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; // Зміна: кукі замість local
+      document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
       document.documentElement.removeAttribute('data-theme');
     }
   }

@@ -23,7 +23,7 @@
             :class="buttonClasses"
             color="neutral"
             size="sm"
-            variant="ghost"
+            variant="soft"
             :aria-label="$t('Header.toggleViewMode')"
             @click="appStore.toggleListView"
           >
@@ -64,7 +64,7 @@ const buttonClasses = computed(() => {
 
   // На головній сторінці з мапою використовуємо світлий hover
   if (isHomePage.value && !appStore.isListView) {
-    return [...baseClasses, 'hover:bg-white/80'];
+    return [...baseClasses, 'hover:bg-white/80 hover:dark:bg-gray-800/80'];
   }
 
   // В інших випадках використовуємо стандартний hover
@@ -73,17 +73,17 @@ const buttonClasses = computed(() => {
 
 // Класи для іконки
 const iconClasses = computed(() => {
-  if (isHomePage.value && !appStore.isListView) {
-    return ['text-gray-900'];
-  }
+  // if (isHomePage.value && !appStore.isListView) {
+  //   return ['text-gray-900'];
+  // }
   return [appStore.isDark ? 'text-white' : 'text-gray-900'];
 });
 
 // Класи для тексту
 const textClasses = computed(() => {
-  if (isHomePage.value && !appStore.isListView) {
-    return ['text-gray-900'];
-  }
+  // if (isHomePage.value && !appStore.isListView) {
+  //   return ['text-gray-900'];
+  // }
   return [appStore.isDark ? 'text-white' : 'text-gray-900'];
 });
 

@@ -1,15 +1,15 @@
 type ConsentData = { categories: string[] } | { cookie: { categories: string[] } };
 
 export const useCookieConsent = () => {
-  const getCookieConsentData = (): unknown | null => {
+  const getCookieConsentData = (): ConsentData | null => {
     if (typeof window === 'undefined') return null;
 
     const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('cc_cookie='));
 
     if (cookieValue) {
       try {
-        const consent = JSON.parse(decodeURIComponent(cookieValue?.split('=')[1] ?? ''));
-        return consent;
+        const consent = JSON.parse(decodeURIComponent(cookieValue.split('=')[1] ?? ''));
+        return consent as ConsentData;
       } catch (e) {
         console.warn('Failed to parse cookie consent:', e);
         return null;
@@ -19,17 +19,14 @@ export const useCookieConsent = () => {
   };
 
   const hasConsent = (category: string): boolean => {
-    const consent = getCookieConsentData() as ConsentData | null;
-    if (consent === null) {
-      return false;
-    }
+    const consent = getCookieConsentData();
+    if (!consent) return false;
     if ('categories' in consent) {
       return consent.categories.includes(category);
     } else if ('cookie' in consent && 'categories' in consent.cookie) {
       return consent.cookie.categories.includes(category);
-    } else {
-      return false;
     }
+    return false;
   };
 
   const hasAnalyticsConsent = (): boolean => {
@@ -62,8 +59,13 @@ export const useCookieConsent = () => {
 
   const getAllCategories = (): string[] => {
     const consent = getCookieConsentData();
-    // @ts-expect-error error type
-    return (consent as { cookie?: { categories: string[] } })?.cookie?.categories || consent?.categories || [];
+    if (!consent) return [];
+    if ('categories' in consent) {
+      return consent.categories;
+    } else if ('cookie' in consent && 'categories' in consent.cookie) {
+      return consent.cookie.categories;
+    }
+    return [];
   };
 
   return {
