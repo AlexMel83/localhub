@@ -19,7 +19,6 @@ export default defineNuxtConfig({
     disallow: ['/admin'],
     sitemap: `${process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store'}/sitemap_index.xml`,
   },
-
   sitemap: {
     siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store',
     autoI18n: false,
@@ -32,12 +31,10 @@ export default defineNuxtConfig({
     },
     cacheMaxAgeSeconds: process.env.NODE_ENV === 'production' ? 3600 : 0
   },
-
   css: [
     "~/assets/css/main.css", 
     'vanilla-cookieconsent/dist/cookieconsent.css'
   ],
-
   leaflet: {
     markerCluster: true,
   },
@@ -67,7 +64,6 @@ export default defineNuxtConfig({
   skipSettingLocaleOnNavigate: false,
   defaultLocaleRouteNameSuffix: 'default'
   },
-
   runtimeConfig: {
     apiSecret: process.env.API_SECRET,
     public: {
@@ -81,7 +77,6 @@ export default defineNuxtConfig({
       googleTagManagerDebug: process.env.GOOGLE_TAG_MANAGER_DEBUG === 'true',
     },
   },
-
   plugins: [
     "~/plugins/axios.ts",
     { src: '~/plugins/cookie-consent.client.ts', mode: 'client' },
@@ -90,7 +85,6 @@ export default defineNuxtConfig({
     { src: "~/plugins/leaflet.js", mode: 'client' },
     { src: "~/plugins/google-maps.client.js", mode: 'client' },
   ],
-
   nitro: {
     compressPublicAssets: true,
     routeRules: {
@@ -99,15 +93,12 @@ export default defineNuxtConfig({
       '/api/**': { cors: true, headers: { 'cache-control': 's-maxage=60' } },
     }
   },
-
   experimental: {
     payloadExtraction: false,
   },
-
   build: {
     transpile: []
   },
-
   image: {
     provider: 'ipx',
     quality: 80,
@@ -121,7 +112,6 @@ export default defineNuxtConfig({
       xxl: 1536
     }
   },
-
   app: {
     head: {
       charset: 'utf-8',
