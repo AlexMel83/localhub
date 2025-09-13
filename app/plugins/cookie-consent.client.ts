@@ -6,7 +6,6 @@ import * as CookieConsentLib from 'vanilla-cookieconsent';
 declare global {
   interface Window {
     gtag?: (command: string, ...args: unknown[]) => void;
-    // @ts-expect-error types error
     dataLayer?: unknown[];
     CC?: unknown;
   }
