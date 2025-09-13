@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app';
+import { defineNuxtPlugin } from 'nuxt/app';
 import 'vanilla-cookieconsent/dist/cookieconsent.css';
 import * as CookieConsentLib from 'vanilla-cookieconsent';
 
@@ -64,13 +64,11 @@ export default defineNuxtPlugin((nuxtApp: any) => {
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = function (...args: unknown[]) {
-    window.dataLayer.push(args);
+    window.dataLayer?.push(args);
     console.log('dataLayer initial push:', args);
   };
 
   const CookieConsent: typeof CookieConsentLib = CookieConsentLib as typeof CookieConsentLib;
-
-  const runtimeConfig = useRuntimeConfig();
 
   CookieConsent.run({
     guiOptions: {
@@ -310,7 +308,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
         console.log('Analytics consent granted, handled by nuxt-gtag');
         // nuxt-gtag автоматично обробить це
       } else {
-        window.dataLayer.push([
+        window.dataLayer?.push([
           'consent',
           'update',
           {
