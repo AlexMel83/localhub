@@ -16,6 +16,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       enabled: false, // завжди false на старті
       debug: config.googleTagManagerDebug,
       trackOnNextTick: false,
+      defaultEventName: 'page-load',
     }),
   );
 });

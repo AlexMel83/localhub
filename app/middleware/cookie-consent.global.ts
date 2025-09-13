@@ -28,7 +28,6 @@ export default defineNuxtRouteMiddleware(() => {
 
     // Якщо згода на i18n не надана, відключаємо автоматичне перенаправлення
     if (!categories.includes('i18n')) {
-      // Логіка для відключення автоматичної локалізації
       const nuxtApp = useNuxtApp();
       if (nuxtApp.$i18n) {
         console.log('i18n auto-detection blocked - no user consent');
@@ -44,7 +43,11 @@ export default defineNuxtRouteMiddleware(() => {
         ad_user_data: analyticsAllowed ? 'granted' : 'denied',
         ad_personalization: analyticsAllowed ? 'granted' : 'denied',
       });
-      console.log('Middleware consent update:', analyticsAllowed ? 'granted' : 'denied');
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Middleware consent update:', analyticsAllowed ? 'granted' : 'denied');
+      }
+    } else if (process.env.NODE_ENV !== 'production') {
+      console.warn('gtag not available in middleware');
     }
 
     if (!analyticsAllowed) {

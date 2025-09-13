@@ -3,48 +3,59 @@ import 'vanilla-cookieconsent/dist/cookieconsent.css';
 import * as CookieConsentLib from 'vanilla-cookieconsent';
 import { useGtm } from '@gtm-support/vue-gtm';
 
+declare module '@gtm-support/vue-gtm' {
+  interface GtmSupport {
+    disable(enabled?: boolean): void;
+  }
+}
 interface CookieConsentLib {
   default: typeof CookieConsentLib;
 }
 
-// === Утиліти (відкладений запуск сервісів) ===
-function setupI18nDetection() {
+// === Утиліти ===
+function clearCookie(name: string, domain: string = window.location.hostname): void {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${domain}`;
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.${domain}`;
+}
+
+function setupI18nDetection(): void {
   try {
     const browserLang = navigator.language?.split('-')[0] || 'uk';
     const supportedLangs = ['uk', 'en'];
     const detectedLang = supportedLangs.includes(browserLang) ? browserLang : 'uk';
     document.cookie = `i18n_redirected=${detectedLang}; path=/; max-age=31536000`;
-    console.log(
-      'i18n detection enabled ✅, set i18n_redirected to:',
-      detectedLang,
-      'current cookies:',
-      document.cookie,
-    );
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('i18n detection enabled ✅, set i18n_redirected to:', detectedLang);
+    }
   } catch (e) {
     console.warn('i18n detection failed', e);
   }
 }
 
-function setupTheme() {
+function setupTheme(): void {
   try {
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     const theme = prefersDark ? 'dark' : 'light';
     document.cookie = `theme=${theme}; path=/; max-age=31536000`;
     document.documentElement.setAttribute('data-theme', theme);
-    console.log('Theme detection enabled ✅', theme);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Theme detection enabled ✅', theme);
+    }
   } catch (e) {
     console.warn('Theme setup failed', e);
   }
 }
 
-function setupGtm(allowed: boolean) {
+function setupGtm(allowed: boolean): void {
   const gtm = useGtm();
   if (!gtm) return;
 
   const gtmId = useRuntimeConfig().public.googleTagManagerId;
-  console.log('GTM ID:', gtmId);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('GTM ID:', gtmId);
+  }
 
-  // Оновлюємо consent mode
   if (window.gtag) {
     window.gtag('consent', 'update', {
       ad_storage: allowed ? 'granted' : 'denied',
@@ -55,14 +66,17 @@ function setupGtm(allowed: boolean) {
   }
 
   if (allowed) {
-    console.log('✅ GTM enabled by consent');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('✅ GTM enabled by consent');
+    }
 
-    // Додаємо скрипт у DOM, якщо його ще немає
     if (!document.getElementById('gtm-script')) {
       const script = document.createElement('script');
       script.onload = () => {
         gtm.enable(true);
-        console.log('GTM script loaded and enabled');
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('GTM script loaded and enabled');
+        }
       };
       script.id = 'gtm-script';
       script.async = true;
@@ -70,14 +84,14 @@ function setupGtm(allowed: boolean) {
       document.head.appendChild(script);
     }
 
-    // Вмикаємо GTM у vue-gtm
     gtm.enable(true);
   } else {
-    console.log('❌ GTM disabled by consent');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('❌ GTM disabled by consent');
+    }
 
     gtm.disable(true);
 
-    // Видаляємо GTM-скрипт, якщо юзер відкликав згоду
     const script = document.getElementById('gtm-script');
     if (script) {
       script.remove();
@@ -85,31 +99,33 @@ function setupGtm(allowed: boolean) {
   }
 }
 
-function clearThemeIfNoConsent() {
+function clearThemeIfNoConsent(): void {
   try {
     const ccCookie = document.cookie.split('; ').find((r) => r.startsWith('cc_cookie='));
     if (!ccCookie) {
-      document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+      clearCookie('theme');
       document.documentElement.removeAttribute('data-theme');
-      console.log('No cookie-consent yet — theme cleared to prevent pre-consent application');
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('No cookie-consent yet — theme cleared to prevent pre-consent application');
+      }
     }
   } catch (e) {
     console.warn('Theme setup failed', e);
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default defineNuxtPlugin((nuxtApp: any) => {
+export default defineNuxtPlugin((nuxtApp) => {
   if (!import.meta.client) return;
 
   clearThemeIfNoConsent();
 
   window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push = window.dataLayer.push || [];
 
   const CookieConsent: typeof CookieConsentLib = CookieConsentLib as typeof CookieConsentLib;
 
   CookieConsent.run({
-    revision: 1, // Додано: ревізія, щоб при змінах користувачі бачили модалку знову
+    revision: 1,
     guiOptions: {
       consentModal: {
         layout: 'box',
@@ -128,7 +144,8 @@ export default defineNuxtPlugin((nuxtApp: any) => {
       theme: { enabled: false },
     },
     language: {
-      default: nuxtApp.$i18n?.locale?.value || 'uk',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      default: (nuxtApp.$i18n as any)?.locale?.value || 'uk',
       translations: {
         uk: {
           consentModal: {
@@ -339,8 +356,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
       },
     },
 
-    onConsent: ({ cookie }: { cookie: unknown & { categories?: string[] } }) => {
-      console.log('onConsent fired', cookie);
+    onConsent: ({ cookie }: { cookie: { categories?: string[] } }) => {
       const categories: string[] = cookie?.categories || [];
 
       const analyticsAllowed = categories.includes('analytics');
@@ -349,23 +365,18 @@ export default defineNuxtPlugin((nuxtApp: any) => {
       if (categories.includes('i18n')) {
         setupI18nDetection();
       } else {
-        document.cookie = 'i18n_redirected=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-        console.log('i18n not allowed');
+        clearCookie('i18n_redirected');
       }
 
       if (categories.includes('theme')) {
         setupTheme();
       } else {
-        document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+        clearCookie('theme');
         document.documentElement.removeAttribute('data-theme');
-        console.log('theme not allowed');
       }
     },
 
     onChange: ({ changedCategories }: { changedCategories: string[] }) => {
-      console.log('onChange', changedCategories);
-
-      // Виправлено: завжди перевіряємо актуальний статус, а не тільки якщо змінився
       const analyticsAllowed = CookieConsent.acceptedCategory('analytics');
       setupGtm(analyticsAllowed);
 
@@ -373,7 +384,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
         if (CookieConsent.acceptedCategory('i18n')) {
           setupI18nDetection();
         } else {
-          document.cookie = 'i18n_redirected=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+          clearCookie('i18n_redirected');
         }
       }
 
@@ -381,7 +392,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
         if (CookieConsent.acceptedCategory('theme')) {
           setupTheme();
         } else {
-          document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+          clearCookie('theme');
           document.documentElement.removeAttribute('data-theme');
         }
       }
@@ -392,5 +403,7 @@ export default defineNuxtPlugin((nuxtApp: any) => {
     },
   });
 
-  console.log('CookieConsent initialized (patched) ✅');
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('CookieConsent initialized (patched) ✅');
+  }
 });

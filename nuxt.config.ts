@@ -41,14 +41,6 @@ export default defineNuxtConfig({
   leaflet: {
     markerCluster: true,
   },
-
-  // ui: {
-  //   theme: {
-  //     colors: ["primary", "error"],
-  //   },
-  // },
-
-  // I18N налаштування - відключаємо автодетект
   i18n: {
     locales: [
       {

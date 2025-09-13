@@ -4,7 +4,7 @@
       <Header class="flex-0" />
       <NuxtPage class="flex-1" />
       <Footer />
-      <CookieDebug />
+      <!-- <CookieDebug /> -->
     </div>
   </UApp>
 </template>
