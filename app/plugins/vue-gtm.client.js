@@ -13,7 +13,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       compatibility: false,
       loadScript: false, // скрипт завантажимо вручну по згоді
       vueRouter: router, // Hook у Vue Router
-      enabled: false, // завжди false на старті
+      enabled: config.googleTagManagerEnabled !== 'false', // Динамічне увімкнення
       debug: config.googleTagManagerDebug,
       trackOnNextTick: false,
       defaultEventName: 'page-load',
