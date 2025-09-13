@@ -6,17 +6,26 @@ export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig().public;
   const router = useRouter();
 
-  nuxtApp.vueApp.use(
-    createGtm({
-      id: config.googleTagManagerId,
-      defer: false,
-      compatibility: false,
-      loadScript: false, // скрипт завантажимо вручну по згоді
-      vueRouter: router, // Hook у Vue Router
-      enabled: config.googleTagManagerEnabled !== 'false', // Динамічне увімкнення
-      debug: config.googleTagManagerDebug,
-      trackOnNextTick: false,
-      defaultEventName: 'page-load',
-    }),
-  );
+  if (!config.googleTagManagerId) {
+    console.warn('❌ GTM ID not found, skipping GTM plugin initialization');
+    return;
+  }
+
+  const gtmInstance = createGtm({
+    id: config.googleTagManagerId,
+    defer: false,
+    compatibility: false,
+    loadScript: false,
+    vueRouter: router,
+    enabled: false,
+    debug: config.googleTagManagerDebug === 'true',
+    trackOnNextTick: false,
+    defaultEventName: 'page-load',
+  });
+
+  nuxtApp.vueApp.use(gtmInstance);
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('✅ GTM Vue plugin initialized (script managed by cookie-consent)');
+  }
 });

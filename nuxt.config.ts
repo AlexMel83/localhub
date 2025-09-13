@@ -84,8 +84,8 @@ export default defineNuxtConfig({
 
   plugins: [
     "~/plugins/axios.ts",
-    "~/plugins/vue-gtm.client.js",
     { src: '~/plugins/cookie-consent.client.ts', mode: 'client' },
+    { src: '~/plugins/vue-gtm.client.js', mode: 'client' },
     { src: '~/plugins/toastify.client.ts', mode: 'client' },
     { src: "~/plugins/leaflet.js", mode: 'client' },
     { src: "~/plugins/google-maps.client.js", mode: 'client' },
