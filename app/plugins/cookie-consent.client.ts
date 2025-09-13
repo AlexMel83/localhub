@@ -6,6 +6,7 @@ import * as CookieConsentLib from 'vanilla-cookieconsent';
 declare global {
   interface Window {
     gtag?: (command: string, ...args: unknown[]) => void;
+    // @ts-expect-error types error
     dataLayer?: unknown[];
     CC?: unknown;
   }
@@ -68,7 +69,7 @@ function initializeGTM(gtmId: string, gtagId?: string): void {
   window.gtag =
     window.gtag ||
     function (..._args: unknown[]) {
-      window.dataLayer!.push(..._args);
+      window.dataLayer!.push(arguments);
     };
 
   // Встановлюємо початковий consent на denied
