@@ -224,12 +224,12 @@ const toggleAbout = () => {
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/businesses" class="text-sm hover:text-blue-600 transition-colors">
+              <NuxtLink to="/" class="text-sm hover:text-blue-600 transition-colors">
                 {{ t('Footer.businesses') }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/services" class="text-sm hover:text-blue-600 transition-colors">
+              <NuxtLink to="/" class="text-sm hover:text-blue-600 transition-colors">
                 {{ t('Footer.services') }}
               </NuxtLink>
             </li>

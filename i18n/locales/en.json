@@ -231,5 +231,15 @@
       "street or neighborhood",
       ", which makes it a unique solution. Forget about queues and high costs for advertising in pedestrian areas. Your page is already optimized for promotion on the Internet. You can share it with a short link, and customized meta tags will do everything for you. Our platform is open for orders for your services and goods 24/7, and does not require expenses for supporting the work of an office or store"
     ]
-  }
+  },
+  "cookieSettings": "Cookie settings",
+  "analytics": "Analytics",
+  "language": "Language",
+  "theme": "Theme",
+  "cookiePreferences": "Cookie preferences",
+  "cookieInfo": "Cookie status",
+  "enabled": "Enabled",
+  "disabled": "Disabled",
+  "necessary": "Necessary",
+  "optional": "Optional"
 }

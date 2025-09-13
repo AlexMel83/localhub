@@ -1,3 +1,5 @@
+import { defineSitemapEventHandler } from '#imports';
+
 export default defineSitemapEventHandler(async () => {
   const siteUrl = process.env.SITE_URL || 'https://localhub.store';
   const apiBase = process.env.API_BASE_URL || 'https://api.localhub.store';

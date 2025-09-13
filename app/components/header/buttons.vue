@@ -150,6 +150,7 @@ const toggleLanguage = async (): Promise<void> => {
   const newLang = currentLocale.value === 'uk' ? 'en' : 'uk';
 
   try {
+    appStore.setLanguage(newLang);
     const currentRoute = router.currentRoute.value;
     const currentPath = currentRoute.fullPath;
 

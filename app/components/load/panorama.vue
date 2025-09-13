@@ -12,8 +12,8 @@ import { useNuxtApp } from '#app';
 import { useIntersectionObserver } from '@vueuse/core';
 
 const props = defineProps({
-  latitude: [String, Number],
-  longitude: [String, Number],
+  latitude: { type: [String, Number], default: 0 },
+  longitude: { type: [String, Number], default: 0 },
   heading: { type: [String, Number], default: 0 },
   tilt: { type: [String, Number], default: 0 },
 });

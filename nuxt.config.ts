@@ -1,15 +1,7 @@
 import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
-  typescript: {
-    strict: true,
-    typeCheck: true,
-    shim: false
-  },
   compatibilityDate: "2025-07-15",
-  // devtools: { 
-  //   enabled: process.env.NODE_ENV === 'development' 
-  // },
   modules: [
     "@nuxt/eslint",
     "@pinia/nuxt", 
@@ -22,23 +14,38 @@ export default defineNuxtConfig({
     '@nuxtjs/robots',
     'nuxt-gtag',
   ],
+
+  // GTAG налаштування - відключено за замовчуванням
   // @ts-expect-error need types
   gtag: {
     id: process.env.NUXT_PUBLIC_GTAG_ID || 'G-C4177GTQXR',
-    loadingStrategy: 'defer',
     config: {
-      page_title: 'LocalHub',
       anonymize_ip: true,
+      send_page_view: false, // Виключаємо автоматичний page_view, якщо хочете контролювати вручну
       allow_google_signals: false,
       allow_ad_personalization_signals: false,
-      disable_google_one_tap: true
-    }
+    },
+    consent: {
+      enabled: true, // Увімкнення Consent Mode
+      cookieKey: 'cc_cookie', // Повинно відповідати ключу вашого CookieConsent
+      onConsentChange: (consent) => {
+        if (consent.analytics) {
+          console.log('Analytics consent granted');
+          // Викликаємо enableAnalytics, якщо потрібно
+        } else {
+          console.log('Analytics consent denied');
+          // Викликаємо disableAnalytics, якщо потрібно
+        }
+      },
+    },
   },
+
   robots: {
     allow: '/',
-    disallow: ['/admin',],
+    disallow: ['/admin'],
     sitemap: `${process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store'}/sitemap_index.xml`,
   },
+
   sitemap: {
     siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store',
     autoI18n: false,
@@ -51,45 +58,53 @@ export default defineNuxtConfig({
     },
     cacheMaxAgeSeconds: process.env.NODE_ENV === 'production' ? 3600 : 0
   },
-  css: ["~/assets/css/main.css"],
+
+  css: [
+    "~/assets/css/main.css", 
+    'vanilla-cookieconsent/dist/cookieconsent.css'
+  ],
+
   leaflet: {
     markerCluster: true,
   },
+
   ui: {
     theme: {
       colors: ["primary", "error"],
     },
   },
+
+  // I18N налаштування - відключаємо автодетект
   i18n: {
     locales: [
-      { 
-        code: "uk", 
+      {
+        code: "uk",
         name: "UA", 
         file: "uk.json",
         iso: 'uk-UA'
       },
-      { 
-        code: "en", 
-        name: "EN", 
-        file: "en.json",
+      {
+        code: "en",
+        name: "EN",
+        file: "en.json", 
         iso: 'en-US'
       },
     ],
     vueI18n: 'i18n.config.ts',
     strategy: "prefix_except_default",
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'i18n_redirected',
-      redirectOn: 'root'
-    },
-    defaultLocale: "uk",
-    langDir: "locales",
-    baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store'
+    // Відключаємо автодетект браузерної мови
+    detectBrowserLanguage: false,
+  defaultLocale: "uk",
+  langDir: "locales",
+  baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store',
+  customRoutes: 'config',
+  differentDomains: false,
+  skipSettingLocaleOnNavigate: false,
+  defaultLocaleRouteNameSuffix: 'default'
   },
+
   runtimeConfig: {
-    // Приватні ключі (доступні тільки на сервері)
     apiSecret: process.env.API_SECRET,
-    // Публічні ключі
     public: {
       apiKeyMapbox: process.env.APIKEY_MAPBOX,
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
@@ -98,12 +113,15 @@ export default defineNuxtConfig({
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://localhub.store'
     },
   },
+
   plugins: [
-    "~/plugins/axios.ts", 
-    {src: '~/plugins/toastify.client.ts', mode: 'client'},
+    "~/plugins/axios.ts",
+    { src: '~/plugins/cookie-consent.client.ts', mode: 'client' },
+    { src: '~/plugins/toastify.client.ts', mode: 'client' },
     { src: "~/plugins/leaflet.js", mode: 'client' },
-    { src: "~/plugins/google-maps.js", mode: 'client' },
+    { src: "~/plugins/google-maps.client.js", mode: 'client' },
   ],
+
   nitro: {
     compressPublicAssets: true,
     routeRules: {
@@ -112,31 +130,15 @@ export default defineNuxtConfig({
       '/api/**': { cors: true, headers: { 'cache-control': 's-maxage=60' } },
     }
   },
-  // vite: {
-  //   css: {
-  //     preprocessorOptions: {
-  //       scss: {
-  //         additionalData: '@use "~/assets/scss/variables.scss" as *;'
-  //       }
-  //     }
-  //   },
-  //   build: {
-  //     sourcemap: true,
-  //     rollupOptions: {
-  //       output: {
-  //         manualChunks: {
-  //           'leaflet': ['leaflet'],
-  //         }
-  //       }
-  //     }
-  //   }
-  // },
+
   experimental: {
     payloadExtraction: false,
   },
+
   build: {
     transpile: []
   },
+
   image: {
     provider: 'ipx',
     quality: 80,
@@ -150,13 +152,14 @@ export default defineNuxtConfig({
       xxl: 1536
     }
   },
+
   app: {
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
       title: 'LocalHub Старокостянтинів',
       meta: [
-        { name: 'description', content: 'LocalHub Старокостянтинів — платформа для підтримки місцевої економіки, об’єднання громади та нових можливостей для бізнесу' },
+        { name: 'description', content: "LocalHub Старокостянтинів — платформа для підтримки місцевої економіки, об'єднання громади та нових можливостей для бізнесу" },
       ]
     }
   }

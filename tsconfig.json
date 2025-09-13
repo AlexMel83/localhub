@@ -1,24 +1,25 @@
 {
+  "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
     "strict": true,
-    "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./*"],
-      "@/*": ["./*"],
-      "#app": ["node_modules/nuxt/dist/app"],
-      "#app/*": ["node_modules/nuxt/dist/app/*"]
-    },
-    "types": ["@nuxt/types", "@nuxtjs/i18n", "vue3-toastify", "nuxt/config", "vue-tsc"]
+    "resolveJsonModule": true
   },
-  "include": ["types/**/*.d.ts", "plugins/**/*", "components/**/*", "pages/**/*", "stores/**/*", "nuxt.config.ts"],
-  "exclude": ["node_modules", ".nuxt", "dist"]
+  "include": [
+    "types/**/*.d.ts",
+    ".nuxt/imports.d.ts",
+    "plugins/**/*",
+    "components/**/*",
+    "pages/**/*",
+    "stores/**/*",
+    "server/**/*",
+    "nuxt.config.ts"
+  ],
+  "exclude": ["node_modules", ".nuxt/dist", "dist"]
 }

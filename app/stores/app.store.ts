@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
-import { useNuxtApp } from 'nuxt/app';
+import { useNuxtApp, navigateTo } from 'nuxt/app';
 import type { AuthApi } from '../api/auth';
-// @ts-expect-error need types
 import { useCookie } from '#app';
 import axios from 'axios';
+import { useCookieConsent } from '~/composables/useCookieConsent';
 
 interface User {
   id: number;
@@ -60,9 +60,18 @@ interface CustomApi {
   stores: StoresApi;
 }
 
+interface ConsentData {
+  categories?: string[];
+}
+
 export const useAppStore = defineStore('app', {
   state: () => {
-    const themeCookie = useCookie('theme', { default: () => 'light' }); // Кукі за замовчуванням 'light'
+    const themeCookie = useCookie<string | null>('theme', {
+      default: () => {
+        const prefersDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return prefersDark ? 'dark' : 'light';
+      },
+    });
     const isDark = themeCookie.value === 'dark';
 
     return {
@@ -83,14 +92,45 @@ export const useAppStore = defineStore('app', {
     },
     toggleDarkMode() {
       this.isDark = !this.isDark;
-      const themeCookie = useCookie('theme');
-      themeCookie.value = this.isDark ? 'dark' : 'light'; // Оновлюємо кукі
-      if (import.meta.client) {
-        if (this.isDark) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
+
+      const { getCookieConsentData } = useCookieConsent();
+      const consentData = getCookieConsentData() as ConsentData | null; // Приведення типу
+      const allowed = consentData && 'categories' in consentData && consentData.categories?.includes('theme');
+
+      if (allowed) {
+        const themeCookie = useCookie('theme');
+        themeCookie.value = this.isDark ? 'dark' : 'light';
+      }
+      if (typeof document !== 'undefined') {
+        document.documentElement.setAttribute('data-theme', this.isDark ? 'dark' : 'light');
+      }
+    },
+    setLanguage(lang: string) {
+      const { getCookieConsentData } = useCookieConsent();
+      const consentData = getCookieConsentData() as ConsentData | null;
+      console.log('setLanguage consentData:', consentData); // Дебаг
+      const allowed = consentData && 'categories' in consentData && consentData.categories?.includes('i18n');
+      console.log('setLanguage allowed:', allowed); // Дебаг allowed
+
+      if (allowed) {
+        const langCookie = useCookie('i18n_redirected');
+        langCookie.value = lang;
+        console.log('setLanguage updated i18n_redirected to:', lang); // Дебаг
+        const { $i18n } = useNuxtApp();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ($i18n && typeof ($i18n as any).setLocale === 'function') {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ($i18n as any).setLocale(lang);
+          console.log('setLocale called with:', lang); // Дебаг
         }
+        // Редірект на правильний шлях
+        const currentPath = window.location.pathname;
+        if (!currentPath.startsWith(`/${lang}`) && lang !== 'uk') {
+          navigateTo(`/${lang}${currentPath}`, { replace: true });
+          console.log('Navigated to:', `/${lang}${currentPath}`); // Дебаг
+        }
+      } else {
+        console.log('setLanguage not allowed, consentData:', consentData); // Дебаг
       }
     },
     toggleListView() {
