@@ -90,7 +90,7 @@ declare module 'nuxt/schema' {
     };
   }
   interface PublicRuntimeConfig {
-    [key: string]: any; // Гнучкість для runtime config
+    [key: string]: unknown;
   }
 }
 
