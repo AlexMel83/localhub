@@ -44,12 +44,26 @@ function setupGtm(allowed: boolean) {
   const gtmId = useRuntimeConfig().public.googleTagManagerId;
   console.log('GTM ID:', gtmId);
 
+  // Оновлюємо consent mode
+  if (window.gtag) {
+    window.gtag('consent', 'update', {
+      ad_storage: allowed ? 'granted' : 'denied',
+      analytics_storage: allowed ? 'granted' : 'denied',
+      ad_user_data: allowed ? 'granted' : 'denied',
+      ad_personalization: allowed ? 'granted' : 'denied',
+    });
+  }
+
   if (allowed) {
     console.log('✅ GTM enabled by consent');
 
     // Додаємо скрипт у DOM, якщо його ще немає
     if (!document.getElementById('gtm-script')) {
       const script = document.createElement('script');
+      script.onload = () => {
+        gtm.enable(true);
+        console.log('GTM script loaded and enabled');
+      };
       script.id = 'gtm-script';
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
@@ -57,11 +71,11 @@ function setupGtm(allowed: boolean) {
     }
 
     // Вмикаємо GTM у vue-gtm
-    gtm.enable();
+    gtm.enable(true);
   } else {
     console.log('❌ GTM disabled by consent');
 
-    gtm.disable();
+    gtm.disable(true);
 
     // Видаляємо GTM-скрипт, якщо юзер відкликав згоду
     const script = document.getElementById('gtm-script');
@@ -92,9 +106,24 @@ export default defineNuxtPlugin((nuxtApp: any) => {
 
   window.dataLayer = window.dataLayer || [];
 
+  // Визначаємо gtag для consent mode
+  // @ts-expect-error: gtag type
+  window.gtag = function () {
+    window.dataLayer.push(arguments);
+  };
+
+  // Встановлюємо default consent 'denied' на початку (перед будь-яким завантаженням скриптів)
+  window.gtag('consent', 'default', {
+    ad_storage: 'denied',
+    analytics_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+  });
+
   const CookieConsent: typeof CookieConsentLib = CookieConsentLib as typeof CookieConsentLib;
 
   CookieConsent.run({
+    revision: 1, // Додано: ревізія, щоб при змінах користувачі бачили модалку знову
     guiOptions: {
       consentModal: {
         layout: 'box',
@@ -324,7 +353,6 @@ export default defineNuxtPlugin((nuxtApp: any) => {
       },
     },
 
-    // Використай правильну сигнатуру callbacks згідно з документацією:
     onConsent: ({ cookie }: { cookie: unknown & { categories?: string[] } }) => {
       console.log('onConsent fired', cookie);
       const categories: string[] = cookie?.categories || [];
@@ -348,36 +376,31 @@ export default defineNuxtPlugin((nuxtApp: any) => {
       }
     },
 
-    onChange: ({ cookie, changedCategories }: { cookie: unknown; changedCategories: string[] }) => {
-      console.log('onChange', changedCategories, cookie);
+    onChange: ({ changedCategories }: { changedCategories: string[] }) => {
+      console.log('onChange', changedCategories);
 
-      const changes = changedCategories || [];
-
-      const analyticsAllowed = changes.includes('analytics');
+      // Виправлено: завжди перевіряємо актуальний статус, а не тільки якщо змінився
+      const analyticsAllowed = CookieConsent.acceptedCategory('analytics');
       setupGtm(analyticsAllowed);
 
-      if (changes.includes('i18n')) {
-        if (CookieConsent.acceptedCategory('i18n')) setupI18nDetection();
-        else document.cookie = 'i18n_redirected=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+      if (changedCategories.includes('i18n')) {
+        if (CookieConsent.acceptedCategory('i18n')) {
+          setupI18nDetection();
+        } else {
+          document.cookie = 'i18n_redirected=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+        }
       }
 
-      if (changes.includes('theme')) {
-        if (CookieConsent.acceptedCategory('theme')) setupTheme();
-        else {
-          // Зміна: очищуємо кукі
+      if (changedCategories.includes('theme')) {
+        if (CookieConsent.acceptedCategory('theme')) {
+          setupTheme();
+        } else {
           document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
           document.documentElement.removeAttribute('data-theme');
         }
       }
 
-      if (changedCategories.includes('analytics')) {
-        setupGtm(true); // <-- додаємо GTM
-      } else {
-        setupGtm(false); // <-- блокуємо GTM
-      }
-
-      // Якщо зміни критичні — reload (залишено, але тільки для i18n якщо потрібно редірект)
-      if (changes.some((c) => ['i18n'].includes(c))) {
+      if (changedCategories.some((c) => ['i18n'].includes(c))) {
         setTimeout(() => window.location.reload(), 400);
       }
     },
