@@ -5,9 +5,9 @@ import * as CookieConsentLib from 'vanilla-cookieconsent';
 // Типи для глобальних об'єктів
 declare global {
   interface Window {
-    gtag?: (command: string, ...args: any[]) => void;
-    dataLayer?: any[];
-    CC?: any;
+    gtag?: (command: string, ...args: unknown[]) => void;
+    dataLayer?: unknown[];
+    CC?: unknown;
   }
 }
 
@@ -67,7 +67,7 @@ function initializeGTM(gtmId: string): void {
   // Ініціалізуємо gtag функцію
   window.gtag =
     window.gtag ||
-    function (...args: any[]) {
+    function (...args: unknown[]) {
       window.dataLayer!.push(args);
     };
 
@@ -179,7 +179,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       theme: { enabled: false },
     },
     language: {
-      default: (nuxtApp.$i18n as any)?.locale?.value || 'uk',
+      default: (nuxtApp.$i18n as unknown)?.locale?.value || 'uk',
       translations: {
         uk: {
           consentModal: {
