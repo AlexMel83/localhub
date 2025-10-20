@@ -22,7 +22,7 @@ export default defineNuxtRouteMiddleware(() => {
 
     // Логуємо поточний стан згоди для діагностики
     if (process.env.NODE_ENV !== 'production') {
-      console.log('🔍 Route middleware - current consent categories:', categories);
+      // console.log('🔍 Route middleware - current consent categories:', categories);
 
       if (!categories.includes('i18n')) {
         console.log('ℹ️ i18n auto-detection blocked - no user consent');

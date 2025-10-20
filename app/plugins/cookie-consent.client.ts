@@ -37,9 +37,9 @@ function setupI18nDetection(): void {
     const detectedLang = supportedLangs.includes(browserLang) ? browserLang : 'uk';
     document.cookie = `i18n_redirected=${detectedLang}; path=/; max-age=31536000; SameSite=Lax`;
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('✅ i18n detection enabled, set to:', detectedLang);
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    //   console.log('✅ i18n detection enabled, set to:', detectedLang);
+    // }
   } catch (e) {
     console.warn('❌ i18n detection failed', e);
   }
@@ -52,9 +52,9 @@ function setupTheme(): void {
     document.cookie = `theme=${theme}; path=/; max-age=31536000; SameSite=Lax`;
     document.documentElement.setAttribute('data-theme', theme);
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('✅ Theme detection enabled:', theme);
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    //   console.log('✅ Theme detection enabled:', theme);
+    // }
   } catch (e) {
     console.warn('❌ Theme setup failed', e);
   }
@@ -84,19 +84,19 @@ function initializeGTM(gtmId: string, gtagId?: string): void {
   // Додаємо початкову конфігурацію GTM
   window.gtag('js', new Date());
 
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('🔧 GTM dataLayer and gtag initialized');
-  }
+  // if (process.env.NODE_ENV !== 'production') {
+  //   console.log('🔧 GTM dataLayer and gtag initialized');
+  // }
 
   // Завантажуємо GTM скрипт
   const gtmScript = document.createElement('script');
   gtmScript.async = true;
   gtmScript.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
-  gtmScript.onload = () => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('✅ GTM script loaded');
-    }
-  };
+  // gtmScript.onload = () => {
+  //   if (process.env.NODE_ENV !== 'production') {
+  //     console.log('✅ GTM script loaded');
+  //   }
+  // };
   document.head.appendChild(gtmScript);
 
   // Якщо є gtagId, завантажуємо також Google Analytics
@@ -112,9 +112,9 @@ function initializeGTM(gtmId: string, gtagId?: string): void {
         allow_google_signals: false,
       });
 
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('✅ Google Analytics script loaded and configured');
-      }
+      // if (process.env.NODE_ENV !== 'production') {
+      //   console.log('✅ Google Analytics script loaded and configured');
+      // }
     };
     document.head.appendChild(gtagScript);
   }
@@ -171,9 +171,9 @@ export default defineNuxtPlugin(() => {
     return;
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('🚀 Initializing analytics with GTM:', gtmId, 'and GTAG:', gtagId);
-  }
+  // if (process.env.NODE_ENV !== 'production') {
+  //   console.log('🚀 Initializing analytics with GTM:', gtmId, 'and GTAG:', gtagId);
+  // }
 
   // Ініціалізуємо GTM і Google Analytics
   initializeGTM(gtmId, gtagId);
@@ -199,9 +199,9 @@ export default defineNuxtPlugin(() => {
       ad_personalization: consentState,
     });
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`✅ GTM consent updated: ${consentState}`);
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    //   console.log(`✅ GTM consent updated: ${consentState}`);
+    // }
 
     // Якщо згода надана, відправляємо page_view подію
     if (allowed) {
@@ -223,9 +223,9 @@ export default defineNuxtPlugin(() => {
             });
           }
 
-          if (process.env.NODE_ENV !== 'production') {
-            console.log('📊 GTM page_view event sent to:', gtmId, config.gtagId ? `and ${config.gtagId}` : '');
-          }
+          // if (process.env.NODE_ENV !== 'production') {
+          //   console.log('📊 GTM page_view event sent to:', gtmId, config.gtagId ? `and ${config.gtagId}` : '');
+          // }
         }
       }, 100);
     }
@@ -434,9 +434,9 @@ export default defineNuxtPlugin(() => {
     onConsent: ({ cookie }: { cookie: { categories?: string[] } }) => {
       const categories: string[] = cookie?.categories || [];
 
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('🔐 Consent given for categories:', categories);
-      }
+      // if (process.env.NODE_ENV !== 'production') {
+      //   console.log('🔐 Consent given for categories:', categories);
+      // }
 
       // Керування аналітикою
       const analyticsAllowed = categories.includes('analytics');
@@ -501,7 +501,7 @@ export default defineNuxtPlugin(() => {
   // Експортуємо CookieConsent для глобального доступу
   window.CC = CookieConsent;
 
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('✅ CookieConsent initialized with GTM integration');
-  }
+  // if (process.env.NODE_ENV !== 'production') {
+  //   console.log('✅ CookieConsent initialized with GTM integration');
+  // }
 });

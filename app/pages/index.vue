@@ -142,12 +142,10 @@ const isLiked = (storeId) => {
   return likedStores.value.has(storeId);
 };
 
-onMounted(async () => {
-  await storesStore.fetchStores($customApi);
-});
+const { data: shops } = await useFetch('https://api.localhub.store/business');
 
 const filteredStores = computed(() => {
   const search = searchTerm.value?.toLowerCase() || '';
-  return storesStore.stores.filter((p) => p.title.toLowerCase().includes(search));
+  return shops.value.filter((p) => p.title.toLowerCase().includes(search));
 });
 </script>

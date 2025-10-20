@@ -1,7 +1,7 @@
 <template>
   <div>
     <MetaTags
-      v-if="store.title"
+      v-if="store?.title"
       :url="`https://localhub.ua/business/${store.slug}`"
       :title="store.title"
       :description="store.description"
@@ -128,29 +128,21 @@
 
 <script setup>
 import { ref, defineAsyncComponent } from 'vue';
-import { useAppStore, useStoresStore } from '@/stores/app.store';
+import { useAppStore } from '@/stores/app.store';
 import { useRoute } from 'vue-router';
 
 const loadPanorama = defineAsyncComponent(() => import('~/components/load/panorama.vue'));
 
 const appStore = useAppStore();
-const storesStore = useStoresStore();
 const UButton = resolveComponent('UButton');
 const UIcon = resolveComponent('UIcon');
 const store = ref({});
 
 const route = useRoute();
 const errorMessage = ref('');
-const { $customApi } = useNuxtApp();
 
-onMounted(async () => {
-  const s = await storesStore.fetchStoreBySlug($customApi, route.params.slug);
-  if (!s) {
-    errorMessage.value = 'Магазин не знайдено';
-  } else {
-    store.value = s;
-  }
-});
+const { data: shop } = await useFetch(`https://api.localhub.store/business?slug=${route.params.slug}`);
+[store.value] = shop.value;
 
 const typeStyles = {
   culture: 'bg-purple-600',
