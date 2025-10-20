@@ -47,15 +47,15 @@
           {{ $t('DonationServiceTerms.contactsTitle') }}
         </h3>
         <p class="mb-2 text-lg">
-          {{ $t('DonationServiceTerms.fondName') }}<br >
-          {{ $t('DonationServiceTerms.edrpou') }}<br >
-          {{ $t('DonationServiceTerms.address') }}<br >
+          {{ $t('DonationServiceTerms.fondName') }}<br />
+          {{ $t('DonationServiceTerms.edrpou') }}<br />
+          {{ $t('DonationServiceTerms.address') }}<br />
           <a
             href="https://cfhope.in.ua"
             target="_blank"
             class="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-800 hover:dark:text-blue-300"
             >https://cfhope.in.ua</a
-          ><br >
+          ><br />
           <a
             href="mailto:boss@cfhope.in.ua"
             class="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-800 hover:dark:text-blue-300"
@@ -63,7 +63,7 @@
           >
         </p>
         <p class="mb-4 text-lg">
-          {{ $t('DonationServiceTerms.bankName') }}<br >
+          {{ $t('DonationServiceTerms.bankName') }}<br />
           {{ $t('DonationServiceTerms.bankAccount') }}
         </p>
         <p class="font-semibold text-lg dark:text-gray-100">

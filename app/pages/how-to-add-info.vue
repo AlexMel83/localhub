@@ -72,7 +72,7 @@
       <!-- Контакти -->
       <footer class="text-center mt-16">
         <p>
-          {{ $t('HowToAddInfo.contactUs[0]') }} <br >
+          {{ $t('HowToAddInfo.contactUs[0]') }} <br />
           {{ $t('HowToAddInfo.contactUs[1]') }}
         </p>
       </footer>
