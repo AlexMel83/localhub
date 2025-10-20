@@ -80,7 +80,7 @@ export const useAppStore = defineStore('app', {
       menuOpen: false,
       searchTerm: '',
       isDark,
-      isListView: false,
+      isListView: true,
     };
   },
   actions: {
