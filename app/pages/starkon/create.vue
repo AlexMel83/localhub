@@ -2,7 +2,7 @@
   <div class="max-w-3xl mx-auto p-4 space-y-6">
     <h1 class="text-3xl font-bold">Створити магазин / бізнес</h1>
 
-    <UForm :state="formState" @submit="handleSubmit" class="space-y-4">
+    <UForm :state="formState" class="space-y-4" @submit="handleSubmit">
       <!-- Назва -->
       <UInput v-model="form.title" label="Назва магазину" placeholder="Введіть назву" required @input="updateSlug" />
 
@@ -122,12 +122,19 @@ const handleSubmit = async () => {
       method: 'POST',
       body: form,
     });
+    console.log(res);
 
     successMessage.value = 'Магазин успішно створено!';
     resetForm();
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
-    errorMessage.value = err?.message || 'Помилка при створенні магазину';
+    if (typeof err === 'string') {
+      errorMessage.value = err;
+    } else if (err instanceof Error) {
+      errorMessage.value = err.message;
+    } else {
+      errorMessage.value = 'Помилка при створенні магазину';
+    }
   }
 };
 </script>
