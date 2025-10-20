@@ -90,11 +90,8 @@
 </template>
 
 <script setup>
-import { useAppStore, useStoresStore } from '~/stores/app.store';
+import { useAppStore } from '~/stores/app.store';
 const appStore = useAppStore();
-const storesStore = useStoresStore();
-
-const { $customApi } = useNuxtApp();
 const searchTerm = computed(() => appStore.searchTerm);
 
 const likedStores = ref(new Set());
