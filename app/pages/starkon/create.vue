@@ -1,43 +1,65 @@
 <template>
-  <div class="max-w-3xl mx-auto p-4 space-y-6">
-    <h1 class="text-3xl font-bold">Створити магазин / бізнес</h1>
+  <div class="max-w-4xl mx-auto p-6 space-y-8">
+    <h1 class="text-3xl font-bold mb-4">Створити магазин / бізнес</h1>
 
-    <UForm :state="formState" class="space-y-4" @submit="handleSubmit">
-      <!-- Назва -->
-      <UInput v-model="form.title" label="Назва магазину" placeholder="Введіть назву" required @input="updateSlug" />
+    <!-- Форма -->
+    <UForm :state="formState" @submit="handleSubmit" class="space-y-4">
+      <!-- Крок 1 — Адреса та координати -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-semibold">Локація</h2>
 
-      <!-- Slug (можна редагувати) -->
-      <UInput v-model="form.slug" label="Slug" placeholder="Автоматично згенерується з назви" required />
+        <div class="flex gap-2">
+          <UInput
+            v-model="form.address"
+            label="Адреса"
+            class="flex-1"
+            placeholder="Введіть адресу (наприклад, Київ, Володимирська 5)"
+          />
+          <UButton color="primary" variant="solid" @click.prevent="geocodeAddress"> Знайти </UButton>
+        </div>
 
-      <!-- Тип -->
-      <USelect v-model="form.type" :options="typeOptions" label="Тип магазину" required />
+        <div class="grid grid-cols-2 gap-4">
+          <UInput v-model="form.latitude" label="Широта" type="number" step="0.000001" />
+          <UInput v-model="form.longitude" label="Довгота" type="number" step="0.000001" />
+        </div>
 
-      <!-- Опис -->
-      <UTextarea v-model="form.description" label="Опис" placeholder="Короткий опис магазину" :rows="4" />
+        <!-- Карта -->
+        <ClientOnly>
+          <div id="map" class="w-full h-[400px] rounded-lg overflow-hidden shadow-md" />
+        </ClientOnly>
 
-      <!-- Адреса -->
-      <UInput v-model="form.address" label="Адреса" placeholder="Вулиця, номер, місто" />
+        <!-- Крок 2 — Основні поля -->
+        <div class="pt-6 flex flex-col gap-1 border-t border-gray-200 space-y-4">
+          <h2 class="text-xl font-semibold">Назва та Опис</h2>
+          <UInput
+            v-model="form.title"
+            label="Назва магазину"
+            placeholder="Введіть назву"
+            required
+            @input="updateSlug"
+          />
 
-      <!-- Контакти -->
-      <UInput v-model="form.contacts" label="Контакти" placeholder="+380 ..." />
+          <UTextarea v-model="form.description" label="Опис" placeholder="Короткий опис магазину" :rows="3" />
 
-      <!-- Години роботи -->
-      <UInput v-model="form.working_hours" label="Години роботи" placeholder="Наприклад: 9:00 - 18:00" />
+          <USelect v-model="form.type" :options="typeOptions" label="Тип магазину" required />
+        </div>
+      </div>
 
-      <!-- Посилання на прайс / Google Sheet -->
-      <UInput v-model="form.price" label="Посилання на прайс" placeholder="https://..." />
+      <!-- Крок 3 — Додаткові поля -->
+      <div
+        v-if="form.title && form.description && form.type"
+        class="pt-6 flex flex-col gap-1 border-t border-gray-200 space-y-4"
+      >
+        <h2 class="text-xl font-semibold">Додатково</h2>
 
-      <!-- Широта -->
-      <UInput v-model="form.latitude" label="Широта" type="number" step="0.000001" required />
+        <UInput v-model="form.contacts" label="Контакти" placeholder="+380..." />
+        <UInput v-model="form.working_hours" label="Години роботи" placeholder="9:00 - 18:00" />
+        <UInput v-model="form.price" label="Посилання на прайс" placeholder="https://..." />
+        <UInput v-model="form.thumbnail_url" label="Мініатюра" placeholder="/panoimg/shop.jpg" />
+      </div>
 
-      <!-- Довгота -->
-      <UInput v-model="form.longitude" label="Довгота" type="number" step="0.000001" required />
-
-      <!-- Зображення / мініатюра -->
-      <UInput v-model="form.thumbnail_url" label="Мініатюра" placeholder="/panoimg/назва.jpg" />
-
-      <div class="flex justify-end gap-4 mt-4">
-        <UButton type="submit">Створити</UButton>
+      <div class="flex justify-end gap-4 mt-6">
+        <UButton type="submit" color="primary">Зберегти</UButton>
         <UButton type="button" variant="outline" @click="resetForm">Очистити</UButton>
       </div>
     </UForm>
@@ -49,13 +71,17 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch, nextTick } from 'vue';
+import { useRoute } from 'vue-router';
 
 interface Form {
-  [key: string]: string;
+  [key: string]: string | number | null;
+  // other properties...
 }
 
-// Основні дані форми
+// ---- СТАН ----
+const route = useRoute();
+
 const form: Form = reactive({
   title: '',
   slug: '',
@@ -65,19 +91,16 @@ const form: Form = reactive({
   contacts: '',
   working_hours: '',
   price: '',
-  latitude: '',
-  longitude: '',
+  latitude: Number(route.query.lat) || 49.7550101,
+  longitude: Number(route.query.lng) || 27.1874278,
   thumbnail_url: '',
 });
 
-// Стейт для UForm
 const formState = reactive({ ...form });
-
-// Повідомлення
 const successMessage = ref('');
 const errorMessage = ref('');
 
-// Типи магазинів
+// ---- ВИБІР ТИПУ ----
 const typeOptions = [
   { label: 'Магазин', value: 'store' },
   { label: 'Сервіс', value: 'service' },
@@ -85,9 +108,9 @@ const typeOptions = [
   { label: 'Подія', value: 'event' },
 ];
 
-// Автогенерація slug
+// ---- SLUG ----
 const updateSlug = () => {
-  if (!form.slug) {
+  if (typeof form.title === 'string' && form.title) {
     form.slug = form.title
       .toLowerCase()
       .trim()
@@ -98,47 +121,92 @@ const updateSlug = () => {
   }
 };
 
-// Очистка форми
-const resetForm = () => {
-  Object.keys(form).forEach((key) => {
-    form[key] = '';
-    formState[key] = '';
+// ---- КАРТА ----
+let map: any = null;
+let marker: any = null;
+
+onMounted(async () => {
+  // Імпортуємо Leaflet тільки на клієнті (SSR-safe)
+  if (!process.client) return;
+  const L = await import('leaflet');
+  await nextTick();
+
+  const { latitude, longitude } = form;
+  map = L.map('map').setView([latitude as number, longitude as number], 15);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap',
+  }).addTo(map);
+
+  marker = L.marker([latitude as number, longitude as number], { draggable: true }).addTo(map);
+
+  marker.on('dragend', (e: any) => {
+    const pos = e.target.getLatLng();
+    form.latitude = Number(pos.lat.toFixed(6));
+    form.longitude = Number(pos.lng.toFixed(6));
   });
-  form.type = 'store';
-  formState.type = 'store';
+});
+
+// ---- ВІДСТЕЖЕННЯ ЗМІН LAT/LNG ----
+watch(
+  () => [form.latitude, form.longitude],
+  (newVal) => {
+    if (marker && map) {
+      marker.setLatLng([Number(newVal[0]), Number(newVal[1])]);
+      map.setView([Number(newVal[0]), Number(newVal[1])], map.getZoom());
+    }
+  },
+);
+
+// ---- ГЕОКОДИНГ ----
+const geocodeAddress = async () => {
+  if (!form.address) return;
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(form.address)}`,
+    );
+    const data = await res.json();
+    if (data?.length > 0) {
+      const { lat, lon, display_name } = data[0];
+      form.latitude = Number(lat);
+      form.longitude = Number(lon);
+      form.address = display_name;
+    } else {
+      errorMessage.value = 'Адресу не знайдено';
+    }
+  } catch (err) {
+    console.error(err);
+    errorMessage.value = 'Помилка при геокодуванні';
+  }
 };
 
-// Сабміт форми
+// ---- RESET ----
+const resetForm = () => {
+  Object.keys(form).forEach((key) => (form[key] = ''));
+  form.type = 'store';
+  form.latitude = 49.7550101;
+  form.longitude = 27.1874278;
+  if (map && marker) {
+    map.setView([form.latitude, form.longitude], 14);
+    marker.setLatLng([form.latitude, form.longitude]);
+  }
+};
+
+// ---- SUBMIT ----
 const handleSubmit = async () => {
   errorMessage.value = '';
   successMessage.value = '';
-
   try {
-    // TODO: підключити yup валідацію
-    // await businessSchema.validate(form)
-
-    // Відправка на API
-    const res = await $fetch('/api/business/create', {
+    await $fetch('/api/business/create', {
       method: 'POST',
       body: form,
     });
-    console.log(res);
-
     successMessage.value = 'Магазин успішно створено!';
     resetForm();
-  } catch (err: unknown) {
+  } catch (err: any) {
     console.error(err);
-    if (typeof err === 'string') {
-      errorMessage.value = err;
-    } else if (err instanceof Error) {
-      errorMessage.value = err.message;
-    } else {
-      errorMessage.value = 'Помилка при створенні магазину';
-    }
+    errorMessage.value = err?.message || 'Помилка при створенні магазину';
   }
 };
 </script>
-
-<style scoped>
-/* Кастомні стилі при потребі */
-</style>
