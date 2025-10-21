@@ -3,7 +3,7 @@
     <h1 class="text-3xl font-bold mb-4">Створити магазин / бізнес</h1>
 
     <!-- Форма -->
-    <UForm :state="formState" @submit="handleSubmit" class="space-y-4">
+    <UForm :state="formState" class="space-y-4" @submit="handleSubmit">
       <!-- Крок 1 — Адреса та координати -->
       <div class="space-y-4">
         <h2 class="text-xl font-semibold">Локація</h2>
@@ -13,7 +13,7 @@
             v-model="form.address"
             label="Адреса"
             class="flex-1"
-            placeholder="Введіть адресу (наприклад, Київ, Володимирська 5)"
+            placeholder="Введіть адресу (наприклад, Старокостянтинів, Есенська 2)"
           />
           <UButton color="primary" variant="solid" @click.prevent="geocodeAddress"> Знайти </UButton>
         </div>
@@ -87,7 +87,7 @@ const form: Form = reactive({
   slug: '',
   type: 'store',
   description: '',
-  address: '',
+  address: 'Старокостянтинів, ',
   contacts: '',
   working_hours: '',
   price: '',
@@ -122,12 +122,12 @@ const updateSlug = () => {
 };
 
 // ---- КАРТА ----
-let map: any = null;
-let marker: any = null;
+let map: L.Map | null = null;
+let marker: L.Marker | null = null;
 
 onMounted(async () => {
   // Імпортуємо Leaflet тільки на клієнті (SSR-safe)
-  if (!process.client) return;
+  if (!import.meta.client) return;
   const L = await import('leaflet');
   await nextTick();
 
@@ -141,8 +141,8 @@ onMounted(async () => {
 
   marker = L.marker([latitude as number, longitude as number], { draggable: true }).addTo(map);
 
-  marker.on('dragend', (e: any) => {
-    const pos = e.target.getLatLng();
+  marker.on('dragend', (e: unknown) => {
+    const pos = (e as L.DragEndEvent).target.getLatLng();
     form.latitude = Number(pos.lat.toFixed(6));
     form.longitude = Number(pos.lng.toFixed(6));
   });
@@ -204,9 +204,9 @@ const handleSubmit = async () => {
     });
     successMessage.value = 'Магазин успішно створено!';
     resetForm();
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
-    errorMessage.value = err?.message || 'Помилка при створенні магазину';
+    errorMessage.value = (err as Error)?.message || 'Помилка при створенні магазину';
   }
 };
 </script>
