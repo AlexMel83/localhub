@@ -51,10 +51,19 @@
         class="pt-6 flex flex-col gap-1 border-t border-gray-200 space-y-4"
       >
         <h2 class="text-xl font-semibold">Додатково</h2>
-
+        <label class="block text-sm font-medium mb-1">Телефон</label>
         <UInput v-model="form.contacts" label="Контакти" placeholder="+380..." />
-        <UInput v-model="form.working_hours" label="Години роботи" placeholder="9:00 - 18:00" />
+        <div>
+          <label class="block text-sm font-medium mb-1">Години роботи</label>
+          <div class="flex items-center gap-2">
+            <UInput v-model="form.working_hours_start" type="time" placeholder="09:00" class="w-32" />
+            <span class="text-gray-500">—</span>
+            <UInput v-model="form.working_hours_end" type="time" placeholder="18:00" class="w-32" />
+          </div>
+        </div>
+        <label class="block text-sm font-medium mb-1">Посилання на прайс</label>
         <UInput v-model="form.price" label="Посилання на прайс" placeholder="https://..." />
+        <label class="block text-sm font-medium mb-1">Мініатюра</label>
         <UInput v-model="form.thumbnail_url" label="Мініатюра" placeholder="/panoimg/shop.jpg" />
       </div>
 
@@ -89,7 +98,8 @@ const form: Form = reactive({
   description: '',
   address: 'Старокостянтинів, ',
   contacts: '',
-  working_hours: '',
+  working_hours_start: '09:00',
+  working_hours_end: '18:00',
   price: '',
   latitude: Number(route.query.lat) || 49.7550101,
   longitude: Number(route.query.lng) || 27.1874278,
@@ -197,6 +207,7 @@ const resetForm = () => {
 const handleSubmit = async () => {
   errorMessage.value = '';
   successMessage.value = '';
+  form.working_hours = `${form.working_hours_start} - ${form.working_hours_end}`;
   try {
     await $fetch('/api/business/create', {
       method: 'POST',
