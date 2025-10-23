@@ -3,75 +3,77 @@
     <h1 class="text-3xl font-bold mb-4">Створити магазин / бізнес</h1>
 
     <!-- Форма -->
-    <UForm :state="formState" class="space-y-4" @submit="handleSubmit">
-      <!-- Крок 1 — Адреса та координати -->
-      <div class="space-y-4">
-        <h2 class="text-xl font-semibold">Локація</h2>
+    <ClientOnly>
+      <UForm :state="form" class="space-y-4" @submit="handleSubmit">
+        <!-- Крок 1 — Адреса та координати -->
+        <div class="space-y-4">
+          <h2 class="text-xl font-semibold">Локація</h2>
 
-        <div class="flex gap-2">
-          <UInput
-            v-model="form.address"
-            label="Адреса"
-            class="flex-1"
-            placeholder="Введіть адресу (наприклад, Старокостянтинів, Есенська 2)"
-          />
-          <UButton color="primary" variant="solid" @click.prevent="geocodeAddress"> Знайти </UButton>
-        </div>
+          <div class="flex gap-2">
+            <UInput
+              v-model="form.address"
+              label="Адреса"
+              class="flex-1"
+              placeholder="Введіть адресу (наприклад, Старокостянтинів, Есенська 2)"
+            />
+            <UButton color="primary" variant="solid" @click.prevent="geocodeAddress"> Знайти </UButton>
+          </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <UInput v-model="form.latitude" label="Широта" type="number" step="0.000001" />
-          <UInput v-model="form.longitude" label="Довгота" type="number" step="0.000001" />
-        </div>
+          <div class="grid grid-cols-2 gap-4">
+            <UInput v-model="form.latitude" label="Широта" type="number" step="0.000001" />
+            <UInput v-model="form.longitude" label="Довгота" type="number" step="0.000001" />
+          </div>
 
-        <!-- Карта -->
-        <ClientOnly>
-          <div id="map" class="w-full h-[400px] rounded-lg overflow-hidden shadow-md" />
-        </ClientOnly>
+          <!-- Карта -->
+          <ClientOnly>
+            <div id="map" class="w-full h-[400px] rounded-lg overflow-hidden shadow-md" />
+          </ClientOnly>
 
-        <!-- Крок 2 — Основні поля -->
-        <div class="pt-6 flex flex-col gap-1 border-t border-gray-200 space-y-4">
-          <h2 class="text-xl font-semibold">Назва та Опис</h2>
-          <UInput
-            v-model="form.title"
-            label="Назва магазину"
-            placeholder="Введіть назву"
-            required
-            @input="updateSlug"
-          />
+          <!-- Крок 2 — Основні поля -->
+          <div class="pt-6 flex flex-col gap-1 border-t border-gray-200 space-y-4">
+            <h2 class="text-xl font-semibold">Назва та Опис</h2>
+            <UInput
+              v-model="form.title"
+              label="Назва магазину"
+              placeholder="Введіть назву"
+              required
+              @input="updateSlug"
+            />
 
-          <UTextarea v-model="form.description" label="Опис" placeholder="Короткий опис магазину" :rows="3" />
-
-          <USelect v-model="form.type" :options="typeOptions" label="Тип магазину" required />
-        </div>
-      </div>
-
-      <!-- Крок 3 — Додаткові поля -->
-      <div
-        v-if="form.title && form.description && form.type"
-        class="pt-6 flex flex-col gap-1 border-t border-gray-200 space-y-4"
-      >
-        <h2 class="text-xl font-semibold">Додатково</h2>
-        <label class="block text-sm font-medium mb-1">Телефон</label>
-        <UInput v-model="form.contacts" label="Контакти" placeholder="+380..." />
-        <div>
-          <label class="block text-sm font-medium mb-1">Години роботи</label>
-          <div class="flex items-center gap-2">
-            <UInput v-model="form.working_hours_start" type="time" placeholder="09:00" class="w-32" />
-            <span class="text-gray-500">—</span>
-            <UInput v-model="form.working_hours_end" type="time" placeholder="18:00" class="w-32" />
+            <UTextarea v-model="form.description" label="Опис" placeholder="Короткий опис магазину" :rows="3" />
+            <USelect v-model="value" value-key="id" :items="items" class="w-48" />
+            <!-- <USelect v-model="form.type" :options="typeOptions" label="Тип магазину" required /> -->
           </div>
         </div>
-        <label class="block text-sm font-medium mb-1">Посилання на прайс</label>
-        <UInput v-model="form.price" label="Посилання на прайс" placeholder="https://..." />
-        <label class="block text-sm font-medium mb-1">Мініатюра</label>
-        <UInput v-model="form.thumbnail_url" label="Мініатюра" placeholder="/panoimg/shop.jpg" />
-      </div>
 
-      <div class="flex justify-end gap-4 mt-6">
-        <UButton type="submit" color="primary">Зберегти</UButton>
-        <UButton type="button" variant="outline" @click="resetForm">Очистити</UButton>
-      </div>
-    </UForm>
+        <!-- Крок 3 — Додаткові поля -->
+        <div
+          v-if="form.title && form.description && form.type"
+          class="pt-6 flex flex-col gap-1 border-t border-gray-200 space-y-4"
+        >
+          <h2 class="text-xl font-semibold">Додатково</h2>
+          <label class="block text-sm font-medium mb-1">Телефон</label>
+          <UInput v-model="form.contacts" label="Контакти" placeholder="+380..." />
+          <div>
+            <label class="block text-sm font-medium mb-1">Години роботи</label>
+            <div class="flex items-center gap-2">
+              <UInput v-model="form.working_hours_start" type="time" placeholder="09:00" class="w-32" />
+              <span class="text-gray-500">—</span>
+              <UInput v-model="form.working_hours_end" type="time" placeholder="18:00" class="w-32" />
+            </div>
+          </div>
+          <label class="block text-sm font-medium mb-1">Посилання на прайс</label>
+          <UInput v-model="form.price" label="Посилання на прайс" placeholder="https://..." />
+          <label class="block text-sm font-medium mb-1">Мініатюра</label>
+          <UInput v-model="form.thumbnail_url" label="Мініатюра" placeholder="/panoimg/shop.jpg" />
+        </div>
+
+        <div class="flex justify-end gap-4 mt-6">
+          <UButton type="submit" color="primary">Зберегти</UButton>
+          <UButton type="button" variant="outline" @click="resetForm">Очистити</UButton>
+        </div>
+      </UForm>
+    </ClientOnly>
 
     <!-- Повідомлення -->
     <div v-if="successMessage" class="text-green-600 font-medium">{{ successMessage }}</div>
@@ -82,6 +84,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
+import type { SelectItem } from '@nuxt/ui';
 
 interface Form {
   [key: string]: string | number | null;
@@ -106,17 +109,43 @@ const form: Form = reactive({
   thumbnail_url: '',
 });
 
-const formState = reactive({ ...form });
 const successMessage = ref('');
 const errorMessage = ref('');
 
 // ---- ВИБІР ТИПУ ----
-const typeOptions = [
-  { label: 'Магазин', value: 'store' },
-  { label: 'Сервіс', value: 'service' },
-  { label: 'Культура / місце', value: 'place' },
-  { label: 'Подія', value: 'event' },
-];
+const items = ref<SelectItem[]>([
+  {
+    label: 'Магазин',
+    id: 'store',
+  },
+  {
+    label: 'Сервіс',
+    id: 'service',
+  },
+  {
+    label: 'Культура / місце',
+    id: 'place',
+  },
+  {
+    label: 'Подія',
+    id: 'event',
+  },
+]);
+const value = ref('Магазин');
+
+const normalizePhone = (phone: string): string => {
+  if (!phone) return '';
+
+  // Прибираємо все, крім цифр
+  let digits = phone.replace(/\D/g, '');
+
+  // Якщо номер починається з "0" — додаємо код країни
+  if (digits.startsWith('0')) digits = '38' + digits;
+  // Якщо починається з "380" — все ок
+  if (!digits.startsWith('380')) digits = '380' + digits;
+
+  return '+' + digits;
+};
 
 // ---- SLUG ----
 const updateSlug = () => {
@@ -208,8 +237,12 @@ const handleSubmit = async () => {
   errorMessage.value = '';
   successMessage.value = '';
   form.working_hours = `${form.working_hours_start} - ${form.working_hours_end}`;
+  // нормалізація телефону
+  if (typeof form.contacts === 'string') {
+    form.contacts = normalizePhone(form.contacts);
+  }
   try {
-    await $fetch('/api/business/create', {
+    await $fetch('https://api.localhub.store/business/create', {
       method: 'POST',
       body: form,
     });
