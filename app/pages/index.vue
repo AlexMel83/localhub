@@ -91,7 +91,10 @@
 
 <script setup>
 import { useAppStore } from '~/stores/app.store';
+import { useRuntimeConfig } from 'nuxt/app';
 const appStore = useAppStore();
+const config = useRuntimeConfig();
+const apiBase = config.public.apiBase || 'https://api.localhub.store';
 const searchTerm = computed(() => appStore.searchTerm);
 
 const likedStores = ref(new Set());
@@ -139,7 +142,7 @@ const isLiked = (storeId) => {
   return likedStores.value.has(storeId);
 };
 
-const { data: shops } = await useFetch('https://api.localhub.store/business');
+const { data: shops } = await useFetch(apiBase + '/business');
 
 const filteredStores = computed(() => {
   const search = searchTerm.value?.toLowerCase() || '';

@@ -53,7 +53,10 @@
         >
           <h2 class="text-xl font-semibold">Додатково</h2>
           <label class="block text-sm font-medium mb-1">Телефон</label>
-          <UInput v-model="form.contacts" label="Контакти" placeholder="+380..." />
+          <div>
+            <UInput v-model="form.contacts" label="Контакти" placeholder="+380..." @blur="validatePhone" />
+            <p v-if="phoneError" class="text-red-500 text-sm mt-1">{{ phoneError }}</p>
+          </div>
           <div>
             <label class="block text-sm font-medium mb-1">Години роботи</label>
             <div class="flex items-center gap-2">
@@ -66,6 +69,14 @@
           <UInput v-model="form.price" label="Посилання на прайс" placeholder="https://..." />
           <label class="block text-sm font-medium mb-1">Мініатюра</label>
           <UInput v-model="form.thumbnail_url" label="Мініатюра" placeholder="/panoimg/shop.jpg" />
+          <div v-if="form.thumbnail_url" class="mt-2">
+            <p class="text-sm text-gray-500 mb-1">Прев’ю:</p>
+            <img
+              :src="form.thumbnail_url?.toString() || ''"
+              alt="Прев’ю мініатюри"
+              class="w-48 h-32 object-cover rounded-md border shadow-sm"
+            />
+          </div>
         </div>
 
         <div class="flex justify-end gap-4 mt-6">
@@ -84,6 +95,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
+import { useRuntimeConfig } from 'nuxt/app';
 import type { SelectItem } from '@nuxt/ui';
 
 interface Form {
@@ -93,7 +105,9 @@ interface Form {
 
 // ---- СТАН ----
 const route = useRoute();
-
+const config = useRuntimeConfig();
+const apiBase = config.public.apiBase || 'https://api.localhub.store';
+console.log('apiBase:', apiBase);
 const form: Form = reactive({
   title: '',
   slug: '',
@@ -103,14 +117,15 @@ const form: Form = reactive({
   contacts: '',
   working_hours_start: '09:00',
   working_hours_end: '18:00',
-  price: '',
+  price: 'https://docs.google.com/spreadsheets/d/1lAT-AuKNSjmruKh59ePe8jt63QSSbm_4gWdWPxsU7-8/edit?usp=sharing',
   latitude: Number(route.query.lat) || 49.7550101,
   longitude: Number(route.query.lng) || 27.1874278,
-  thumbnail_url: '',
+  thumbnail_url: 'https://localhub.store/panoimg/Instrument-Shop.jpg',
 });
 
 const successMessage = ref('');
 const errorMessage = ref('');
+const phoneError = ref('');
 
 // ---- ВИБІР ТИПУ ----
 const items = ref<SelectItem[]>([
@@ -132,6 +147,36 @@ const items = ref<SelectItem[]>([
   },
 ]);
 const value = ref('Магазин');
+
+const validatePhone = () => {
+  phoneError.value = '';
+
+  let phone = String(form.contacts || '').trim();
+
+  if (!phone) {
+    return;
+  }
+
+  // Видаляємо пробіли, дужки, дефіси
+  phone = phone.replace(/[()\s-]/g, '');
+
+  // Якщо користувач ввів 098..., додаємо +38
+  if (/^0\d{9}$/.test(phone)) {
+    phone = '+38' + phone;
+  }
+  // Якщо ввів 380..., додаємо +
+  else if (/^380\d{9}$/.test(phone)) {
+    phone = '+' + phone;
+  }
+
+  // Остаточна перевірка — формат +380XXXXXXXXX
+  if (!/^\+380\d{9}$/.test(phone)) {
+    phoneError.value = 'Невірний формат номера. Використовуйте, наприклад: +380987654321';
+  } else {
+    // нормалізуємо в form
+    form.contacts = phone;
+  }
+};
 
 const normalizePhone = (phone: string): string => {
   if (!phone) return '';
@@ -236,15 +281,24 @@ const resetForm = () => {
 const handleSubmit = async () => {
   errorMessage.value = '';
   successMessage.value = '';
+  validatePhone();
+  if (phoneError.value) {
+    errorMessage.value = phoneError.value;
+    return;
+  }
   form.working_hours = `${form.working_hours_start} - ${form.working_hours_end}`;
   // нормалізація телефону
   if (typeof form.contacts === 'string') {
     form.contacts = normalizePhone(form.contacts);
   }
+  const payload = { ...form };
+  delete payload.working_hours_start;
+  delete payload.working_hours_end;
+  payload.user_id = 1;
   try {
-    await $fetch('https://api.localhub.store/business/create', {
+    await $fetch(apiBase + '/business/create', {
       method: 'POST',
-      body: form,
+      body: payload,
     });
     successMessage.value = 'Магазин успішно створено!';
     resetForm();
