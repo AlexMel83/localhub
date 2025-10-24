@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRuntimeConfig, useFetch } from 'nuxt/app';
 import type { SelectItem } from '@nuxt/ui';
@@ -145,7 +145,6 @@ try {
 
   // Розбиваємо години роботи
   if (shop.working_hours) {
-    let [start, end] = shop.working_hours.split(' - ');
     // Додаємо ведучий нуль для години, якщо потрібно
     const padTime = (t: string) => {
       if (!t) return '09:00';
@@ -158,9 +157,9 @@ try {
       form.working_hours_end = padTime(end);
     }
   }
-} catch (err: any) {
+} catch (err: unknown) {
   console.error(err);
-  errorMessage.value = err.message || 'Не вдалося завантажити магазин';
+  errorMessage.value = (err as Error).message || 'Не вдалося завантажити магазин';
 }
 // ---- Оновлення ----
 const handleUpdate = async () => {
@@ -183,9 +182,9 @@ const handleUpdate = async () => {
       body: payload,
     });
     successMessage.value = 'Магазин успішно оновлено!';
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
-    errorMessage.value = err.message || 'Помилка при оновленні';
+    errorMessage.value = (err as Error).message || 'Помилка при оновленні';
   }
 };
 
