@@ -35,7 +35,7 @@
             <p class="text-sm text-gray-300 line-clamp-2">{{ store.description }}</p>
             <p class="text-xs text-gray-300 line-clamp-2">{{ store.address }}</p>
             <div class="flex items-center justify-between">
-              <p class="text-sm mt-2">{{ store.working_hours }}</p>
+              <p class="text-sm mt-2">{{ store.working_hours || '09:00 - 18:00' }}</p>
               <!-- Рейтинг зірок -->
               <div class="flex items-center mt-2 text-yellow-400">
                 <template v-for="n in 5" :key="n">
@@ -54,6 +54,11 @@
                 </template>
               </div>
             </div>
+          </div>
+          <div
+            class="absolute top-2 right-8 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-300"
+          >
+            <NuxtLink :to="`/starkon/${store.slug}/edit`">Edit</NuxtLink>
           </div>
           <!-- Іконка серця -->
           <div
@@ -76,7 +81,7 @@
           </div>
         </div>
         <!-- Повідомлення про відсутність магазинів поза циклом -->
-        <div v-if="filteredStores.length === 0" class="text-center text-gray-500 mt-4 col-span-full">
+        <div v-if="filteredStores?.length === 0" class="text-center text-gray-500 mt-4 col-span-full">
           Stores не знайдені
         </div>
       </div>
@@ -139,13 +144,14 @@ const toggleLike = (storeId) => {
 
 // Перевірка, чи магазин "лайкнутий"
 const isLiked = (storeId) => {
-  return likedStores.value.has(storeId);
+  return likedStores?.value.has(storeId);
 };
 
-const { data: shops } = await useFetch(apiBase + '/business');
+const { data: shopsData } = await useFetch(apiBase + '/business');
 
 const filteredStores = computed(() => {
+  const list = shopsData.value || [];
   const search = searchTerm.value?.toLowerCase() || '';
-  return shops.value.filter((p) => p.title.toLowerCase().includes(search));
+  return list.filter((p) => p.title.toLowerCase().includes(search));
 });
 </script>
