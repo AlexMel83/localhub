@@ -58,7 +58,7 @@
           <div
             class="absolute top-2 right-8 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-300"
           >
-            <NuxtLink :to="`/starkon/${store.slug}/edit`">Edit</NuxtLink>
+            <NuxtLink v-if="store.slug" :to="`/starkon/${store.slug}/edit`">Edit</NuxtLink>
           </div>
           <!-- Іконка серця -->
           <div
