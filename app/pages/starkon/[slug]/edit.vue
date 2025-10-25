@@ -175,8 +175,8 @@ const handleUpdate = async () => {
     ...form,
     working_hours: `${form.working_hours_start} - ${form.working_hours_end}`,
   };
-  delete (payload as any).working_hours_start;
-  delete (payload as any).working_hours_end;
+  delete payload.working_hours_start;
+  delete payload.working_hours_end;
 
   try {
     const updatedStore = await $fetch(apiBase + '/business/', {
