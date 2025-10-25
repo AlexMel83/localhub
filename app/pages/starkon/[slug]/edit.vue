@@ -60,9 +60,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useRuntimeConfig, useFetch } from 'nuxt/app';
+import { useRuntimeConfig, useFetch, navigateTo } from 'nuxt/app';
 import type { SelectItem } from '@nuxt/ui';
 
 interface Form {
@@ -138,7 +138,6 @@ try {
   const { data: res } = await useFetch(apiBase + '/business?slug=' + route.params.slug);
   const shop = Array.isArray(res.value) ? res.value[0] : res.value;
   if (!shop) throw new Error('Магазин не знайдено');
-  console.log(shop);
 
   // Заповнюємо форму
   Object.assign(form, shop);
@@ -172,16 +171,27 @@ const handleUpdate = async () => {
     return;
   }
 
-  const payload: Form = { ...form, working_hours: `${form.working_hours_start} - ${form.working_hours_end}` };
-  delete payload.working_hours_start;
-  delete payload.working_hours_end;
+  const payload: Form = {
+    ...form,
+    working_hours: `${form.working_hours_start} - ${form.working_hours_end}`,
+  };
+  delete (payload as any).working_hours_start;
+  delete (payload as any).working_hours_end;
 
   try {
-    await $fetch(apiBase + '/business/' + form.slug, {
+    const updatedStore = await $fetch(apiBase + '/business/', {
       method: 'PUT',
       body: payload,
     });
+
+    console.log(updatedStore);
     successMessage.value = 'Магазин успішно оновлено!';
+
+    // 🔹 Якщо slug змінився — оновлюємо URL
+    if (route.params.slug !== form.slug) {
+      const newPath = `/starkon/${form.slug}/edit`;
+      await navigateTo(newPath, { replace: true });
+    }
   } catch (err: unknown) {
     console.error(err);
     errorMessage.value = (err as Error).message || 'Помилка при оновленні';
@@ -190,14 +200,19 @@ const handleUpdate = async () => {
 
 // ---- Генерація слагу ----
 const updateSlug = () => {
-  if (typeof form.title === 'string' && form.title) {
-    form.slug = form.title
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-zа-яіїєґ0-9\s-]/gi, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .substring(0, 200);
+  if (!form.title) {
+    form.slug = '';
+    return;
   }
+  form.slug = form.title
+    .trim()
+    .replace(/[^a-zA-Zа-яА-Яіїєґ0-9\s-]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 200);
 };
+
+watch(() => form.title, updateSlug);
 </script>
