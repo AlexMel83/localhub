@@ -22,8 +22,26 @@
         <!-- Локація -->
         <div class="space-y-4 border-b pb-4">
           <h2 class="text-xl font-semibold">Локація</h2>
-          <UInput v-model="form.address" label="Адреса" placeholder="Адреса" />
-          <UButton color="primary" variant="solid" @click.prevent="geocodeAddress"> Знайти </UButton>
+          <div class="grid grid-cols-3 gap-4">
+            <UButton
+              color="primary"
+              variant="outline"
+              size="sm"
+              @click.prevent="reverseGeocode"
+              :disabled="!form.latitude || !form.longitude"
+            >
+              Заповнити </UButton
+            ><UInput v-model="form.address" label="Адреса" placeholder="Адреса" />
+            <UButton
+              color="primary"
+              variant="outline"
+              size="sm"
+              @click.prevent="geocodeAddress"
+              :disabled="!form.address"
+            >
+              Знайти
+            </UButton>
+          </div>
           <div class="grid grid-cols-2 gap-4">
             <UInput v-model="form.latitude" label="Широта" type="number" step="0.000001" />
             <UInput v-model="form.longitude" label="Довгота" type="number" step="0.000001" />
@@ -144,6 +162,41 @@ const items = ref<SelectItem[]>([
   },
 ]);
 const value = ref('Магазин');
+
+const lastReverseTime = ref(0);
+const REVERSE_DELAY = 1000;
+
+const reverseGeocode = async () => {
+  const now = Date.now();
+  if (now - lastReverseTime.value < REVERSE_DELAY) {
+    errorMessage.value = 'Зачекайте 1 секунду між запитами';
+    return;
+  }
+  lastReverseTime.value = now;
+
+  if (!form.latitude || !form.longitude) {
+    errorMessage.value = 'Введіть координати';
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${form.latitude}&lon=${form.longitude}`,
+    );
+    const data = await res.json();
+
+    if (data?.display_name) {
+      form.address = data.display_name;
+      successMessage.value = 'Адресу заповнено!';
+      setTimeout(() => (successMessage.value = ''), 2000);
+    } else {
+      errorMessage.value = 'Адресу не знайдено';
+    }
+  } catch (err) {
+    console.error(err);
+    errorMessage.value = 'Помилка запиту до Nominatim';
+  }
+};
 
 const geocodeAddress = async () => {
   if (!form.address) return;
@@ -284,16 +337,21 @@ onMounted(async () => {
   });
 });
 
-// ---- ВІДСТЕЖЕННЯ ЗМІН LAT/LNG ----
 watch(
   () => form.title,
-  () => updateSlug(),
+  () => {
+    updateSlug();
+  },
+);
+
+watch(
   () => [form.latitude, form.longitude],
-  (newVal) => {
-    if (marker && map) {
-      marker.setLatLng([Number(newVal[0]), Number(newVal[1])]);
-      map.setView([Number(newVal[0]), Number(newVal[1])], map.getZoom());
+  ([lat, lng]) => {
+    if (marker && map && lat !== null && lng !== null) {
+      marker.setLatLng([lat, lng]);
+      map.setView([lat, lng], map.getZoom());
     }
   },
+  { immediate: true },
 );
 </script>
