@@ -60,6 +60,9 @@
           >
             <NuxtLink v-if="store.slug" :to="`/starkon/${store.slug}/edit`">Edit</NuxtLink>
           </div>
+          <div class="absolute top-2 right-16 text-red-500 cursor-pointer transition-colors duration-300">
+            <NuxtLink @click.stop="deleteStore(store)">Delete</NuxtLink>
+          </div>
           <!-- Іконка серця -->
           <div
             class="absolute top-2 right-2 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-300"
@@ -121,6 +124,14 @@ const typeLabels = {
   market: 'Ринок',
 };
 
+const deleteStore = async (store) => {
+  const res = await fetch(apiBase + '/business?id=' + store.id, {
+    method: 'DELETE',
+  });
+  console.log(res);
+  await refreshStores();
+};
+
 function onParallax(event, el) {
   const { offsetX, offsetY, currentTarget } = event;
   const { clientWidth, clientHeight } = currentTarget;
@@ -147,7 +158,7 @@ const isLiked = (storeId) => {
   return likedStores?.value.has(storeId);
 };
 
-const { data: shopsData } = await useFetch(apiBase + '/business');
+const { data: shopsData, refresh: refreshStores } = await useFetch(apiBase + '/business');
 
 const filteredStores = computed(() => {
   const list = shopsData.value || [];
