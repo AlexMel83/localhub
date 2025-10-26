@@ -2,30 +2,30 @@
   <div>
     <MetaTags
       v-if="store?.title"
-      :url="`https://localhub.ua/business/${store.slug}`"
-      :title="store.title"
-      :description="store.description"
-      :image="store.image"
-      :keywords="store.keywords"
+      :url="`https://localhub.ua/business/${business.slug}`"
+      :title="business.title"
+      :description="business.description"
+      :image="business.image"
+      :keywords="business.keywords"
       business-type="AutoRepair"
-      :business-name="store.title"
-      :business-description="store.description"
-      :business-phone="store.phone"
-      :business-email="store.email"
-      :business-url="`https://localhub.ua/business/${store.slug}`"
-      :business-logo="store.logo"
+      :business-name="business.title"
+      :business-description="business.description"
+      :business-phone="business.phone"
+      :business-email="business.email"
+      :business-url="`https://localhub.ua/business/${business.slug}`"
+      :business-logo="business.logo"
       :business-address="{
-        streetAddress: store.address,
+        streetAddress: business.address,
         addressLocality: 'Старокостянтинів',
         addressRegion: 'Хмельницька область',
-        postalCode: store.postalCode,
+        postalCode: business.postalCode,
         addressCountry: 'UA',
       }"
       :business-geo="{
-        latitude: store.latitude,
-        longitude: store.longitude,
+        latitude: business.latitude,
+        longitude: business.longitude,
       }"
-      :business-opening-hours="store.openingHours"
+      :business-opening-hours="business.openingHours"
       :faq="[
         {
           question: 'Які послуги надає ваше СТО?',
@@ -39,11 +39,11 @@
     <!-- Ледаче завантаження панорами -->
     <component
       :is="loadPanorama"
-      v-if="store && store.latitude && store.longitude"
-      :latitude="store.latitude"
-      :longitude="store.longitude"
-      :heading="store.heading"
-      :tilt="store.tilt"
+      v-if="store && business.latitude && business.longitude"
+      :latitude="business.latitude"
+      :longitude="business.longitude"
+      :heading="business.heading"
+      :tilt="business.tilt"
     />
 
     <!-- Повідомлення про помилку -->
@@ -54,39 +54,39 @@
     <!-- Інформація про магазин -->
     <div v-if="store" class="store-container max-w-[800px] mx-auto px-2">
       <h1 class="text-3xl font-bold text-gray-900 text-left my-2 dark:text-white">
-        {{ store.title }} {{ $t('Stores.platform') }}
+        {{ business.title }} {{ $t('Stores.platform') }}
       </h1>
 
-      <div v-if="store.address" class="text-left mb-2 dark:text-white">
-        <strong>{{ $t('Stores.address') }}</strong> {{ store.address }}
+      <div v-if="business.address" class="text-left mb-2 dark:text-white">
+        <strong>{{ $t('Stores.address') }}</strong> {{ business.address }}
       </div>
-      <div v-if="store.description" class="text-left mb-2 dark:text-white">
-        <strong>{{ $t('Stores.description') }}</strong> {{ store.description }}
+      <div v-if="business.description" class="text-left mb-2 dark:text-white">
+        <strong>{{ $t('Stores.description') }}</strong> {{ business.description }}
       </div>
-      <div v-if="store.contacts" class="text-left mb-2 dark:text-white">
-        <strong>{{ $t('Stores.contacts') }}</strong> {{ store.contacts }}
+      <div v-if="business.contacts" class="text-left mb-2 dark:text-white">
+        <strong>{{ $t('Stores.contacts') }}</strong> {{ business.contacts }}
       </div>
-      <div v-if="store.working_hours" class="text-left mb-2 dark:text-white">
-        <strong>{{ $t('Stores.workingHours') }}</strong> {{ store.working_hours }}
+      <div v-if="business.working_hours" class="text-left mb-2 dark:text-white">
+        <strong>{{ $t('Stores.workingHours') }}</strong> {{ business.working_hours }}
       </div>
-      <div v-if="store.type" class="text-left mb-2 dark:text-white">
+      <div v-if="business.type" class="text-left mb-2 dark:text-white">
         <strong>{{ $t('Stores.type') }}</strong>
         <span
-          v-if="store.type"
-          :class="typeStyles[store.type] || typeStyles.default"
+          v-if="business.type"
+          :class="typeStyles[business.type] || typeStyles.default"
           class="text-white text-xs px-2 py-1 rounded-full uppercase"
         >
-          {{ typeLabels[store.type] || store.type }}
+          {{ typeLabels[business.type] || business.type }}
         </span>
       </div>
-      <div v-if="store.rating" class="text-left mb-4 dark:text-white flex items-center gap-2">
+      <div v-if="business.rating" class="text-left mb-4 dark:text-white flex items-center gap-2">
         <strong>{{ $t('Stores.rating') }}</strong>
         <span class="flex items-center mt-2 text-yellow-400">
           <template v-for="n in 5" :key="n">
-            <template v-if="n <= Math.floor(store.rating)">
+            <template v-if="n <= Math.floor(business.rating)">
               <UIcon name="line-md:star-pulsating-filled-loop" class="w-5 h-5" />
             </template>
-            <template v-else-if="n - 0.5 === store.rating">
+            <template v-else-if="n - 0.5 === business.rating">
               <UIcon name="material-symbols:star-half" class="w-5 h-5" />
             </template>
             <template v-else>
@@ -94,22 +94,22 @@
             </template>
           </template>
         </span>
-        <span class="ml-2 text-sm text-gray-500 dark:text-gray-300">({{ store.rating.toFixed(1) }})</span>
+        <span class="ml-2 text-sm text-gray-500 dark:text-gray-300">({{ business.rating.toFixed(1) }})</span>
       </div>
 
-      <div v-if="store.created_at && store.updated_at" class="text-left mb-2 text-sm italic dark:text-gray-300">
-        {{ $t('Stores.createdAt') }} {{ formatDate(store.created_at) }}<br />
-        {{ $t('Stores.updatedAt') }} {{ formatDate(store.updated_at) }}
+      <div v-if="business.created_at && business.updated_at" class="text-left mb-2 text-sm italic dark:text-gray-300">
+        {{ $t('Stores.createdAt') }} {{ formatDate(business.created_at) }}<br />
+        {{ $t('Stores.updatedAt') }} {{ formatDate(business.updated_at) }}
       </div>
 
       <!-- Товари та акції -->
-      <LoadGoods v-if="store.slug && store.price" :price="store.price" />
+      <LoadGoods v-if="business.slug && business.price" :price="business.price" />
       <ShareButtons
-        v-if="store.title"
+        v-if="business.title"
         :page-object="{
-          title: store.title,
-          description: store.description,
-          image: store.thumbnail_url,
+          title: business.title,
+          description: business.description,
+          image: business.thumbnail_url,
         }"
       />
       <div class="flex gap-3 my-4 justify-center">
@@ -128,21 +128,19 @@
 
 <script setup>
 import { ref, defineAsyncComponent } from 'vue';
-import { useAppStore } from '@/stores/app.store';
 
 const { getBusinessBySlug } = useBusiness();
+const { slug } = useRoute().params;
 
 const loadPanorama = defineAsyncComponent(() => import('~/components/load/panorama.vue'));
 
-const appStore = useAppStore();
 const UButton = resolveComponent('UButton');
 const UIcon = resolveComponent('UIcon');
 const store = ref({});
 
 const errorMessage = ref('');
 
-const { data: shop } = await getBusinessBySlug();
-[store.value] = shop.value;
+const business = await getBusinessBySlug(slug);
 
 const typeStyles = {
   culture: 'bg-purple-600',
@@ -162,7 +160,7 @@ const typeLabels = {
 };
 
 const goToView = (listView = false) => {
-  appStore.isListView = listView;
+  appbusiness.isListView = listView;
   navigateTo('/');
 };
 

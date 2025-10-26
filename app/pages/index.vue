@@ -63,7 +63,7 @@
             Edit
           </NuxtLink>
           <div class="absolute top-2 right-16 text-red-500 cursor-pointer transition-colors duration-300">
-            <NuxtLink @click.stop="deleteStore(store)">Delete</NuxtLink>
+            <NuxtLink @click.stop="deleteBusiness(store)">Delete</NuxtLink>
           </div>
           <!-- Іконка серця -->
           <div
@@ -101,10 +101,8 @@
 
 <script setup>
 import { useAppStore } from '~/stores/app.store';
-import { useRuntimeConfig } from 'nuxt/app';
+const $router = useRouter();
 const appStore = useAppStore();
-const config = useRuntimeConfig();
-const apiBase = config.public.apiBase || 'https://api.localhub.store';
 const searchTerm = computed(() => appStore.searchTerm);
 
 const likedStores = ref(new Set());
@@ -129,14 +127,6 @@ const typeLabels = {
 const goToStore = (slug) => {
   if (!slug) return;
   $router.push(`/starkon/${slug}`);
-};
-
-const deleteStore = async (store) => {
-  const res = await fetch(apiBase + '/business?id=' + store.id, {
-    method: 'DELETE',
-  });
-  console.log(res);
-  await refreshStores();
 };
 
 function onParallax(event, el) {
@@ -166,14 +156,12 @@ const isLiked = (storeId) => {
 };
 
 // const { data: shopsData, refresh: refreshStores } = await useFetch(apiBase + '/business', { key: 'businesses' });
-const { getBusiness } = useBusiness();
-const { data: rawShops, refresh: refreshStores } = await getBusiness();
-const shopsData = ref(Array.isArray(rawShops.value) ? rawShops.value : []);
+const { getBusiness, deleteBusiness } = useBusiness();
+const businesses = await getBusiness();
 
 const filteredStores = computed(() => {
-  const list = shopsData.value || [];
   const search = searchTerm.value?.toLowerCase() || '';
-  return list
+  return businesses.value
     .map((store) => ({
       ...store,
       slug: String(store.slug || store.id || ''),
