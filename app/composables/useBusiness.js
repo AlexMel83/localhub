@@ -1,8 +1,6 @@
 import { useRuntimeConfig } from 'nuxt/app';
-import { useRoute } from 'vue-router';
 
 export const useBusiness = () => {
-  const route = useRoute();
   const config = useRuntimeConfig();
   const apiBase = config.public.apiBase || 'https://api.localhub.store';
 
@@ -12,7 +10,7 @@ export const useBusiness = () => {
   };
 
   const getBusinessBySlug = async (slug) => {
-    return await useFetch(apiBase + '/business?slug=' + route.params.slug);
+    return await useFetch(apiBase + '/business?slug=' + slug);
   };
 
   const createBusiness = async (payload) => {

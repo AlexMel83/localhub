@@ -23,8 +23,8 @@ export const useGeoCode = () => {
 
       if (data?.display_name) {
         form.address = data.display_name;
-        successMessage = 'Адресу заповнено!';
         setTimeout(() => (successMessage = ''), 2000);
+        console.log(successMessage);
       } else {
         errorMessage = 'Адресу не знайдено';
       }
@@ -34,7 +34,7 @@ export const useGeoCode = () => {
     }
   };
 
-  const geoCodeAddress = async (form, errorMessage) => {
+  const geoCodeAddress = async (form) => {
     if (!form.address) return;
     try {
       const res = await fetch(
@@ -46,12 +46,9 @@ export const useGeoCode = () => {
         form.latitude = Number(lat);
         form.longitude = Number(lon);
         form.address = display_name;
-      } else {
-        errorMessage = 'Адресу не знайдено';
       }
     } catch (err) {
       console.error(err);
-      errorMessage = 'Помилка при геокодуванні';
     }
   };
 

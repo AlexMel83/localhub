@@ -15,7 +15,7 @@
               variant="outline"
               size="sm"
               :disabled="!form.latitude || !form.longitude"
-              @click.prevent="reverseGeoCode(form, errorMessage, successMessage)"
+              @click.prevent="reverseGeoCode(form, errorMessage)"
             >
               Заповнити </UButton
             ><UInput v-model="form.address" class="flex-1" label="Адреса" placeholder="Адреса" />
@@ -24,7 +24,7 @@
               variant="outline"
               size="sm"
               :disabled="!form.address"
-              @click.prevent="geoCodeAddress(form, errorMessage)"
+              @click.prevent="geoCodeAddress(form)"
             >
               Знайти
             </UButton>

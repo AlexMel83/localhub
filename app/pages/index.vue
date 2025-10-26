@@ -57,8 +57,8 @@
           </div>
           <NuxtLink
             :to="`/starkon/${store.slug}/edit`"
-            @click.stop
             class="absolute top-2 right-8 text-gray-400 hover:text-blue-500"
+            @click.stop
           >
             Edit
           </NuxtLink>
