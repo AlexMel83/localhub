@@ -10,13 +10,24 @@
           <h2 class="text-xl font-semibold">Локація</h2>
 
           <div class="flex gap-2">
-            <UInput
-              v-model="form.address"
-              label="Адреса"
-              class="flex-1"
-              placeholder="Введіть адресу (наприклад, Старокостянтинів, Есенська 2)"
-            />
-            <UButton color="primary" variant="solid" @click.prevent="geocodeAddress"> Знайти </UButton>
+            <UButton
+              color="primary"
+              variant="outline"
+              size="sm"
+              :disabled="!form.latitude || !form.longitude"
+              @click.prevent="reverseGeocode"
+            >
+              Заповнити </UButton
+            ><UInput class="flex-1" v-model="form.address" label="Адреса" placeholder="Адреса" />
+            <UButton
+              color="primary"
+              variant="outline"
+              size="sm"
+              :disabled="!form.address"
+              @click.prevent="geocodeAddress"
+            >
+              Знайти
+            </UButton>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
@@ -157,6 +168,41 @@ const items = ref<SelectItem[]>([
   },
 ]);
 const value = ref('Магазин');
+
+const lastReverseTime = ref(0);
+const REVERSE_DELAY = 1000;
+
+const reverseGeocode = async () => {
+  const now = Date.now();
+  if (now - lastReverseTime.value < REVERSE_DELAY) {
+    errorMessage.value = 'Зачекайте 1 секунду між запитами';
+    return;
+  }
+  lastReverseTime.value = now;
+
+  if (!form.latitude || !form.longitude) {
+    errorMessage.value = 'Введіть координати';
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${form.latitude}&lon=${form.longitude}`,
+    );
+    const data = await res.json();
+
+    if (data?.display_name) {
+      form.address = data.display_name;
+      successMessage.value = 'Адресу заповнено!';
+      setTimeout(() => (successMessage.value = ''), 2000);
+    } else {
+      errorMessage.value = 'Адресу не знайдено';
+    }
+  } catch (err) {
+    console.error(err);
+    errorMessage.value = 'Помилка запиту до Nominatim';
+  }
+};
 
 const validatePhone = () => {
   phoneError.value = '';
@@ -299,6 +345,7 @@ const handleSubmit = async () => {
   errorMessage.value = '';
   successMessage.value = '';
   validatePhone();
+  updateSlug();
   if (phoneError.value) {
     errorMessage.value = phoneError.value;
     return;
@@ -313,10 +360,11 @@ const handleSubmit = async () => {
   delete payload.working_hours_end;
   payload.user_id = 1;
   try {
-    await $fetch(apiBase + '/business/create', {
+    const response = await $fetch(apiBase + '/business/create', {
       method: 'POST',
       body: payload,
     });
+    console.log(response);
     successMessage.value = 'Магазин успішно створено!';
     resetForm();
   } catch (err: unknown) {
