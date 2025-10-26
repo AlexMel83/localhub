@@ -158,7 +158,7 @@ const isLiked = (storeId) => {
   return likedStores?.value.has(storeId);
 };
 
-const { data: shopsData, refresh: refreshStores } = await useFetch(apiBase + '/business');
+const { data: shopsData, refresh: refreshStores } = await useFetch(apiBase + '/business', { key: 'businesses' });
 
 const filteredStores = computed(() => {
   const list = shopsData.value || [];

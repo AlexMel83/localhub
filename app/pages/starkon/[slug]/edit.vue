@@ -5,8 +5,15 @@
     <ClientOnly>
       <UForm :state="form" class="space-y-4" @submit="handleUpdate">
         <!-- Назва, опис, тип -->
-        <div class="space-y-4 border-b pb-4">
-          <UInput v-model="form.title" label="Назва магазину" placeholder="Введіть назву" @input="updateSlug" />
+        <div class="flex flex-col space-y-4 border-b pb-4">
+          <h2 class="text-xl font-semibold">Назва та Опис</h2>
+          <UInput
+            v-model="form.title"
+            label="Назва магазину"
+            placeholder="Введіть назву"
+            required
+            @input="updateSlug"
+          />
           <UTextarea v-model="form.description" label="Опис" placeholder="Опис магазину" :rows="3" />
 
           <USelect v-model="value" value-key="id" :items="items" class="w-48" />
@@ -14,11 +21,16 @@
 
         <!-- Локація -->
         <div class="space-y-4 border-b pb-4">
+          <h2 class="text-xl font-semibold">Локація</h2>
           <UInput v-model="form.address" label="Адреса" placeholder="Адреса" />
           <div class="grid grid-cols-2 gap-4">
             <UInput v-model="form.latitude" label="Широта" type="number" step="0.000001" />
             <UInput v-model="form.longitude" label="Довгота" type="number" step="0.000001" />
           </div>
+          <!-- Карта -->
+          <ClientOnly>
+            <div id="map" class="w-full h-[400px] rounded-lg overflow-hidden shadow-md" />
+          </ClientOnly>
         </div>
 
         <!-- Контакти -->
@@ -60,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref, watch, onMounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRuntimeConfig, useFetch, navigateTo } from 'nuxt/app';
 import type { SelectItem } from '@nuxt/ui';
@@ -69,7 +81,16 @@ interface Form {
   working_hours_start?: string;
   working_hours_end?: string;
   working_hours?: string;
-  // інші поля…
+  title: string;
+  slug: string;
+  type: string;
+  description: string;
+  address: string;
+  contacts: string;
+  price: string;
+  thumbnail_url: string;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 // 🔹 ROUTE + API
@@ -77,8 +98,12 @@ const route = useRoute();
 const config = useRuntimeConfig();
 const apiBase = config.public.apiBase || 'https://api.localhub.store';
 
+// ---- КАРТА ----
+let map: L.Map | null = null;
+let marker: L.Marker | null = null;
+
 // ---- СТАН ----
-const form = reactive({
+const form: Form = reactive({
   id: null,
   title: '',
   slug: '',
@@ -118,6 +143,27 @@ const items = ref<SelectItem[]>([
   },
 ]);
 const value = ref('Магазин');
+
+const geocodeAddress = async () => {
+  if (!form.address) return;
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(form.address)}`,
+    );
+    const data = await res.json();
+    if (data?.length > 0) {
+      const { lat, lon, display_name } = data[0];
+      form.latitude = Number(lat);
+      form.longitude = Number(lon);
+      form.address = display_name;
+    } else {
+      errorMessage.value = 'Адресу не знайдено';
+    }
+  } catch (err) {
+    console.error(err);
+    errorMessage.value = 'Помилка при геокодуванні';
+  }
+};
 
 // ---- Валідація телефону ----
 const validatePhone = () => {
@@ -214,5 +260,39 @@ const updateSlug = () => {
     .slice(0, 200);
 };
 
-watch(() => form.title, updateSlug);
+onMounted(async () => {
+  // Імпортуємо Leaflet тільки на клієнті (SSR-safe)
+  if (!import.meta.client) return;
+  const L = await import('leaflet');
+  await nextTick();
+
+  const { latitude, longitude } = form;
+  map = L.map('map').setView([latitude as number, longitude as number], 15);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap',
+  }).addTo(map);
+
+  marker = L.marker([latitude as number, longitude as number], { draggable: true }).addTo(map);
+
+  marker.on('dragend', (e: unknown) => {
+    const pos = (e as L.DragEndEvent).target.getLatLng();
+    form.latitude = Number(pos.lat.toFixed(6));
+    form.longitude = Number(pos.lng.toFixed(6));
+  });
+});
+
+// ---- ВІДСТЕЖЕННЯ ЗМІН LAT/LNG ----
+watch(
+  () => form.title,
+  () => updateSlug(),
+  () => [form.latitude, form.longitude],
+  (newVal) => {
+    if (marker && map) {
+      marker.setLatLng([Number(newVal[0]), Number(newVal[1])]);
+      map.setView([Number(newVal[0]), Number(newVal[1])], map.getZoom());
+    }
+  },
+);
 </script>

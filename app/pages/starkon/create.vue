@@ -99,15 +99,25 @@ import { useRuntimeConfig } from 'nuxt/app';
 import type { SelectItem } from '@nuxt/ui';
 
 interface Form {
-  [key: string]: string | number | null;
-  // other properties...
+  [key: string]: unknown;
+  title: string;
+  slug: string;
+  type: string;
+  description: string;
+  address: string;
+  contacts: string;
+  working_hours_start?: string;
+  working_hours_end?: string;
+  price: string;
+  latitude: number;
+  longitude: number;
+  thumbnail_url: string;
 }
 
 // ---- СТАН ----
 const route = useRoute();
 const config = useRuntimeConfig();
 const apiBase = config.public.apiBase || 'https://api.localhub.store';
-console.log('apiBase:', apiBase);
 const form: Form = reactive({
   title: '',
   slug: '',
@@ -194,15 +204,18 @@ const normalizePhone = (phone: string): string => {
 
 // ---- SLUG ----
 const updateSlug = () => {
-  if (typeof form.title === 'string' && form.title) {
-    form.slug = form.title
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-zа-яіїєґ0-9\s-]/gi, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .substring(0, 200);
+  if (!form.title) {
+    form.slug = '';
+    return;
   }
+  form.slug = form.title
+    .trim()
+    .replace(/[^a-zA-Zа-яА-Яіїєґ0-9\s-]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 200);
 };
 
 // ---- КАРТА ----
@@ -271,6 +284,10 @@ const resetForm = () => {
   form.type = 'store';
   form.latitude = 49.7550101;
   form.longitude = 27.1874278;
+  form.thumbnail_url = 'https://localhub.store/panoimg/Instrument-Shop.jpg';
+  form.working_hours_start = '09:00';
+  form.working_hours_end = '18:00';
+  form.price = 'https://docs.google.com/spreadsheets/d/1lAT-AuKNSjmruKh59ePe8jt63QSSbm_4gWdWPxsU7-8/edit?usp=sharing';
   if (map && marker) {
     map.setView([form.latitude, form.longitude], 14);
     marker.setLatLng([form.latitude, form.longitude]);
