@@ -93,7 +93,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch, onMounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
-import { useRuntimeConfig, useFetch, navigateTo } from 'nuxt/app';
+import { useRuntimeConfig, useLazyFetch, navigateTo } from 'nuxt/app';
 import type { SelectItem } from '@nuxt/ui';
 
 interface Form {
@@ -235,7 +235,7 @@ const validatePhone = () => {
 
 // ---- Отримання даних магазину ----
 try {
-  const { data: res } = await useFetch(apiBase + '/business?slug=' + route.params.slug);
+  const { data: res } = await useLazyFetch(apiBase + '/business?slug=' + route.params.slug);
   const shop = Array.isArray(res.value) ? res.value[0] : res.value;
   if (!shop) throw new Error('Магазин не знайдено');
 
