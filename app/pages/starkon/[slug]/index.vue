@@ -129,7 +129,8 @@
 <script setup>
 import { ref, defineAsyncComponent } from 'vue';
 import { useAppStore } from '@/stores/app.store';
-import { useRoute } from 'vue-router';
+
+const { getBusinessBySlug } = useBusiness();
 
 const loadPanorama = defineAsyncComponent(() => import('~/components/load/panorama.vue'));
 
@@ -138,10 +139,9 @@ const UButton = resolveComponent('UButton');
 const UIcon = resolveComponent('UIcon');
 const store = ref({});
 
-const route = useRoute();
 const errorMessage = ref('');
 
-const { data: shop } = await useFetch(`https://api.localhub.store/business?slug=${route.params.slug}`);
+const { data: shop } = await getBusinessBySlug();
 [store.value] = shop.value;
 
 const typeStyles = {

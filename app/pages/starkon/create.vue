@@ -15,7 +15,7 @@
               variant="outline"
               size="sm"
               :disabled="!form.latitude || !form.longitude"
-              @click.prevent="reverseGeocode"
+              @click.prevent="reverseGeoCode(form, errorMessage, successMessage)"
             >
               Заповнити </UButton
             ><UInput v-model="form.address" class="flex-1" label="Адреса" placeholder="Адреса" />
@@ -24,7 +24,7 @@
               variant="outline"
               size="sm"
               :disabled="!form.address"
-              @click.prevent="geocodeAddress"
+              @click.prevent="geoCodeAddress(form, errorMessage)"
             >
               Знайти
             </UButton>
@@ -65,7 +65,12 @@
           <h2 class="text-xl font-semibold">Додатково</h2>
           <label class="block text-sm font-medium mb-1">Телефон</label>
           <div>
-            <UInput v-model="form.contacts" label="Контакти" placeholder="+380..." @blur="validatePhone" />
+            <UInput
+              v-model="form.contacts"
+              label="Контакти"
+              placeholder="+380..."
+              @blur="validatePhone(form.contacts, (v: string) => (form.contacts = v))"
+            />
             <p v-if="phoneError" class="text-red-500 text-sm mt-1">{{ phoneError }}</p>
           </div>
           <div>
@@ -106,8 +111,10 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
-import { useRuntimeConfig } from 'nuxt/app';
 import type { SelectItem } from '@nuxt/ui';
+
+const { phoneError, validatePhone, normalizePhone } = useValidate();
+const { createBusiness } = useBusiness();
 
 interface Form {
   [key: string]: unknown;
@@ -127,8 +134,6 @@ interface Form {
 
 // ---- СТАН ----
 const route = useRoute();
-const config = useRuntimeConfig();
-const apiBase = config.public.apiBase || 'https://api.localhub.store';
 const form: Form = reactive({
   title: '',
   slug: '',
@@ -146,7 +151,6 @@ const form: Form = reactive({
 
 const successMessage = ref('');
 const errorMessage = ref('');
-const phoneError = ref('');
 
 // ---- ВИБІР ТИПУ ----
 const items = ref<SelectItem[]>([
@@ -169,84 +173,7 @@ const items = ref<SelectItem[]>([
 ]);
 const value = ref('Магазин');
 
-const lastReverseTime = ref(0);
-const REVERSE_DELAY = 1000;
-
-const reverseGeocode = async () => {
-  const now = Date.now();
-  if (now - lastReverseTime.value < REVERSE_DELAY) {
-    errorMessage.value = 'Зачекайте 1 секунду між запитами';
-    return;
-  }
-  lastReverseTime.value = now;
-
-  if (!form.latitude || !form.longitude) {
-    errorMessage.value = 'Введіть координати';
-    return;
-  }
-
-  try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${form.latitude}&lon=${form.longitude}`,
-    );
-    const data = await res.json();
-
-    if (data?.display_name) {
-      form.address = data.display_name;
-      successMessage.value = 'Адресу заповнено!';
-      setTimeout(() => (successMessage.value = ''), 2000);
-    } else {
-      errorMessage.value = 'Адресу не знайдено';
-    }
-  } catch (err) {
-    console.error(err);
-    errorMessage.value = 'Помилка запиту до Nominatim';
-  }
-};
-
-const validatePhone = () => {
-  phoneError.value = '';
-
-  let phone = String(form.contacts || '').trim();
-
-  if (!phone) {
-    return;
-  }
-
-  // Видаляємо пробіли, дужки, дефіси
-  phone = phone.replace(/[()\s-]/g, '');
-
-  // Якщо користувач ввів 098..., додаємо +38
-  if (/^0\d{9}$/.test(phone)) {
-    phone = '+38' + phone;
-  }
-  // Якщо ввів 380..., додаємо +
-  else if (/^380\d{9}$/.test(phone)) {
-    phone = '+' + phone;
-  }
-
-  // Остаточна перевірка — формат +380XXXXXXXXX
-  if (!/^\+380\d{9}$/.test(phone)) {
-    phoneError.value = 'Невірний формат номера. Використовуйте, наприклад: +380987654321';
-  } else {
-    // нормалізуємо в form
-    form.contacts = phone;
-  }
-};
-
-const normalizePhone = (phone: string): string => {
-  if (!phone) return '';
-
-  // Прибираємо все, крім цифр
-  let digits = phone.replace(/\D/g, '');
-
-  // Якщо номер починається з "0" — додаємо код країни
-  if (digits.startsWith('0')) digits = '38' + digits;
-  // Якщо починається з "380" — все ок
-  if (!digits.startsWith('380')) digits = '380' + digits;
-
-  return '+' + digits;
-};
+const { reverseGeoCode, geoCodeAddress } = useGeoCode();
 
 // ---- SLUG ----
 const updateSlug = () => {
@@ -302,28 +229,6 @@ watch(
   },
 );
 
-// ---- ГЕОКОДИНГ ----
-const geocodeAddress = async () => {
-  if (!form.address) return;
-  try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(form.address)}`,
-    );
-    const data = await res.json();
-    if (data?.length > 0) {
-      const { lat, lon, display_name } = data[0];
-      form.latitude = Number(lat);
-      form.longitude = Number(lon);
-      form.address = display_name;
-    } else {
-      errorMessage.value = 'Адресу не знайдено';
-    }
-  } catch (err) {
-    console.error(err);
-    errorMessage.value = 'Помилка при геокодуванні';
-  }
-};
-
 // ---- RESET ----
 const resetForm = () => {
   Object.keys(form).forEach((key) => (form[key] = ''));
@@ -344,26 +249,27 @@ const resetForm = () => {
 const handleSubmit = async () => {
   errorMessage.value = '';
   successMessage.value = '';
-  validatePhone();
+  // Валідація
+  const isValid = validatePhone(form.contacts, (value: string) => (form.contacts = value));
+  if (!isValid) {
+    errorMessage.value = phoneError.value;
+    return;
+  }
+
+  // Нормалізація (якщо потрібно)
+  form.contacts = normalizePhone(form.contacts);
   updateSlug();
   if (phoneError.value) {
     errorMessage.value = phoneError.value;
     return;
   }
   form.working_hours = `${form.working_hours_start} - ${form.working_hours_end}`;
-  // нормалізація телефону
-  if (typeof form.contacts === 'string') {
-    form.contacts = normalizePhone(form.contacts);
-  }
   const payload = { ...form };
   delete payload.working_hours_start;
   delete payload.working_hours_end;
   payload.user_id = 1;
   try {
-    const response = await $fetch(apiBase + '/business/create', {
-      method: 'POST',
-      body: payload,
-    });
+    const response = await createBusiness(payload);
     console.log(response);
     successMessage.value = 'Магазин успішно створено!';
     resetForm();

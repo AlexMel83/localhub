@@ -28,7 +28,7 @@
               variant="outline"
               size="sm"
               :disabled="!form.latitude || !form.longitude"
-              @click.prevent="reverseGeocode"
+              @click.prevent="reverseGeoCode(form, errorMessage, successMessage)"
             >
               Заповнити </UButton
             ><UInput v-model="form.address" label="Адреса" placeholder="Адреса" />
@@ -37,7 +37,7 @@
               variant="outline"
               size="sm"
               :disabled="!form.address"
-              @click.prevent="geocodeAddress"
+              @click.prevent="geoCodeAddress(form, errorMessage)"
             >
               Знайти
             </UButton>
@@ -54,7 +54,12 @@
 
         <!-- Контакти -->
         <div class="space-y-4 border-b pb-4">
-          <UInput v-model="form.contacts" label="Телефон" placeholder="+380..." @blur="validatePhone" />
+          <UInput
+            v-model="form.contacts"
+            label="Контакти"
+            placeholder="+380..."
+            @blur="validatePhone(form.contacts, (v: string) => (form.contacts = v))"
+          />
           <p v-if="phoneError" class="text-red-500 text-sm">{{ phoneError }}</p>
         </div>
 
@@ -93,8 +98,12 @@
 <script setup lang="ts">
 import { reactive, ref, watch, onMounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
-import { useRuntimeConfig, useLazyFetch, navigateTo } from 'nuxt/app';
+import { navigateTo } from 'nuxt/app';
 import type { SelectItem } from '@nuxt/ui';
+
+const { phoneError, validatePhone, normalizePhone } = useValidate();
+const { getBusinessBySlug, updateBusiness } = useBusiness();
+const { reverseGeoCode, geoCodeAddress } = useGeoCode();
 
 interface Form {
   working_hours_start?: string;
@@ -114,8 +123,6 @@ interface Form {
 
 // 🔹 ROUTE + API
 const route = useRoute();
-const config = useRuntimeConfig();
-const apiBase = config.public.apiBase || 'https://api.localhub.store';
 
 // ---- КАРТА ----
 let map: L.Map | null = null;
@@ -140,7 +147,6 @@ const form: Form = reactive({
 
 const successMessage = ref('');
 const errorMessage = ref('');
-const phoneError = ref('');
 
 // ---- ВИБІР ТИПУ ----
 const items = ref<SelectItem[]>([
@@ -163,79 +169,9 @@ const items = ref<SelectItem[]>([
 ]);
 const value = ref('Магазин');
 
-const lastReverseTime = ref(0);
-const REVERSE_DELAY = 1000;
-
-const reverseGeocode = async () => {
-  const now = Date.now();
-  if (now - lastReverseTime.value < REVERSE_DELAY) {
-    errorMessage.value = 'Зачекайте 1 секунду між запитами';
-    return;
-  }
-  lastReverseTime.value = now;
-
-  if (!form.latitude || !form.longitude) {
-    errorMessage.value = 'Введіть координати';
-    return;
-  }
-
-  try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${form.latitude}&lon=${form.longitude}`,
-    );
-    const data = await res.json();
-
-    if (data?.display_name) {
-      form.address = data.display_name;
-      successMessage.value = 'Адресу заповнено!';
-      setTimeout(() => (successMessage.value = ''), 2000);
-    } else {
-      errorMessage.value = 'Адресу не знайдено';
-    }
-  } catch (err) {
-    console.error(err);
-    errorMessage.value = 'Помилка запиту до Nominatim';
-  }
-};
-
-const geocodeAddress = async () => {
-  if (!form.address) return;
-  try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(form.address)}`,
-    );
-    const data = await res.json();
-    if (data?.length > 0) {
-      const { lat, lon, display_name } = data[0];
-      form.latitude = Number(lat);
-      form.longitude = Number(lon);
-      form.address = display_name;
-    } else {
-      errorMessage.value = 'Адресу не знайдено';
-    }
-  } catch (err) {
-    console.error(err);
-    errorMessage.value = 'Помилка при геокодуванні';
-  }
-};
-
-// ---- Валідація телефону ----
-const validatePhone = () => {
-  phoneError.value = '';
-  let phone = String(form.contacts || '')
-    .trim()
-    .replace(/[()\s-]/g, '');
-  if (!phone) return;
-  if (/^0\d{9}$/.test(phone)) phone = '+38' + phone;
-  else if (/^380\d{9}$/.test(phone)) phone = '+' + phone;
-  if (!/^\+380\d{9}$/.test(phone)) {
-    phoneError.value = 'Невірний формат номера. Використовуйте, наприклад: +380987654321';
-  } else form.contacts = phone;
-};
-
 // ---- Отримання даних магазину ----
 try {
-  const { data: res } = await useLazyFetch(apiBase + '/business?slug=' + route.params.slug);
+  const { data: res } = await getBusinessBySlug(route.params.slug);
   const shop = Array.isArray(res.value) ? res.value[0] : res.value;
   if (!shop) throw new Error('Магазин не знайдено');
 
@@ -265,11 +201,13 @@ const handleUpdate = async () => {
   errorMessage.value = '';
   successMessage.value = '';
 
-  validatePhone();
-  if (phoneError.value) {
+  const isValid = validatePhone(form.contacts, (value: string) => (form.contacts = value));
+  if (!isValid) {
     errorMessage.value = phoneError.value;
     return;
   }
+
+  form.contacts = normalizePhone(form.contacts);
 
   const payload: Form = {
     ...form,
@@ -279,10 +217,7 @@ const handleUpdate = async () => {
   delete payload.working_hours_end;
 
   try {
-    const updatedStore = await $fetch(apiBase + '/business/', {
-      method: 'PUT',
-      body: payload,
-    });
+    const updatedStore = await updateBusiness(payload);
 
     console.log(updatedStore);
     successMessage.value = 'Магазин успішно оновлено!';

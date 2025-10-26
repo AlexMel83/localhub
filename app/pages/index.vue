@@ -12,7 +12,7 @@
           v-for="store in filteredStores"
           :key="store.slug"
           class="relative rounded-lg overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 h-64"
-          @click="$router.push(`/starkon/${store.slug}`)"
+          @click.stop="goToStore(store.slug)"
         >
           <!-- Зображення на всю карточку -->
           <div class="w-full h-full relative overflow-hidden group">
@@ -55,11 +55,13 @@
               </div>
             </div>
           </div>
-          <div
-            class="absolute top-2 right-8 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-300"
+          <NuxtLink
+            :to="`/starkon/${store.slug}/edit`"
+            @click.stop
+            class="absolute top-2 right-8 text-gray-400 hover:text-blue-500"
           >
-            <NuxtLink v-if="store.slug" :to="`/starkon/${store.slug}/edit`">Edit</NuxtLink>
-          </div>
+            Edit
+          </NuxtLink>
           <div class="absolute top-2 right-16 text-red-500 cursor-pointer transition-colors duration-300">
             <NuxtLink @click.stop="deleteStore(store)">Delete</NuxtLink>
           </div>
@@ -124,6 +126,11 @@ const typeLabels = {
   market: 'Ринок',
 };
 
+const goToStore = (slug) => {
+  if (!slug) return;
+  $router.push(`/starkon/${slug}`);
+};
+
 const deleteStore = async (store) => {
   const res = await fetch(apiBase + '/business?id=' + store.id, {
     method: 'DELETE',
@@ -158,11 +165,19 @@ const isLiked = (storeId) => {
   return likedStores?.value.has(storeId);
 };
 
-const { data: shopsData, refresh: refreshStores } = await useFetch(apiBase + '/business', { key: 'businesses' });
+// const { data: shopsData, refresh: refreshStores } = await useFetch(apiBase + '/business', { key: 'businesses' });
+const { getBusiness } = useBusiness();
+const { data: rawShops, refresh: refreshStores } = await getBusiness();
+const shopsData = ref(Array.isArray(rawShops.value) ? rawShops.value : []);
 
 const filteredStores = computed(() => {
   const list = shopsData.value || [];
   const search = searchTerm.value?.toLowerCase() || '';
-  return list.filter((p) => p.title.toLowerCase().includes(search));
+  return list
+    .map((store) => ({
+      ...store,
+      slug: String(store.slug || store.id || ''),
+    }))
+    .filter((p) => p.title.toLowerCase().includes(search));
 });
 </script>
