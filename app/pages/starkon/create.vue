@@ -18,7 +18,7 @@
               @click.prevent="reverseGeocode"
             >
               Заповнити </UButton
-            ><UInput class="flex-1" v-model="form.address" label="Адреса" placeholder="Адреса" />
+            ><UInput v-model="form.address" class="flex-1" label="Адреса" placeholder="Адреса" />
             <UButton
               color="primary"
               variant="outline"
