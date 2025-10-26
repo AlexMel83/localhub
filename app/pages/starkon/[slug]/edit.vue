@@ -23,6 +23,7 @@
         <div class="space-y-4 border-b pb-4">
           <h2 class="text-xl font-semibold">Локація</h2>
           <UInput v-model="form.address" label="Адреса" placeholder="Адреса" />
+          <UButton color="primary" variant="solid" @click.prevent="geocodeAddress"> Знайти </UButton>
           <div class="grid grid-cols-2 gap-4">
             <UInput v-model="form.latitude" label="Широта" type="number" step="0.000001" />
             <UInput v-model="form.longitude" label="Довгота" type="number" step="0.000001" />
