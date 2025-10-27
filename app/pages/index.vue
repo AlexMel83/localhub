@@ -155,13 +155,13 @@ const isLiked = (storeId) => {
   return likedStores?.value.has(storeId);
 };
 
-// const { data: shopsData, refresh: refreshStores } = await useFetch(apiBase + '/business', { key: 'businesses' });
-const { getBusiness, deleteBusiness } = useBusiness();
-const businesses = await getBusiness();
+const { deleteBusiness } = useBusiness();
+const businessStore = useBusiness();
+await businessStore.getBusiness();
 
 const filteredStores = computed(() => {
   const search = searchTerm.value?.toLowerCase() || '';
-  return businesses.value
+  return businessStore.businesses.value
     .map((store) => ({
       ...store,
       slug: String(store.slug || store.id || ''),
