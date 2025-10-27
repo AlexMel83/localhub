@@ -152,7 +152,6 @@ const loadPanorama = defineAsyncComponent(() => import('~/components/load/panora
 
 const UButton = resolveComponent('UButton');
 const UIcon = resolveComponent('UIcon');
-const store = ref({});
 
 const errorMessage = ref('');
 
