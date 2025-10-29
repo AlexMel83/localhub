@@ -137,7 +137,8 @@
 <script setup>
 import { ref, defineAsyncComponent } from 'vue';
 import { useRoute } from 'vue-router';
-import { useBusinessStore } from '~/stores/business';
+import { useRuntimeConfig } from '#imports';
+const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
 const route = useRoute();
 
 const businessStore = useBusinessStore();
@@ -145,7 +146,7 @@ const businessStore = useBusinessStore();
 // const { getBusinessBySlug } = useBusiness();
 watchEffect(async () => {
   if (route.params.slug) {
-    await businessStore.getBusinessBySlug(route.params.slug);
+    await businessStore.getBusinessBySlug(route.params.slug, apiBase);
   }
 });
 const loadPanorama = defineAsyncComponent(() => import('~/components/load/panorama.vue'));
@@ -154,8 +155,6 @@ const UButton = resolveComponent('UButton');
 const UIcon = resolveComponent('UIcon');
 
 const errorMessage = ref('');
-
-// const business = await getBusinessBySlug(slug);
 
 const typeStyles = {
   culture: 'bg-purple-600',

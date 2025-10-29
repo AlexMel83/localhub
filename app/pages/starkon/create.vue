@@ -112,9 +112,12 @@
 import { onMounted, reactive, ref, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import type { SelectItem } from '@nuxt/ui';
+import { useRuntimeConfig } from '#imports';
+const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
 
 const { phoneError, validatePhone, normalizePhone } = useValidate();
-const { createBusiness } = useBusiness();
+// const { createBusiness } = useBusiness();
+const businessStore = useBusinessStore();
 
 interface Form {
   [key: string]: unknown;
@@ -269,7 +272,7 @@ const handleSubmit = async () => {
   delete payload.working_hours_end;
   payload.user_id = 1;
   try {
-    const response = await createBusiness(payload);
+    const response = await businessStore.createBusiness(payload, apiBase);
     console.log(response);
     successMessage.value = 'Магазин успішно створено!';
     resetForm();

@@ -101,8 +101,13 @@
 
 <script setup>
 import { useAppStore } from '~/stores/app.store';
-const $router = useRouter();
+import { useRuntimeConfig } from '#imports';
+const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
 const appStore = useAppStore();
+const businessStore = useBusinessStore();
+
+const $router = useRouter();
+
 const searchTerm = computed(() => appStore.searchTerm);
 
 const likedStores = ref(new Set());
@@ -156,12 +161,11 @@ const isLiked = (storeId) => {
 };
 
 const { deleteBusiness } = useBusiness();
-const businessStore = useBusiness();
-await businessStore.getBusiness();
+await businessStore.getBusiness(apiBase);
 
 const filteredStores = computed(() => {
   const search = searchTerm.value?.toLowerCase() || '';
-  return businessStore.businesses.value
+  return businessStore.businesses
     .map((store) => ({
       ...store,
       slug: String(store.slug || store.id || ''),
