@@ -100,10 +100,12 @@ import { reactive, ref, watch, onMounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import { navigateTo } from 'nuxt/app';
 import type { SelectItem } from '@nuxt/ui';
+import { useRuntimeConfig } from '#imports';
+const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
 
 const { phoneError, validatePhone, normalizePhone } = useValidate();
-const { getBusinessBySlug, updateBusiness } = useBusiness();
 const { reverseGeoCode, geoCodeAddress } = useGeoCode();
+const businessStore = useBusinessStore();
 
 interface Form {
   working_hours_start?: string;
@@ -171,8 +173,8 @@ const value = ref('Магазин');
 
 // ---- Отримання даних магазину ----
 try {
-  const { data: res } = await getBusinessBySlug(route.params.slug);
-  const shop = Array.isArray(res.value) ? res.value[0] : res.value;
+  await businessStore.getBusinessBySlug(route.params.slug as string, apiBase);
+  const shop = businessStore.business; // ← Бери з Pinia!
   if (!shop) throw new Error('Магазин не знайдено');
 
   // Заповнюємо форму
@@ -209,18 +211,17 @@ const handleUpdate = async () => {
 
   form.contacts = normalizePhone(form.contacts);
 
-  const payload: Form = {
+  const payload = {
     ...form,
     working_hours: `${form.working_hours_start} - ${form.working_hours_end}`,
   };
   delete payload.working_hours_start;
   delete payload.working_hours_end;
+  businessStore.business = payload;
 
   try {
-    const updatedStore = await updateBusiness(payload);
-
-    console.log(updatedStore);
-    successMessage.value = 'Магазин успішно оновлено!';
+    await businessStore.updateBusiness(apiBase);
+    successMessage.value = 'Оновлено!';
 
     // 🔹 Якщо slug змінився — оновлюємо URL
     if (route.params.slug !== form.slug) {
