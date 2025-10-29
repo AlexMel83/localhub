@@ -23,7 +23,7 @@ export const useBusiness = () => {
   const createBusiness = async (payload) => {
     return await $fetch(apiBase + '/business/create', {
       method: 'POST',
-      body: payload, 
+      body: payload,
     });
   };
 
