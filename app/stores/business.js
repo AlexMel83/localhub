@@ -28,14 +28,14 @@ export const useBusinessStore = defineStore('businessStore', {
       });
     },
 
-    async deleteBusiness(apiBase) {
+    async deleteBusiness(payload, apiBase) {
       try {
-        const res = await fetch(apiBase + '/business?id=' + this.business.id, {
+        const res = await fetch(apiBase + '/business?id=' + payload.id, {
           method: 'DELETE',
         });
 
         if (res.ok) {
-          this.businesses = this.businesses.filter((item) => item.id !== this.business.id);
+          this.businesses = this.businesses.filter((item) => item.id !== payload.id);
         } else {
           console.error('Помилка видалення:', res.status);
         }

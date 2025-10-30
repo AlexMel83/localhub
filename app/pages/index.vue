@@ -63,7 +63,7 @@
             Edit
           </NuxtLink>
           <div class="absolute top-2 right-16 text-red-500 cursor-pointer transition-colors duration-300">
-            <NuxtLink @click.stop="deleteBusiness(store)">Delete</NuxtLink>
+            <NuxtLink @click.stop="businessStore.deleteBusiness(store, apiBase)">Delete</NuxtLink>
           </div>
           <!-- Іконка серця -->
           <div
@@ -160,7 +160,6 @@ const isLiked = (storeId) => {
   return likedStores?.value.has(storeId);
 };
 
-const { deleteBusiness } = useBusiness();
 await businessStore.getBusiness(apiBase);
 
 const filteredStores = computed(() => {
