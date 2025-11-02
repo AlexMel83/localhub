@@ -1,31 +1,31 @@
 <template>
   <div>
     <MetaTags
-      v-if="store.title"
-      :url="`https://localhub.ua/business/${store.slug}`"
-      :title="store.title"
-      :description="store.description"
-      :image="store.image"
-      :keywords="store.keywords"
+      v-if="businessStore.business?.title"
+      :url="`https://localhub.ua/business/${businessStore.business.slug}`"
+      :title="businessStore.business.title"
+      :description="businessStore.business.description"
+      :image="businessStore.business.image"
+      :keywords="businessStore.business.keywords"
       business-type="AutoRepair"
-      :business-name="store.title"
-      :business-description="store.description"
-      :business-phone="store.phone"
-      :business-email="store.email"
-      :business-url="`https://localhub.ua/business/${store.slug}`"
-      :business-logo="store.logo"
+      :business-name="businessStore.business.title"
+      :business-description="businessStore.business.description"
+      :business-phone="businessStore.business.phone"
+      :business-email="businessStore.business.email"
+      :business-url="`https://localhub.ua/business/${businessStore.business.slug}`"
+      :business-logo="businessStore.business.logo"
       :business-address="{
-        streetAddress: store.address,
+        streetAddress: businessStore.business.address,
         addressLocality: 'Старокостянтинів',
         addressRegion: 'Хмельницька область',
-        postalCode: store.postalCode,
+        postalCode: businessStore.business.postalCode,
         addressCountry: 'UA',
       }"
       :business-geo="{
-        latitude: store.latitude,
-        longitude: store.longitude,
+        latitude: businessStore.business.latitude,
+        longitude: businessStore.business.longitude,
       }"
-      :business-opening-hours="store.openingHours"
+      :business-opening-hours="businessStore.business.openingHours"
       :faq="[
         {
           question: 'Які послуги надає ваше СТО?',
@@ -39,11 +39,11 @@
     <!-- Ледаче завантаження панорами -->
     <component
       :is="loadPanorama"
-      v-if="store && store.latitude && store.longitude"
-      :latitude="store.latitude"
-      :longitude="store.longitude"
-      :heading="store.heading"
-      :tilt="store.tilt"
+      v-if="businessStore.business && businessStore.business.latitude && businessStore.business.longitude"
+      :latitude="businessStore.business.latitude"
+      :longitude="businessStore.business.longitude"
+      :heading="businessStore.business.heading"
+      :tilt="businessStore.business.tilt"
     />
 
     <!-- Повідомлення про помилку -->
@@ -52,41 +52,41 @@
     </div>
 
     <!-- Інформація про магазин -->
-    <div v-if="store" class="store-container max-w-[800px] mx-auto px-2">
+    <div v-if="businessStore.business" class="store-container max-w-[800px] mx-auto px-2">
       <h1 class="text-3xl font-bold text-gray-900 text-left my-2 dark:text-white">
-        {{ store.title }} {{ $t('Stores.platform') }}
+        {{ businessStore.business.title }} {{ $t('Stores.platform') }}
       </h1>
 
-      <div v-if="store.address" class="text-left mb-2 dark:text-white">
-        <strong>{{ $t('Stores.address') }}</strong> {{ store.address }}
+      <div v-if="businessStore.business.address" class="text-left mb-2 dark:text-white">
+        <strong>{{ $t('Stores.address') }}</strong> {{ businessStore.business.address }}
       </div>
-      <div v-if="store.description" class="text-left mb-2 dark:text-white">
-        <strong>{{ $t('Stores.description') }}</strong> {{ store.description }}
+      <div v-if="businessStore.business.description" class="text-left mb-2 dark:text-white">
+        <strong>{{ $t('Stores.description') }}</strong> {{ businessStore.business.description }}
       </div>
-      <div v-if="store.contacts" class="text-left mb-2 dark:text-white">
-        <strong>{{ $t('Stores.contacts') }}</strong> {{ store.contacts }}
+      <div v-if="businessStore.business.contacts" class="text-left mb-2 dark:text-white">
+        <strong>{{ $t('Stores.contacts') }}</strong> {{ businessStore.business.contacts }}
       </div>
-      <div v-if="store.working_hours" class="text-left mb-2 dark:text-white">
-        <strong>{{ $t('Stores.workingHours') }}</strong> {{ store.working_hours }}
+      <div v-if="businessStore.business.working_hours" class="text-left mb-2 dark:text-white">
+        <strong>{{ $t('Stores.workingHours') }}</strong> {{ businessStore.business.working_hours }}
       </div>
-      <div v-if="store.type" class="text-left mb-2 dark:text-white">
+      <div v-if="businessStore.business?.type" class="text-left mb-2 dark:text-white">
         <strong>{{ $t('Stores.type') }}</strong>
         <span
-          v-if="store.type"
-          :class="typeStyles[store.type] || typeStyles.default"
+          v-if="businessStore.business.type"
+          :class="typeStyles[businessStore.business.type] || typeStyles.default"
           class="text-white text-xs px-2 py-1 rounded-full uppercase"
         >
-          {{ typeLabels[store.type] || store.type }}
+          {{ typeLabels[businessStore.business.type] || businessStore.business.type }}
         </span>
       </div>
-      <div v-if="store.rating" class="text-left mb-4 dark:text-white flex items-center gap-2">
+      <div v-if="businessStore.business.rating" class="text-left mb-4 dark:text-white flex items-center gap-2">
         <strong>{{ $t('Stores.rating') }}</strong>
         <span class="flex items-center mt-2 text-yellow-400">
           <template v-for="n in 5" :key="n">
-            <template v-if="n <= Math.floor(store.rating)">
+            <template v-if="n <= Math.floor(businessStore.business.rating)">
               <UIcon name="line-md:star-pulsating-filled-loop" class="w-5 h-5" />
             </template>
-            <template v-else-if="n - 0.5 === store.rating">
+            <template v-else-if="n - 0.5 === businessStore.business.rating">
               <UIcon name="material-symbols:star-half" class="w-5 h-5" />
             </template>
             <template v-else>
@@ -94,22 +94,30 @@
             </template>
           </template>
         </span>
-        <span class="ml-2 text-sm text-gray-500 dark:text-gray-300">({{ store.rating.toFixed(1) }})</span>
+        <span class="ml-2 text-sm text-gray-500 dark:text-gray-300"
+          >({{ businessStore.business.rating.toFixed(1) }})</span
+        >
       </div>
 
-      <div v-if="store.created_at && store.updated_at" class="text-left mb-2 text-sm italic dark:text-gray-300">
-        {{ $t('Stores.createdAt') }} {{ formatDate(store.created_at) }}<br />
-        {{ $t('Stores.updatedAt') }} {{ formatDate(store.updated_at) }}
+      <div
+        v-if="businessStore.business.created_at && businessStore.business.updated_at"
+        class="text-left mb-2 text-sm italic dark:text-gray-300"
+      >
+        {{ $t('Stores.createdAt') }} {{ formatDate(businessStore.business.created_at) }}<br />
+        {{ $t('Stores.updatedAt') }} {{ formatDate(businessStore.business.updated_at) }}
       </div>
 
       <!-- Товари та акції -->
-      <LoadGoods v-if="store.slug && store.price" :price="store.price" />
+      <LoadGoods
+        v-if="businessStore.business.slug && businessStore.business.price"
+        :price="businessStore.business.price"
+      />
       <ShareButtons
-        v-if="store.title"
+        v-if="businessStore.business.title"
         :page-object="{
-          title: store.title,
-          description: store.description,
-          image: store.thumbnail_url,
+          title: businessStore.business.title,
+          description: businessStore.business.description,
+          image: businessStore.business.thumbnail_url,
         }"
       />
       <div class="flex gap-3 my-4 justify-center">
@@ -128,29 +136,25 @@
 
 <script setup>
 import { ref, defineAsyncComponent } from 'vue';
-import { useAppStore, useStoresStore } from '@/stores/app.store';
 import { useRoute } from 'vue-router';
-
-const loadPanorama = defineAsyncComponent(() => import('~/components/load/panorama.vue'));
-
-const appStore = useAppStore();
-const storesStore = useStoresStore();
-const UButton = resolveComponent('UButton');
-const UIcon = resolveComponent('UIcon');
-const store = ref({});
-
+import { useRuntimeConfig } from '#imports';
+const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
 const route = useRoute();
-const errorMessage = ref('');
-const { $customApi } = useNuxtApp();
 
-onMounted(async () => {
-  const s = await storesStore.fetchStoreBySlug($customApi, route.params.slug);
-  if (!s) {
-    errorMessage.value = 'Магазин не знайдено';
-  } else {
-    store.value = s;
+const businessStore = useBusinessStore();
+
+// const { getBusinessBySlug } = useBusiness();
+watchEffect(async () => {
+  if (route.params.slug) {
+    await businessStore.getBusinessBySlug(route.params.slug, apiBase);
   }
 });
+const loadPanorama = defineAsyncComponent(() => import('~/components/load/panorama.vue'));
+
+const UButton = resolveComponent('UButton');
+const UIcon = resolveComponent('UIcon');
+
+const errorMessage = ref('');
 
 const typeStyles = {
   culture: 'bg-purple-600',
@@ -170,7 +174,7 @@ const typeLabels = {
 };
 
 const goToView = (listView = false) => {
-  appStore.isListView = listView;
+  appbusiness.isListView = listView;
   navigateTo('/');
 };
 

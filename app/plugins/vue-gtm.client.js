@@ -25,7 +25,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   nuxtApp.vueApp.use(gtmInstance);
 
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('✅ GTM Vue plugin initialized (script managed by cookie-consent)');
-  }
+  // if (process.env.NODE_ENV !== 'production') {
+  //   console.log('✅ GTM Vue plugin initialized (script managed by cookie-consent)');
+  // }
 });

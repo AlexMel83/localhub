@@ -12,7 +12,7 @@
           v-for="store in filteredStores"
           :key="store.slug"
           class="relative rounded-lg overflow-hidden shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 h-64"
-          @click="$router.push(`/starkon/${store.slug}`)"
+          @click.stop="goToStore(store.slug)"
         >
           <!-- Зображення на всю карточку -->
           <div class="w-full h-full relative overflow-hidden group">
@@ -35,7 +35,7 @@
             <p class="text-sm text-gray-300 line-clamp-2">{{ store.description }}</p>
             <p class="text-xs text-gray-300 line-clamp-2">{{ store.address }}</p>
             <div class="flex items-center justify-between">
-              <p class="text-sm mt-2">{{ store.working_hours }}</p>
+              <p class="text-sm mt-2">{{ store.working_hours || '09:00 - 18:00' }}</p>
               <!-- Рейтинг зірок -->
               <div class="flex items-center mt-2 text-yellow-400">
                 <template v-for="n in 5" :key="n">
@@ -54,6 +54,16 @@
                 </template>
               </div>
             </div>
+          </div>
+          <NuxtLink
+            :to="`/starkon/${store.slug}/edit`"
+            class="absolute top-2 right-8 text-gray-400 hover:text-blue-500"
+            @click.stop
+          >
+            Edit
+          </NuxtLink>
+          <div class="absolute top-2 right-16 text-red-500 cursor-pointer transition-colors duration-300">
+            <NuxtLink @click.stop="businessStore.deleteBusiness(store, apiBase)">Delete</NuxtLink>
           </div>
           <!-- Іконка серця -->
           <div
@@ -76,7 +86,7 @@
           </div>
         </div>
         <!-- Повідомлення про відсутність магазинів поза циклом -->
-        <div v-if="filteredStores.length === 0" class="text-center text-gray-500 mt-4 col-span-full">
+        <div v-if="filteredStores?.length === 0" class="text-center text-gray-500 mt-4 col-span-full">
           Stores не знайдені
         </div>
       </div>
@@ -90,11 +100,14 @@
 </template>
 
 <script setup>
-import { useAppStore, useStoresStore } from '~/stores/app.store';
+import { useAppStore } from '~/stores/app.store';
+import { useRuntimeConfig } from '#imports';
+const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
 const appStore = useAppStore();
-const storesStore = useStoresStore();
+const businessStore = useBusinessStore();
 
-const { $customApi } = useNuxtApp();
+const $router = useRouter();
+
 const searchTerm = computed(() => appStore.searchTerm);
 
 const likedStores = ref(new Set());
@@ -114,6 +127,11 @@ const typeLabels = {
   hotel: 'Готель',
   service: 'Сервіс',
   market: 'Ринок',
+};
+
+const goToStore = (slug) => {
+  if (!slug) return;
+  $router.push(`/starkon/${slug}`);
 };
 
 function onParallax(event, el) {
@@ -139,15 +157,18 @@ const toggleLike = (storeId) => {
 
 // Перевірка, чи магазин "лайкнутий"
 const isLiked = (storeId) => {
-  return likedStores.value.has(storeId);
+  return likedStores?.value.has(storeId);
 };
 
-onMounted(async () => {
-  await storesStore.fetchStores($customApi);
-});
+await businessStore.getBusiness(apiBase);
 
 const filteredStores = computed(() => {
   const search = searchTerm.value?.toLowerCase() || '';
-  return storesStore.stores.filter((p) => p.title.toLowerCase().includes(search));
+  return businessStore.businesses
+    .map((store) => ({
+      ...store,
+      slug: String(store.slug || store.id || ''),
+    }))
+    .filter((p) => p.title.toLowerCase().includes(search));
 });
 </script>
