@@ -101,10 +101,10 @@ import { useRoute } from 'vue-router';
 import { navigateTo } from 'nuxt/app';
 import type { SelectItem } from '@nuxt/ui';
 import { useRuntimeConfig } from '#imports';
-const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
 
 import { useValidate } from '~~/composables/useValidate';
 import { useGeoCode } from '~~/composables/useGeoCode';
+const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
 
 const { phoneError, validatePhone, normalizePhone } = useValidate();
 const { reverseGeoCode, geoCodeAddress } = useGeoCode();
