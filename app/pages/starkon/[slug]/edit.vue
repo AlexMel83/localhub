@@ -102,8 +102,8 @@ import { navigateTo } from 'nuxt/app';
 import type { SelectItem } from '@nuxt/ui';
 import { useRuntimeConfig } from '#imports';
 
-import { useValidate } from '~~/composables/useValidate';
-import { useGeoCode } from '~~/composables/useGeoCode';
+import { useValidate } from '~/composables/useValidate';
+import { useGeoCode } from '~/composables/useGeoCode';
 const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
 
 const { phoneError, validatePhone, normalizePhone } = useValidate();

@@ -146,7 +146,8 @@ const form: Form = reactive({
   contacts: '',
   working_hours_start: '09:00',
   working_hours_end: '18:00',
-  price: 'https://docs.google.com/spreadsheets/d/1lAT-AuKNSjmruKh59ePe8jt63QSSbm_4gWdWPxsU7-8/edit?usp=sharing',
+  price:
+    'https://script.google.com/macros/s/AKfycbzfUqCk_D9bM1tmHgTeA_v8wmRzSMqYFI1qSPW0Ln8TpI5LNqxKHZs8lr0ffu8Vy4tM/exec',
   latitude: Number(route.query.lat) || 49.7550101,
   longitude: Number(route.query.lng) || 27.1874278,
   thumbnail_url: 'https://localhub.store/panoimg/Instrument-Shop.jpg',
