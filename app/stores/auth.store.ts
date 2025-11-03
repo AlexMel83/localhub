@@ -50,9 +50,16 @@ export const useAuthStore = defineStore('auth', {
         const $api = nuxtApp.$api as { auth: AuthApi };
         const { data } = await $api.auth.signIn({ email, password });
         this.saveUserData(data);
-      } catch (err: any) {
-        console.error('Login error:', err);
-        this.error = err?.response?.data?.message || 'Login failed';
+      } catch (err: unknown) {
+        if (err) {
+          // err is now of type Error
+          console.error('Login error:', err.message);
+          this.error = err?.response?.data?.message || 'Login failed';
+        } else {
+          // Handle other types of errors
+          console.error('Unknown error:', err);
+          this.error = 'An unknown error occurred';
+        }
       } finally {
         this.loading = false;
       }

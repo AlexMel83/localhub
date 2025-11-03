@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { useNuxtApp, navigateTo } from 'nuxt/app';
-import type { AuthApi } from '../api/auth';
 import { useCookie } from '#app';
 import axios from 'axios';
 import { useCookieConsent } from '~/composables/useCookieConsent';

@@ -46,11 +46,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useAppStore } from '../../stores/app.store';
 import { useRoute } from 'vue-router';
 
-const { locale, t } = useI18n();
 const appStore = useAppStore();
 const route = useRoute();
 const isSearchVisible = ref(false);

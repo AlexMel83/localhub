@@ -1,13 +1,8 @@
-import type { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import type { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
 import { useAuthStore } from '~/stores/auth.store';
 import apiModule from '~/api/index';
 import { defineNuxtPlugin, useRuntimeConfig, navigateTo, useNuxtApp } from '#app';
-
-interface TokenData {
-  accessToken: string;
-  refreshToken?: string;
-}
 
 interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;

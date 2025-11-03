@@ -11,7 +11,7 @@
     }"
   >
     <template #default="{ open }">
-      <button ref="modalTrigger" class="hidden" @click="open"></button>
+      <button ref="modalTrigger" class="hidden" @click="open" />
     </template>
 
     <template #content
@@ -223,10 +223,6 @@ const clearVars = (email) => {
   userIsNotRegistered.value = false;
   sendActivationEmail.value = false;
   togglePasswordVisibility.value = false;
-};
-
-const handleTogglePasswordVisibility = async () => {
-  togglePasswordVisibility.value = !togglePasswordVisibility.value;
 };
 
 const loginSchema = object({

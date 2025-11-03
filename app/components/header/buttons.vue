@@ -57,11 +57,11 @@
     </UTooltip>
     <UTooltip text="Увійти" :popper="{ placement: 'bottom' }">
       <UButton
-        @click="openLoginModal"
         color="neutral"
         size="sm"
         variant="soft"
         :class="[buttonClasses, 'flex items-center gap-1']"
+        @click="openLoginModal"
       >
         <Icon :name="authStore.isAuthed ? 'lucide:user' : 'lucide:log-in'" class="w-5 h-5" />
         <span class="text-sm font-semibold">
@@ -109,10 +109,6 @@ const { locale } = useI18n();
 const router = useRouter();
 const route = useRoute();
 const { $gtag } = useNuxtApp();
-
-const langButton = ref<HTMLElement>();
-const themeButton = ref<HTMLElement>();
-const searchButton = ref<HTMLElement>();
 
 const currentLocale = computed(() => locale.value);
 

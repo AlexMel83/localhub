@@ -1,5 +1,5 @@
 <script setup>
-const { $api, $load } = useNuxtApp();
+const { $load } = useNuxtApp();
 
 const errors = reactive({
   textError: '',

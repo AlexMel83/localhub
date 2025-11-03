@@ -6,7 +6,7 @@
       <Footer />
       <!-- <CookieDebug /> -->
     </div>
-    <ModalLoginRegistration @modalClosed="onModalClosed" />
+    <ModalLoginRegistration @modal-closed="onModalClosed" />
   </UApp>
 </template>
 
