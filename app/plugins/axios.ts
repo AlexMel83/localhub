@@ -1,20 +1,12 @@
-// app/plugins/axios.ts
 import type { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
-import { useAuthStore } from '../stores/app.store';
-import apiModule from '../api/index';
-// @ts-expect-error need types
+import { useAuthStore } from '~/stores/auth.store';
+import apiModule from '~/api/index';
 import { defineNuxtPlugin, useRuntimeConfig, navigateTo, useNuxtApp } from '#app';
 
-// Типи для API відповідей
 interface TokenData {
   accessToken: string;
   refreshToken?: string;
-}
-
-interface UserData {
-  tokens: TokenData;
-  [key: string]: unknown;
 }
 
 interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
@@ -24,7 +16,6 @@ interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig();
   const authStore = useAuthStore();
-
   const baseURL = config.public.apiBase || 'http://localhost:5050';
 
   const axiosInstance: AxiosInstance = axios.create({
@@ -39,24 +30,22 @@ export default defineNuxtPlugin(() => {
 
   const api = apiModule(axiosInstance);
 
-  const getAccessToken = (): string | null => authStore?.userData?.tokens?.accessToken || null;
+  // === Додаємо токен при кожному запиті ===
+  const getAccessToken = () => authStore.userData?.tokens?.accessToken || null;
 
-  const setAuthHeader = (token: string | null = null): void => {
+  const setAuthHeader = (token: string | null = null) => {
     const accessToken = token || getAccessToken();
-    if (accessToken) {
-      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-    } else {
-      delete axiosInstance.defaults.headers.common['Authorization'];
-    }
+    if (accessToken) axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+    else delete axiosInstance.defaults.headers.common['Authorization'];
   };
 
+  // === Рефреш токенів ===
   let isRefreshing = false;
   let refreshSubscribers: Array<(token: string) => void> = [];
 
   const subscribeTokenRefresh = (cb: (token: string) => void) => {
     refreshSubscribers.push(cb);
   };
-
   const onRefreshed = (token: string) => {
     refreshSubscribers.forEach((cb) => cb(token));
     refreshSubscribers = [];
@@ -64,137 +53,99 @@ export default defineNuxtPlugin(() => {
 
   const refreshToken = async (): Promise<boolean> => {
     const refreshTokenValue = authStore.userData?.tokens?.refreshToken;
-
     if (!refreshTokenValue) {
       console.warn('Refresh token відсутній, виконується вихід');
-      await authStore.logOut();
+      await authStore.logout();
       return false;
     }
 
     if (isRefreshing) {
-      return new Promise((resolve) => {
-        subscribeTokenRefresh((token) => resolve(!!token));
-      });
+      return new Promise((resolve) => subscribeTokenRefresh((token) => resolve(!!token)));
     }
 
     isRefreshing = true;
 
     try {
       delete axiosInstance.defaults.headers.common['Authorization'];
-
       const response = await api.auth.refresh(refreshTokenValue);
 
-      if (!response.data?.tokens?.accessToken) {
-        throw new Error('Не вдалося отримати новий access token');
-      }
+      const newAccess = response.data?.tokens?.accessToken;
+      if (!newAccess) throw new Error('Не вдалося оновити access token');
 
-      const updatedUserData: UserData = {
+      const updatedData = {
         ...authStore.userData,
         tokens: {
           ...authStore.userData!.tokens,
-          accessToken: response.data.tokens.accessToken,
-          refreshToken: response.data.tokens?.refreshToken || authStore.userData!.tokens.refreshToken,
+          accessToken: newAccess,
+          refreshToken: response.data?.tokens?.refreshToken || authStore.userData!.tokens.refreshToken,
         },
       };
 
-      await authStore.saveUserData(updatedUserData);
-      setAuthHeader(response.data.tokens.accessToken);
-      onRefreshed(response.data.tokens.accessToken);
+      authStore.saveUserData(updatedData);
+      setAuthHeader(newAccess);
+      onRefreshed(newAccess);
 
       return true;
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Невідома помилка';
-      console.error('Помилка при оновленні токену:', errorMessage);
-      await authStore.logOut();
+    } catch (error) {
+      console.error('Помилка оновлення токену:', error);
+      await authStore.logout();
       onRefreshed('');
-      if (import.meta.client) {
-        await navigateTo('/login');
-      }
+      if (import.meta.client) await navigateTo('/login');
       return false;
     } finally {
       isRefreshing = false;
     }
   };
 
+  // === Interceptors ===
   axiosInstance.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
+    (config) => {
       const accessToken = getAccessToken();
-      if (accessToken && config.headers) {
-        config.headers.Authorization = `Bearer ${accessToken}`;
-      }
+      if (accessToken && config.headers) config.headers.Authorization = `Bearer ${accessToken}`;
       return config;
     },
-    (error: AxiosError) => {
-      console.error('Request interceptor error:', error);
-      return Promise.reject(error);
-    },
+    (error) => Promise.reject(error),
   );
 
   axiosInstance.interceptors.response.use(
-    (response: AxiosResponse) => {
-      return response;
-    },
+    (response) => response,
     async (error: AxiosError) => {
       const originalRequest = error.config as ExtendedAxiosRequestConfig;
 
-      if (
-        (error.response?.status === 401 || error.response?.status === 403) &&
-        originalRequest &&
-        !originalRequest._retry
-      ) {
+      if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
         originalRequest._retry = true;
+        const success = await refreshToken();
 
-        const refreshSuccess = await refreshToken();
-
-        if (refreshSuccess) {
-          const newAccessToken = getAccessToken();
-          if (newAccessToken && originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          }
-
-          try {
-            return await axiosInstance(originalRequest);
-          } catch (retryError) {
-            console.error('Помилка при повторному запиті:', retryError);
-            return Promise.reject(retryError);
-          }
+        if (success) {
+          const newToken = getAccessToken();
+          if (newToken && originalRequest.headers) originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return axiosInstance(originalRequest);
         }
       }
 
-      if (import.meta.dev) {
-        console.error(`❌ API Error: ${error.response?.status} ${error.config?.url}`, error.message);
-      }
-
+      // Показ помилок
       if (import.meta.client && error.response) {
         const { $toast, $t } = useNuxtApp();
-        switch (error.response.status) {
-          case 400:
-            $toast.error($t('errors.badRequest'));
-            break;
-          case 404:
-            $toast.error($t('errors.notFound'));
-            break;
-          case 500:
-            $toast.error($t('errors.serverError'));
-            break;
-          case 503:
-            $toast.error($t('errors.serviceUnavailable'));
-            break;
-        }
+        const code = error.response.status;
+        const messages: Record<number, string> = {
+          400: $t('errors.badRequest'),
+          404: $t('errors.notFound'),
+          500: $t('errors.serverError'),
+          503: $t('errors.serviceUnavailable'),
+        };
+        if (messages[code]) $toast.error(messages[code]);
       }
 
       return Promise.reject(error);
     },
   );
 
-  if (import.meta.client) {
-    setAuthHeader();
-  }
+  if (import.meta.client) setAuthHeader();
 
   return {
     provide: {
-      customApi: api,
       axios: axiosInstance,
+      customApi: api,
     },
   };
 });

@@ -6,6 +6,7 @@
       <Footer />
       <!-- <CookieDebug /> -->
     </div>
+    <ModalLoginRegistration @modalClosed="onModalClosed" />
   </UApp>
 </template>
 
@@ -22,6 +23,10 @@ interface Locale {
 
 // Отримання поточної локалі через useI18n
 const { locale } = useI18n();
+
+const onModalClosed = () => {
+  console.log('Модалка закрита глобально');
+};
 
 const currentLocale = computed<Locale>(() => {
   const code = locale.value || 'uk';

@@ -3,7 +3,6 @@
     <!-- Переключувач мови з тултіпом -->
     <UTooltip :text="$t('Header.toggleLanguage')" :popper="{ placement: 'bottom' }">
       <UButton
-        ref="langButton"
         :class="buttonClasses"
         color="neutral"
         size="sm"
@@ -24,7 +23,6 @@
     <!-- Переключувач теми з тултіпом -->
     <UTooltip :text="$t('Header.toggleTheme')" :popper="{ placement: 'bottom' }">
       <UButton
-        ref="themeButton"
         :class="buttonClasses"
         color="neutral"
         size="sm"
@@ -46,7 +44,6 @@
     <!-- Кнопка пошуку з тултіпом -->
     <UTooltip :text="$t('Header.toggleSearch')" :popper="{ placement: 'bottom' }">
       <UButton
-        ref="searchButton"
         :class="[buttonClasses, { 'text-primary-500': isSearchActive }]"
         color="neutral"
         size="sm"
@@ -58,22 +55,40 @@
         <Icon name="lucide:search" class="w-5 h-5" :class="[iconClasses, { 'scale-110': isSearchActive }]" />
       </UButton>
     </UTooltip>
+    <UTooltip text="Увійти" :popper="{ placement: 'bottom' }">
+      <UButton
+        @click="openLoginModal"
+        color="neutral"
+        size="sm"
+        variant="soft"
+        :class="[buttonClasses, 'flex items-center gap-1']"
+      >
+        <Icon :name="authStore.isAuthed ? 'lucide:user' : 'lucide:log-in'" class="w-5 h-5" />
+        <span class="text-sm font-semibold">
+          {{ authStore.isAuthed ? authStore.user?.name || 'Кабінет' : 'Увійти' }}
+        </span>
+      </UButton>
+    </UTooltip>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { useAppStore } from '../../stores/app.store';
+import { useModalStore } from '~/stores/modal.store';
 import { useI18n } from 'vue-i18n';
 import { useRouter, useRoute } from 'vue-router';
-// @ts-expect-error types needed
 import { useNuxtApp } from '#app';
+import { useAuthStore } from '~/stores/auth.store';
 
 interface Props {
   isMenuOpen?: boolean;
   isSearchVisible?: boolean;
   showMobileMenu?: boolean;
 }
+
+const modalStore = useModalStore();
+const authStore = useAuthStore();
 
 const props = withDefaults(defineProps<Props>(), {
   isMenuOpen: false,
@@ -100,6 +115,10 @@ const themeButton = ref<HTMLElement>();
 const searchButton = ref<HTMLElement>();
 
 const currentLocale = computed(() => locale.value);
+
+const openLoginModal = () => {
+  modalStore.openLoginModal();
+};
 
 const languageLabel = computed(() => {
   return currentLocale.value.toUpperCase() === 'UK' ? 'ENG' : 'УКР';
