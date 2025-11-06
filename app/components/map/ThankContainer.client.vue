@@ -1,7 +1,6 @@
 <!-- app/components/map/ThankContainer.client.vue -->
 <template>
   <section class="mapsection relative h-screen">
-    <MapGeoError v-if="geoError" :error-message="geoErrorMsg" @close="closeGeoError" />
     <LMap
       ref="map"
       class="z-[1]"

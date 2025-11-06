@@ -38,8 +38,7 @@ const createPopupContent = (store) => {
       <h3 class="font-bold text-lg">${store.title}</h3>
       <p class="text-sm text-gray-600 mt-1">${store.address || 'Адреса не вказана'}</p>
       <button 
-        class="mt-3 w-full bg-blue-600 text-white py-2 rounded text-sm font-medium hover:bg-blue-700 transition"
-        onclick="window.dispatchEvent(new CustomEvent('open-thankful-details', { detail: ${store.id} }))"
+        class="thankful-detail-btn mt-3 w-full bg-blue-600 text-white py-2 rounded text-sm font-medium hover:bg-blue-700 transition"
       >
         Детальніше
       </button>
@@ -54,8 +53,30 @@ const updateMarkers = () => {
   if (props.showStoreMarkers && props.stores.length) {
     const markers = props.stores.map((store) => {
       const marker = L.marker([store.lat, store.lng], { icon: createIcon() });
+
       marker.bindPopup(createPopupContent(store), { offset: [0, -30] });
-      marker.on('click', () => emit('marker-click', store));
+
+      // Клік по кнопці "Детальніше" у popup
+      marker.on('popupopen', () => {
+        const btn = document.querySelector('.thankful-detail-btn');
+        if (btn && !btn.dataset.listener) {
+          btn.dataset.listener = 'true';
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            emit('marker-click', store); // тільки тут емітимо
+          });
+        }
+      });
+
+      // Очищення при закритті popup
+      marker.on('popupclose', () => {
+        const btn = document.querySelector('.thankful-detail-btn');
+        if (btn && btn.dataset.listener) {
+          btn.removeEventListener('click', () => {});
+          delete btn.dataset.listener;
+        }
+      });
+
       return marker;
     });
     markerClusterGroup.value.addLayers(markers);
@@ -81,5 +102,15 @@ watch(
 .custom-div-icon {
   background: none;
   border: none;
+}
+
+:deep(.leaflet-popup-content) {
+  margin: 0;
+  padding: 0;
+}
+:deep(.leaflet-popup-content-wrapper) {
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 </style>
