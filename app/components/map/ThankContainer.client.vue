@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { MAP_CONFIG, TILE_PROVIDERS } from '@/constants/map-config';
+import { TILE_PROVIDERS } from '@/constants/map-config';
 import { LControlLayers, LControlScale, LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
 
 defineProps({
