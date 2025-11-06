@@ -4,7 +4,7 @@ export const useModalStore = defineStore('modal', {
   state: () => ({
     isLoginModalOpen: false,
     activeModal: null as string | null,
-    selectedFeature: null as any,
+    selectedFeature: null as unknown,
   }),
   actions: {
     openLoginModal() {
@@ -15,7 +15,7 @@ export const useModalStore = defineStore('modal', {
       console.log('Closing modal');
       this.isLoginModalOpen = false;
     },
-    openThankfulDetails(feature: any) {
+    openThankfulDetails(feature: unknown) {
       this.selectedFeature = feature;
       this.activeModal = 'thankful-details';
     },

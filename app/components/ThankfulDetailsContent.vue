@@ -4,7 +4,7 @@
       <UIcon name="line-md:loading-twotone-loop" class="w-8 h-8 mx-auto text-blue-600" />
     </div>
 
-    <div v-else-if="details" class="prose prose-sm max-w-none" v-html="details.html"></div>
+    <div v-else-if="details" class="prose prose-sm max-w-none" v-html="details.html" />
 
     <div v-else class="text-center py-8 text-gray-500">Не вдалося завантажити деталі</div>
 
