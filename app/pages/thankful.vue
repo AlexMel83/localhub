@@ -33,21 +33,45 @@
     />
 
     <!-- Список -->
-    <div v-else class="p-4 max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-else class="p-4 max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <div
           v-for="f in features"
           :key="f.properties.id"
-          class="bg-white rounded-xl shadow hover:shadow-xl cursor-pointer transition"
+          class="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full"
           @click="openDetails(f)"
         >
-          <div class="h-48 bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center">
-            <UIcon name="material-symbols:discount" class="w-16 h-16 text-white" />
+          <!-- Зображення-заглушка -->
+          <div
+            class="relative h-40 bg-gradient-to-br from-green-600 to-green-800 flex items-center justify-center overflow-hidden"
+          >
+            <UIcon name="material-symbols:discount" class="w-20 h-20 text-white opacity-90" />
+            <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
           </div>
-          <div class="p-4">
-            <h3 class="font-semibold text-lg truncate">{{ f.properties.label_column }}</h3>
-            <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ f.properties.dd_institution_name }}</p>
-            <button class="mt-3 w-full bg-blue-600 text-white py-2 rounded text-sm" @click.stop="openDetails(f)">
+
+          <!-- Контент -->
+          <div class="p-5 flex-1 flex flex-col">
+            <!-- Назва -->
+            <h3 class="font-bold text-lg text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+              {{ f.properties.label_column || 'Без назви' }}
+            </h3>
+
+            <!-- Адреса -->
+            <p class="text-sm text-gray-600 mt-2 line-clamp-2 flex-1">
+              {{ f.properties.dd_institution_name || 'Адреса не вказана' }}
+            </p>
+
+            <!-- Знижка (якщо є) -->
+            <div v-if="f.properties.discount" class="mt-3 inline-flex items-center">
+              <UIcon name="material-symbols:local-offer" class="w-4 h-4 text-green-600 mr-1" />
+              <span class="text-xs font-medium text-green-600">{{ f.properties.discount }}</span>
+            </div>
+
+            <!-- Кнопка -->
+            <button
+              class="mt-4 w-full bg-blue-600 text-white py-2.5 rounded-xl font-medium text-sm hover:bg-blue-700 transition-colors shadow-sm"
+              @click.stop="openDetails(f)"
+            >
               Детальніше
             </button>
           </div>
@@ -63,7 +87,7 @@
         </div>
 
         <!-- v-html тільки після отримання html -->
-        <div v-else-if="detailsData?.html" v-html="detailsData.html" class="prose prose-sm max-w-none p-4"></div>
+        <div v-else-if="detailsData?.html" class="prose prose-sm max-w-none p-4" v-html="detailsData.html" />
 
         <div v-else class="text-center py-8 text-gray-500">Не вдалося завантажити деталі</div>
       </template>
@@ -153,13 +177,6 @@ const openDetails = async (storeOrFeature) => {
     loading.value = false;
   }
 };
-
-const close = () => {
-  detailsOpen.value = false;
-  selectedFeature.value = null;
-  detailsData.value = null;
-  loading.value = false;
-};
 </script>
 
 <style scoped>
@@ -195,5 +212,11 @@ const close = () => {
 
 :deep(a.btn:hover) {
   background-color: #2563eb;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 </style>
