@@ -25,7 +25,7 @@
         :url="tileProvider.url"
         layer-type="base"
       />
-      <MapThankMarkers
+      <ThankMapMarkers
         :stores="stores"
         :show-store-markers="showStoreMarkers"
         layer-name="Знижки для військових"

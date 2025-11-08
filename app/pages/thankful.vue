@@ -25,7 +25,7 @@
     </div>
 
     <!-- Карта -->
-    <MapThankContainer
+    <ThankMapContainer
       v-if="!isListView"
       :stores="mapFeatures"
       class="h-[calc(100vh-80px)]"
