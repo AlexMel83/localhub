@@ -55,51 +55,48 @@
       </div>
     </div>
 
-    <!-- UModal з ref -->
-    <UModal v-model="isDetailsOpen" title="Деталі закладу">
-      <template #default="{ open }">
-        <button ref="detailsModalTrigger" class="hidden" @click="open" />
+    <!-- UModal з v-model:open -->
+    <UModal v-model:open="detailsOpen" title="Деталі закладу">
+      <template #body>
+        <div v-if="loading" class="text-center py-8">
+          <UIcon name="line-md:loading-twotone-loop" class="w-8 h-8 mx-auto text-blue-600" />
+        </div>
+
+        <!-- v-html тільки після отримання html -->
+        <div v-else-if="detailsData?.html" v-html="detailsData.html" class="prose prose-sm max-w-none p-4"></div>
+
+        <div v-else class="text-center py-8 text-gray-500">Не вдалося завантажити деталі</div>
       </template>
 
-      <template #content>
-        <div v-if="modalStore.selectedFeature" class="p-6">
-          <h2 class="text-xl font-bold mb-4">
-            {{ modalStore.selectedFeature.properties.label_column }}
-          </h2>
-          <p class="text-gray-600">
-            {{ modalStore.selectedFeature.properties.dd_institution_name }}
-          </p>
-          <pre class="mt-4 text-xs bg-gray-100 p-4 rounded overflow-auto">{{
-            modalStore.selectedFeature.properties
-          }}</pre>
-        </div>
-        <div v-else class="p-6">Немає даних</div>
+      <template #footer="{ close }">
+        <a
+          v-if="selectedFeature"
+          :href="`https://gis.khm.gov.ua/discount_defenders_card/${selectedFeature.properties.id}`"
+          target="_blank"
+          class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Перейти на картку
+        </a>
+        <UButton label="Закрити" color="neutral" variant="outline" @click="close" />
       </template>
     </UModal>
   </div>
 </template>
 
 <script setup>
-import { useModalStore } from '~/stores/modal.store';
-
-const modalStore = useModalStore();
-const isListView = ref(false);
+const detailsOpen = ref(false);
+const selectedFeature = ref(null);
+const detailsData = ref(null);
+const loading = ref(false);
 
 const apiBase = 'https://gis.khm.gov.ua';
 const layerId = '3419035732197508496';
 const jsonUrl = `${apiBase}/api-user/json_layer/${layerId}/2024-08-09%2006:03:38_2024-08-09%2006:03:38%202025-09-24%2011:37:22.431%2094`;
-// const infoUrl = `${apiBase}/api-user/map-info?layer=${layerId}`;
+const infoUrl = `${apiBase}/api-user/map-info?layer=${layerId}`;
 
 const { data: geojson } = await useAsyncData('thankful', () => $fetch(jsonUrl));
 
-const isDetailsOpen = computed({
-  get: () => modalStore.activeModal === 'thankful-details',
-  set: (val) => {
-    if (!val) modalStore.closeModal();
-  },
-});
-
-const detailsModalTrigger = ref(null);
+const isListView = ref(false);
 
 const features = computed(() => geojson.value?.features || []);
 const mapFeatures = computed(() => {
@@ -119,32 +116,84 @@ const mapFeatures = computed(() => {
     .filter(Boolean);
 });
 
-const openDetails = (storeOrFeature) => {
-  console.log('openDetails called with:', storeOrFeature);
-
-  const id = storeOrFeature.id || storeOrFeature.properties?.id;
-  console.log('Extracted id:', id);
-
-  const feature = features.value.find((f) => f.properties.id === id);
-  console.log('Found feature:', feature);
-
-  if (feature) {
-    console.log('Opening modal with feature:', feature);
-    modalStore.openThankfulDetails(feature);
-    console.log('Modal state after open:', modalStore.activeModal);
-  } else {
-    console.log('Feature not found!');
+const fetchDetails = async (id) => {
+  try {
+    const data = await $fetch(`${infoUrl}&id=${id}`);
+    console.log('API response:', data); // ← Перевір, чи є html
+    return data;
+  } catch (err) {
+    console.error('API error:', err);
+    return null;
   }
 };
 
-watch(
-  () => modalStore.activeModal,
-  (newValue) => {
-    if (newValue === 'thankful-details' && detailsModalTrigger.value) {
-      nextTick(() => {
-        detailsModalTrigger.value?.click();
-      });
+const openDetails = async (storeOrFeature) => {
+  const id = storeOrFeature.id || storeOrFeature.properties?.id;
+  const feature = features.value.find((f) => f.properties.id === id);
+  if (!feature) return;
+
+  selectedFeature.value = feature;
+  detailsData.value = null;
+  loading.value = true;
+  detailsOpen.value = false;
+
+  try {
+    const data = await fetchDetails(id);
+
+    if (data?.html) {
+      // Видаляємо кнопку з HTML
+      const cleanHtml = data.html.replace(/<a[^>]*class="btn[^>]*>Перейти на картку<\/a>/, '').trim();
+
+      detailsData.value = { ...data, html: cleanHtml };
+      detailsOpen.value = true;
     }
-  },
-);
+  } catch (err) {
+    console.error('Failed to fetch:', err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const close = () => {
+  detailsOpen.value = false;
+  selectedFeature.value = null;
+  detailsData.value = null;
+  loading.value = false;
+};
 </script>
+
+<style scoped>
+:deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+}
+
+:deep(th),
+:deep(td) {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+:deep(th) {
+  font-weight: 600;
+}
+
+:deep(a.btn) {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  background-color: #3b82f6;
+  color: white;
+  text-decoration: none;
+  border-radius: 0.375rem;
+  text-align: center;
+  width: 100%;
+}
+
+:deep(a.btn:hover) {
+  background-color: #2563eb;
+}
+</style>
