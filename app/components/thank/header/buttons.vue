@@ -40,8 +40,6 @@
         </Transition>
       </UButton>
     </UTooltip>
-
-    <!-- Кнопка пошуку з тултіпом -->
     <UTooltip :text="$t('Header.toggleSearch')" :popper="{ placement: 'bottom' }">
       <UButton
         :class="[buttonClasses, { 'text-primary-500': isSearchActive }]"
@@ -55,52 +53,43 @@
         <Icon name="lucide:search" class="w-5 h-5" :class="[iconClasses, { 'scale-110': isSearchActive }]" />
       </UButton>
     </UTooltip>
-    <UTooltip text="Увійти" :popper="{ placement: 'bottom' }">
-      <UButton
-        color="neutral"
-        size="sm"
-        variant="soft"
-        :class="[buttonClasses, 'flex items-center gap-1']"
-        @click="openLoginModal"
-      >
-        <Icon :name="authStore.isAuthed ? 'lucide:user' : 'lucide:log-in'" class="w-5 h-5" />
-        <span class="text-sm font-semibold">
-          {{ authStore.isAuthed ? authStore.user?.name || 'Кабінет' : 'Увійти' }}
-        </span>
-      </UButton>
-    </UTooltip>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
-import { useAppStore } from '../../stores/app.store';
-import { useModalStore } from '~/stores/modal.store';
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
+import { useAppStore } from '~/stores/app.store';
 import { useI18n } from 'vue-i18n';
 import { useRouter, useRoute } from 'vue-router';
 import { useNuxtApp } from '#app';
-import { useAuthStore } from '~/stores/auth.store';
-
-interface Props {
-  isMenuOpen?: boolean;
-  isSearchVisible?: boolean;
-  showMobileMenu?: boolean;
-}
-
-const modalStore = useModalStore();
-const authStore = useAuthStore();
-
-const props = withDefaults(defineProps<Props>(), {
-  isMenuOpen: false,
-  isSearchVisible: false,
-  showMobileMenu: true,
-});
 
 interface Emits {
   (e: 'toggleMenu'): void;
   (e: 'toggle-search', value: boolean): void;
   (e: 'language-changed', locale: string): void;
 }
+
+interface Props {
+  isSearchVisible?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  isSearchVisible: false,
+});
+
+const isSearchActive = computed(() => props.isSearchVisible);
+
+const toggleSearch = (): void => {
+  const newSearchState = !props.isSearchVisible;
+  emit('toggle-search', newSearchState);
+
+  if (newSearchState) {
+    nextTick(() => {
+      const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
+      searchInput?.focus();
+    });
+  }
+};
 
 const emit = defineEmits<Emits>();
 
@@ -112,10 +101,6 @@ const { $gtag } = useNuxtApp();
 
 const currentLocale = computed(() => locale.value);
 
-const openLoginModal = () => {
-  modalStore.openLoginModal();
-};
-
 const languageLabel = computed(() => {
   return currentLocale.value.toUpperCase() === 'UK' ? 'ENG' : 'УКР';
 });
@@ -124,37 +109,25 @@ const themeIconName = computed(() => {
   return appStore.isDark ? 'lucide:sun' : 'lucide:moon';
 });
 
-const isHomePage = computed(() => {
-  return route.path === '/' || /^\/[a-z]{2}\/?$/.test(route.path);
+const isThankFulPage = computed(() => {
+  return route.path === '/thankful' || /^\/[a-z]{2}(\/thankful)?$/.test(route.path);
 });
 
 const buttonClasses = computed(() => {
   const baseClasses = ['cursor-pointer transition-all duration-200 ease-in-out', 'active:scale-95'];
-
-  // Якщо це головна сторінка з мапою, фіксуємо світлий hover фон
-  if (isHomePage.value && !appStore.isListView) {
+  if (isThankFulPage.value && !appStore.isListView) {
     return [...baseClasses, 'hover:bg-white/80 hover:dark:bg-gray-800/80'];
   }
-
-  // В інших випадках використовуємо оригінальний hover
   return [...baseClasses, 'hover:bg-gray-100 dark:hover:bg-gray-800'];
 });
 
 const iconClasses = computed(() => {
-  // if (isHomePage.value && !appStore.isListView) {
-  //   return ['text-gray-900'];
-  // }
   return [appStore.isDark ? 'text-white' : 'text-gray-900'];
 });
 
 const textClasses = computed(() => {
-  // if (isHomePage.value && !appStore.isListView) {
-  //   return ['text-gray-900'];
-  // }
   return [appStore.isDark ? 'text-white' : 'text-gray-900'];
 });
-
-const isSearchActive = computed(() => props.isSearchVisible);
 
 const isLanguageChanging = ref(false);
 
@@ -205,18 +178,6 @@ const toggleTheme = (): void => {
     }
   } catch (error) {
     console.error('Помилка при зміні теми:', error);
-  }
-};
-
-const toggleSearch = (): void => {
-  const newSearchState = !props.isSearchVisible;
-  emit('toggle-search', newSearchState);
-
-  if (newSearchState) {
-    nextTick(() => {
-      const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
-      searchInput?.focus();
-    });
   }
 };
 
