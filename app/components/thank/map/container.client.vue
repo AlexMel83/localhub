@@ -65,3 +65,76 @@ const onMapReady = () => {
   }
 };
 </script>
+
+<style scoped>
+:deep(.leaflet-control-zoom) {
+  margin-top: 80px !important;
+}
+
+:deep(.leaflet-control-layers) {
+  margin-bottom: 80px !important;
+}
+
+:deep(.leaflet-control-attribution) {
+  margin-bottom: 5px !important;
+}
+
+.custom-div-icon {
+  background: none;
+  border: none;
+}
+
+.custom-map-pin {
+  width: 35px;
+  height: 35px;
+}
+
+.btn {
+  color: var(--white-color);
+  background-color: var(--header-bg);
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+:deep(.leaflet-popup-content p) {
+  margin: 0 !important;
+  min-width: 200px !important;
+}
+
+:deep(.leaflet-popup-content) {
+  margin: 0 0 10px 0 !important;
+  min-width: 200px !important;
+}
+
+:deep(.leaflet-popup-content-wrapper) {
+  border-radius: 0 !important;
+  min-width: 200px !important;
+  max-width: 300px;
+}
+
+:deep(.leaflet-control-attribution) {
+  max-width: 65px;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: max-width 0.3s ease;
+}
+
+:deep(.leaflet-control-attribution:not(.collapsed)) {
+  max-width: 400px; /* розгорнутий стан */
+  padding-right: 8px;
+}
+
+.btn:hover {
+  background-color: var(--btn-border);
+}
+
+@media (min-width: 480px) {
+  :deep(.leaflet-control-layers) {
+    margin-bottom: 35px !important;
+  }
+  :deep(.leaflet-control-attribution) {
+    margin-bottom: 35px !important;
+  }
+}
+</style>

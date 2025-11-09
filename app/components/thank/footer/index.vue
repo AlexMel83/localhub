@@ -295,7 +295,7 @@ const isThankFulPage = computed(() => {
 
 // Логіка показу fixed футера тільки на мапі
 const showFixedFooter = computed(() => {
-  return isThankFulPage.value && !appStore.isListView;
+  return isThankFulPage.value && appStore.isListView;
 });
 
 // Закриття меню при кліку поза межами

@@ -19,6 +19,13 @@ export const TILE_PROVIDERS = [
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
   },
   {
+    name: 'Google Streets',
+    visible: false,
+    maxNativeZoom: 22, // Максимум для Google (з деталізацією до 22 в багатьох локаціях)
+    url: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+    attribution: '&copy; <a href="https://www.google.com/maps">Google</a>',
+  },
+  {
     name: 'Mapbox satellite',
     visible: false,
     maxZoom: 19,

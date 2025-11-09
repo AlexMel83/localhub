@@ -40,35 +40,56 @@
         </Transition>
       </UButton>
     </UTooltip>
+    <UTooltip :text="$t('Header.toggleSearch')" :popper="{ placement: 'bottom' }">
+      <UButton
+        :class="[buttonClasses, { 'text-primary-500': isSearchActive }]"
+        color="neutral"
+        size="sm"
+        variant="soft"
+        :aria-label="$t('Header.toggleSearch')"
+        :aria-pressed="isSearchActive"
+        @click="toggleSearch"
+      >
+        <Icon name="lucide:search" class="w-5 h-5" :class="[iconClasses, { 'scale-110': isSearchActive }]" />
+      </UButton>
+    </UTooltip>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import { useAppStore } from '~/stores/app.store';
 import { useI18n } from 'vue-i18n';
 import { useRouter, useRoute } from 'vue-router';
 import { useNuxtApp } from '#app';
-
-interface Props {
-  isMenuOpen?: boolean;
-  isSearchVisible?: boolean;
-  showMobileMenu?: boolean;
-}
-
-const modalStore = useModalStore();
-
-const props = withDefaults(defineProps<Props>(), {
-  isMenuOpen: false,
-  isSearchVisible: false,
-  showMobileMenu: true,
-});
 
 interface Emits {
   (e: 'toggleMenu'): void;
   (e: 'toggle-search', value: boolean): void;
   (e: 'language-changed', locale: string): void;
 }
+
+interface Props {
+  isSearchVisible?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  isSearchVisible: false,
+});
+
+const isSearchActive = computed(() => props.isSearchVisible);
+
+const toggleSearch = (): void => {
+  const newSearchState = !props.isSearchVisible;
+  emit('toggle-search', newSearchState);
+
+  if (newSearchState) {
+    nextTick(() => {
+      const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
+      searchInput?.focus();
+    });
+  }
+};
 
 const emit = defineEmits<Emits>();
 
@@ -107,8 +128,6 @@ const iconClasses = computed(() => {
 const textClasses = computed(() => {
   return [appStore.isDark ? 'text-white' : 'text-gray-900'];
 });
-
-const isSearchActive = computed(() => props.isSearchVisible);
 
 const isLanguageChanging = ref(false);
 
