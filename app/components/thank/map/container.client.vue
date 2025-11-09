@@ -47,7 +47,7 @@ defineProps({
 defineEmits(['marker-click']);
 
 const center = ref([49.42, 26.98]); // Хмельницький
-const zoom = ref(12);
+const zoom = ref(13);
 const showStoreMarkers = ref(true);
 const map = ref(null);
 
