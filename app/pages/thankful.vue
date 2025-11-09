@@ -1,22 +1,28 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen">
     <MetaTags
       :title="'Хмельницький Вдячний — Знижки для військових'"
       :description="'Карта та список закладів, які надають знижки військовим.'"
     />
 
     <!-- Перемикач -->
-    <div class="sticky top-0 z-20 bg-white shadow-md p-4 flex justify-between items-center">
+    <div class="sticky top-0 z-20 shadow-md p-4 flex justify-between items-center">
       <h1 class="text-xl font-bold">Хмельницький Вдячний</h1>
       <div class="flex gap-2">
         <button
-          :class="[!isListView ? 'bg-blue-600 text-white' : 'bg-gray-200', 'px-4 py-2 rounded-lg font-medium']"
+          :class="[
+            !isListView ? 'bg-blue-600 text-white' : 'bg-gray-200',
+            'px-4 py-1 rounded-lg font-medium cursor-pointer',
+          ]"
           @click="isListView = false"
         >
-          <UIcon name="material-symbols:map" class="w-5 h-5 inline mr-1" /> Карта
+          <UIcon name="material-symbols:map" class="w-5 h-5 inline mr-1" /> Мапа
         </button>
         <button
-          :class="[isListView ? 'bg-blue-600 text-white' : 'bg-gray-200', 'px-4 py-2 rounded-lg font-medium']"
+          :class="[
+            isListView ? 'bg-blue-600 text-white' : 'bg-gray-200 text-black',
+            'px-4 py-1 rounded-lg font-medium cursor-pointer',
+          ]"
           @click="isListView = true"
         >
           <UIcon name="material-symbols:list" class="w-5 h-5 inline mr-1" /> Список
@@ -38,16 +44,16 @@
         <div
           v-for="f in features"
           :key="f.properties.id"
-          class="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full"
+          class="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col h-full"
           @click="openDetails(f)"
         >
           <!-- Зображення-заглушка -->
-          <div
+          <!-- <div
             class="relative h-40 bg-gradient-to-br from-green-600 to-green-800 flex items-center justify-center overflow-hidden"
           >
             <UIcon name="material-symbols:discount" class="w-20 h-20 text-white opacity-90" />
             <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
-          </div>
+          </div> -->
 
           <!-- Контент -->
           <div class="p-5 flex-1 flex flex-col">
@@ -57,7 +63,7 @@
             </h3>
 
             <!-- Адреса -->
-            <p class="text-sm text-gray-600 mt-2 line-clamp-2 flex-1">
+            <p class="text-sm text-gray-600 mt-2 line-clamp-2 flex-1 cursor-pointer">
               {{ f.properties.dd_institution_name || 'Адреса не вказана' }}
             </p>
 
@@ -69,7 +75,7 @@
 
             <!-- Кнопка -->
             <button
-              class="mt-4 w-full bg-blue-600 text-white py-2.5 rounded-xl font-medium text-sm hover:bg-blue-700 transition-colors shadow-sm"
+              class="mt-4 w-full bg-blue-600 text-white py-2.5 rounded-xl font-medium text-sm hover:bg-blue-700 transition-colors shadow-sm cursor-pointer"
               @click.stop="openDetails(f)"
             >
               Детальніше
@@ -82,26 +88,28 @@
     <!-- UModal з v-model:open -->
     <UModal v-model:open="detailsOpen" title="Деталі закладу">
       <template #body>
-        <div v-if="loading" class="text-center py-8">
+        <div v-if="loading" class="text-center py-4">
           <UIcon name="line-md:loading-twotone-loop" class="w-8 h-8 mx-auto text-blue-600" />
         </div>
 
         <!-- v-html тільки після отримання html -->
-        <div v-else-if="detailsData?.html" class="prose prose-sm max-w-none p-4" v-html="detailsData.html" />
+        <div v-else-if="detailsData?.html" class="prose prose-sm max-w-none p-1" v-html="detailsData.html" />
 
-        <div v-else class="text-center py-8 text-gray-500">Не вдалося завантажити деталі</div>
+        <div v-else class="text-center py-4 text-gray-500">Не вдалося завантажити деталі</div>
       </template>
 
       <template #footer="{ close }">
-        <a
-          v-if="selectedFeature"
-          :href="`https://gis.khm.gov.ua/discount_defenders_card/${selectedFeature.properties.id}`"
-          target="_blank"
-          class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Перейти на картку
-        </a>
-        <UButton label="Закрити" color="neutral" variant="outline" @click="close" />
+        <div class="flex gap-2 justify-between w-full">
+          <a
+            v-if="selectedFeature"
+            :href="`https://gis.khm.gov.ua/discount_defenders_card/${selectedFeature.properties.id}`"
+            target="_blank"
+            class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Перейти на картку
+          </a>
+          <UButton label="Закрити" color="neutral" variant="outline" @click="close" />
+        </div>
       </template>
     </UModal>
   </div>

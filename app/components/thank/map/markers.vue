@@ -34,11 +34,10 @@ const createIcon = () => {
 
 const createPopupContent = (store) => {
   return `
-    <div class="p-3 max-w-xs">
-      <h3 class="font-bold text-lg">${store.title}</h3>
-      <p class="text-sm text-gray-600 mt-1">${store.address || 'Адреса не вказана'}</p>
+    <div class="p-1 max-w-xs">
+      <h3 class="font-bold text-lg text-center mb-2">${store.title}</h3>
       <button 
-        class="thankful-detail-btn mt-3 w-full bg-blue-600 text-white py-2 rounded text-sm font-medium hover:bg-blue-700 transition"
+        class="thankful-detail-btn bg-blue-600 text-white py-1 px-3 mx-auto block rounded text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
       >
         Детальніше
       </button>
