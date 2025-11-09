@@ -139,6 +139,16 @@ const searchTerm = computed(() => appStore.searchTerm?.trim().toLowerCase() || '
 const currentPage = ref(1);
 const perPage = ref(8);
 
+const apiBase = 'https://gis.khm.gov.ua';
+const layerId = '3419035732197508496';
+const jsonUrl = `${apiBase}/api-user/json_layer/${layerId}/2024-08-09%2006:03:38_2024-08-09%2006:03:38%202025-09-24%2011:37:22.431%2094`;
+const infoUrl = `${apiBase}/api-user/map-info?layer=${layerId}`;
+
+const { data: geojson } = await useAsyncData('thankful', () => $fetch(jsonUrl), {
+  server: true,
+  lazy: false,
+});
+
 const features = computed(() => geojson.value?.features || []);
 
 // ФІЛЬТРАЦІЯ: за назвою (label_column) + адресою (dd_institution_name)
@@ -215,16 +225,6 @@ definePageMeta({
 
 const isThankFulPage = computed(() => {
   return route.path === '/thankful' || /^\/[a-z]{2}\/thankful$/.test(route.path);
-});
-
-const apiBase = 'https://gis.khm.gov.ua';
-const layerId = '3419035732197508496';
-const jsonUrl = `${apiBase}/api-user/json_layer/${layerId}/2024-08-09%2006:03:38_2024-08-09%2006:03:38%202025-09-24%2011:37:22.431%2094`;
-const infoUrl = `${apiBase}/api-user/map-info?layer=${layerId}`;
-
-const { data: geojson } = await useAsyncData('thankful', () => $fetch(jsonUrl), {
-  server: true,
-  lazy: false,
 });
 
 const fetchDetails = async (id) => {
