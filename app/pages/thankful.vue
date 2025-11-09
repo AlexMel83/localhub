@@ -1,9 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <MetaTags
-      :title="'Хмельницький Вдячний — Знижки для військових'"
-      :description="'Карта та список закладів, які надають знижки військовим.'"
-    />
+    <MetaTags :title="pageTitle" :description="pageDescription" :image="pageImage" />
 
     <!-- Перемикач -->
     <div class="sticky top-0 z-20 shadow-md p-4 flex justify-between items-center">
@@ -58,12 +55,14 @@
           <!-- Контент -->
           <div class="p-5 flex-1 flex flex-col">
             <!-- Назва -->
-            <h3 class="font-bold text-lg text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+            <h3
+              class="font-bold text-lg text-gray-900 line-clamp-2 group-hover:text-blue-600 cursor-pointer transition-colors"
+            >
               {{ f.properties.label_column || 'Без назви' }}
             </h3>
 
             <!-- Адреса -->
-            <p class="text-sm text-gray-600 mt-2 line-clamp-2 flex-1 cursor-pointer">
+            <p class="text-sm text-gray-600 mt-2 line-clamp-2 flex-1">
               {{ f.properties.dd_institution_name || 'Адреса не вказана' }}
             </p>
 
@@ -116,10 +115,22 @@
 </template>
 
 <script setup>
+const pageTitle = 'Вдячна Хмельниччина';
+const pageDescription =
+  'Проект присвячений підтримці захисників та захисниць зі сторони свідомого, соціально-орієнтованого бізнесу Хмельниччини. Проєкт передбачає надання спеціальних знижок та пропозицій для захисників і захисниць та ветеранської спільноти';
+const pageImage = '/ThankfulLogo.png';
+
 const detailsOpen = ref(false);
 const selectedFeature = ref(null);
 const detailsData = ref(null);
 const loading = ref(false);
+
+definePageMeta({
+  layout: 'thank',
+  title: pageTitle,
+  description: pageDescription,
+  image: pageImage,
+});
 
 const apiBase = 'https://gis.khm.gov.ua';
 const layerId = '3419035732197508496';
