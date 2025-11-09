@@ -280,7 +280,6 @@ const openDetails = async (storeOrFeature) => {
 
 :deep(th) {
   font-weight: 600;
-  background-color: #f9fafb;
 }
 
 .line-clamp-2 {
