@@ -49,8 +49,8 @@
               <span class="text-xs font-medium text-green-600">{{ f.properties.discount }}</span>
             </div>
             <button
-              @click.stop="openDetails(f)"
               class="mt-4 w-full bg-blue-600 text-white py-2.5 rounded-xl font-medium text-sm hover:bg-blue-700 transition-colors shadow-sm"
+              @click.stop="openDetails(f)"
             >
               Детальніше
             </button>
@@ -195,7 +195,7 @@ const goToNextPage = () => {
 
 // Сброс страницы при изменении данных (например, после фильтрации)
 watch(
-  () => filteredFeatures.length,
+  () => filteredFeatures.value.length,
   () => {
     if (currentPage.value > totalPages.value) {
       currentPage.value = 1;
