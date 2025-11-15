@@ -7,21 +7,21 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- Простий HTML select замість USelect -->
+        <!-- Простий HTML select -->
         <select v-model="selectedRegionCpu" class="min-w-[220px] border rounded px-2 py-1">
-          <option value="" disabled selected>Виберіть область</option>
+          <option value="" disabled>Виберіть область</option>
           <option v-for="r in regionsOptions" :key="r.value" :value="r.value">{{ r.label }}</option>
         </select>
 
         <select v-model="selectedQueue" class="min-w-[160px] border rounded px-2 py-1">
-          <option value="" disabled selected>Виберіть чергу</option>
+          <option value="" disabled>Виберіть чергу</option>
           <option v-for="q in queuesOptions" :key="q.value" :value="q.value">{{ q.label }}</option>
         </select>
 
         <button
           :disabled="loading"
-          @click="fetchData"
           class="px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+          @click="fetchData"
         >
           Оновити
         </button>
@@ -37,9 +37,9 @@
           Наступна: <strong>{{ data?.date_tomorrow }}</strong>
         </div>
         <div class="ml-2 flex items-center gap-2">
-          <span class="w-4 h-4 rounded-sm" :class="colorClass(2)"></span><span class="text-sm">2</span>
-          <span class="w-4 h-4 rounded-sm" :class="colorClass(1)"></span><span class="text-sm">1</span>
-          <span class="w-4 h-4 rounded-sm" :class="colorClass(0)"></span><span class="text-sm">0 / відсутній</span>
+          <span class="w-4 h-4 rounded-sm" :class="colorClass(2)" /><span class="text-sm">2</span>
+          <span class="w-4 h-4 rounded-sm" :class="colorClass(1)" /><span class="text-sm">1</span>
+          <span class="w-4 h-4 rounded-sm" :class="colorClass(0)" /><span class="text-sm">0 / відсутній</span>
         </div>
       </div>
     </section>
@@ -71,20 +71,20 @@
 
             <div v-else class="space-y-6">
               <div v-for="date in displayedDates" :key="date">
-                <h3 class="text-sm font-medium mb-2">{{ date }} — {{ dayLabel(date) }}</h3>
+                <h3 class="text-sm font-medium mb-2">{{ date }} — {{ dayLabel(date as string) }}</h3>
 
                 <div class="overflow-x-auto border rounded">
                   <div class="grid grid-cols-48-auto min-w-[900px]">
-                    <template v-for="(t, idx) in times" :key="t">
+                    <template v-for="t in times" :key="t">
                       <div
                         class="p-1 min-w-[18px] text-center text-xs border-r last:border-r-0"
-                        :title="t + ' — ' + cellValue(selectedRegion, selectedQueue, date, t)"
+                        :title="t + ' — ' + cellValue(selectedRegion, selectedQueue, date as string, t)"
                       >
                         <div
                           class="h-8 rounded-sm flex items-center justify-center"
-                          :class="valueCellClass(cellValue(selectedRegion, selectedQueue, date, t))"
+                          :class="valueCellClass(cellValue(selectedRegion, selectedQueue, date as string, t))"
                         >
-                          {{ shortLabel(t, idx) }}
+                          {{ shortLabel(t) }}
                         </div>
                       </div>
                     </template>
@@ -98,12 +98,12 @@
             <h4 class="font-medium mb-2">Налаштування відображення</h4>
             <div class="flex flex-wrap gap-3">
               <label class="flex items-center gap-2">
-                <input type="checkbox" v-model="showHalfHourLabels" /> Показывать подписи півгодини
+                <input v-model="showHalfHourLabels" type="checkbox" /> Показывать подписи півгодини
               </label>
               <label class="flex items-center gap-2">
-                <input type="checkbox" v-model="compactView" /> Компактний вигляд
+                <input v-model="compactView" type="checkbox" /> Компактний вигляд
               </label>
-              <button @click="copyCSV" class="px-3 py-1.5 rounded bg-green-600 text-white hover:bg-green-700">
+              <button class="px-3 py-1.5 rounded bg-green-600 text-white hover:bg-green-700" @click="copyCSV">
                 Копіювати CSV для обраної черги
               </button>
             </div>
@@ -119,7 +119,19 @@ import { ref, computed, watch } from 'vue';
 
 const API = 'https://svitlo-proxy.svitlo-proxy.workers.dev/';
 
-const data = ref(null as any);
+interface Data {
+  regions?: Region[];
+  date_today?: string;
+  date_tomorrow?: string;
+}
+
+interface Region {
+  cpu: string;
+  name_ua: string;
+  schedule?: Record<string, Record<string, Record<string, number>>>;
+}
+
+const data = ref<Data>({});
 const loading = ref(false);
 const error = ref('');
 
@@ -127,10 +139,10 @@ async function fetchData() {
   loading.value = true;
   error.value = '';
   try {
-    const res = await $fetch(API, { method: 'GET' });
+    const res: Data = await $fetch(API, { method: 'GET' });
     data.value = res;
-  } catch (e: any) {
-    error.value = (e && e.message) || String(e);
+  } catch (e: unknown) {
+    error.value = (e as { message?: string })?.message || String(e);
   } finally {
     loading.value = false;
   }
@@ -142,8 +154,9 @@ const selectedRegionCpu = ref('');
 const selectedQueue = ref('');
 
 const regions = computed(() => data.value?.regions || []);
-const regionsOptions = computed(() => regions.value.map((r: any) => ({ label: r.name_ua, value: r.cpu })));
-const selectedRegion = computed(() => regions.value.find((r: any) => r.cpu === selectedRegionCpu.value) || null);
+const regionsOptions = computed(() => regions.value.map((r: Region) => ({ label: r.name_ua, value: r.cpu })));
+
+const selectedRegion = computed(() => regions.value.find((r) => r.cpu === selectedRegionCpu.value) || null);
 
 watch(selectedRegionCpu, () => {
   selectedQueue.value = '';
@@ -154,10 +167,7 @@ const queuesOptions = computed(() => {
   return Object.keys(selectedRegion.value.schedule).map((k) => ({ label: k, value: k }));
 });
 
-const displayedDates = computed(() => {
-  if (!data.value) return [];
-  return [data.value.date_today, data.value.date_tomorrow].filter(Boolean);
-});
+const displayedDates = computed(() => [data.value.date_today, data.value.date_tomorrow].filter(Boolean));
 
 const times = Array.from({ length: 48 }).map((_, i) => {
   const h = Math.floor(i / 2);
@@ -165,24 +175,14 @@ const times = Array.from({ length: 48 }).map((_, i) => {
   return `${String(h).padStart(2, '0')}:${m}`;
 });
 
-function cellValue(region: any, queue: string, date: string, time: string) {
-  try {
-    if (!region || !queue || !region.schedule) return null;
-    const q = region.schedule[queue];
-    if (!q) return null;
-    const day = q[date];
-    if (!day) return null;
-    const v = day[time];
-    return typeof v === 'number' ? v : null;
-  } catch (e) {
-    return null;
-  }
+function cellValue(region: Region | null, queue: string, date: string, time: string) {
+  if (!region?.schedule) return null;
+  return region.schedule[queue]?.[date]?.[time] ?? null;
 }
 
 const hasScheduleForSelected = computed(() => {
   if (!selectedRegion.value || !selectedQueue.value) return false;
-  const q = selectedRegion.value.schedule?.[selectedQueue.value];
-  return !!q;
+  return !!selectedRegion.value.schedule?.[selectedQueue.value];
 });
 
 function colorClass(value: number | null) {
@@ -199,7 +199,10 @@ function valueCellClass(v: number | null) {
   return 'bg-slate-100 text-slate-400';
 }
 
-function shortLabel(t: string, idx: number) {
+const showHalfHourLabels = ref(false);
+const compactView = ref(false);
+
+function shortLabel(t: string) {
   if (showHalfHourLabels.value) return t;
   if (t.endsWith(':00')) return t.slice(0, 2);
   return '';
@@ -212,24 +215,22 @@ function dayLabel(date: string) {
   return date;
 }
 
-const showHalfHourLabels = ref(false);
-const compactView = ref(false);
-
 async function copyCSV() {
   if (!selectedRegion.value || !selectedQueue.value) return;
-  const rows: string[] = [];
-  rows.push(['date', 'time', 'value'].join(','));
+  const rows: string[] = [['date', 'time', 'value'].join(',')];
+
   for (const date of displayedDates.value) {
     for (const t of times) {
-      rows.push([date, t, cellValue(selectedRegion.value, selectedQueue.value, date, t) ?? ''].join(','));
+      rows.push([date, t, cellValue(selectedRegion.value, selectedQueue.value, date as string, t) ?? ''].join(','));
     }
   }
+
   const csv = rows.join('\n');
   try {
     await navigator.clipboard.writeText(csv);
     alert('CSV скопійовано в буфер обміну');
   } catch (e) {
-    alert('Не вдалося скопіювати CSV');
+    console.error('Не вдалося скопіювати CSV', e);
   }
 }
 </script>
