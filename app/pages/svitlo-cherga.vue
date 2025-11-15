@@ -35,11 +35,11 @@
             </select>
 
             <client-only>
-              <UButton :loading="loading" color="primary" @click="fetchData" class="w-full sm:w-auto">
+              <UButton :loading="loading" color="primary" class="w-full sm:w-auto" @click="fetchData">
                 {{ $t('SvitloCherga.update') }}
               </UButton>
               <template #fallback>
-                <UButton color="primary" @click="fetchData" class="w-full sm:w-auto">
+                <UButton color="primary" class="w-full sm:w-auto" @click="fetchData">
                   {{ $t('SvitloCherga.update') }}
                 </UButton>
               </template>
@@ -64,15 +64,15 @@
 
           <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
             <div class="flex items-center gap-2">
-              <div class="w-4 h-4 bg-gray-100 border border-black flex-shrink-0"></div>
+              <div class="w-4 h-4 bg-gray-100 border border-black flex-shrink-0" />
               <span class="text-xs sm:text-sm">{{ $t('SvitloCherga.electricityDown') }}</span>
             </div>
             <div class="flex items-center gap-2">
-              <div class="w-4 h-4 bg-green-500 border border-black flex-shrink-0"></div>
+              <div class="w-4 h-4 bg-green-500 border border-black flex-shrink-0" />
               <span class="text-xs sm:text-sm">{{ $t('SvitloCherga.electricityUp') }}</span>
             </div>
             <div class="flex items-center gap-2">
-              <div class="w-4 h-4 bg-white border border-black flex-shrink-0"></div>
+              <div class="w-4 h-4 bg-white border border-black flex-shrink-0" />
               <span class="text-xs sm:text-sm">{{ $t('SvitloCherga.electricityUnknown') }}</span>
             </div>
           </div>
@@ -158,7 +158,7 @@
                           class="w-full h-8 sm:h-10"
                           :class="getCellClass(queue, dateInfo.date, time)"
                           :title="`${time} | ${queue} | ${getCellValue(queue, dateInfo.date, time)}`"
-                        ></div>
+                        />
                       </td>
                     </tr>
                   </tbody>
@@ -286,8 +286,8 @@ const sortedQueues = computed(() => {
 // Чи є дані на завтра
 const hasValidTomorrowData = computed(() => {
   if (!selectedRegion.value?.schedule || !dataFetch.value?.date_tomorrow) return false;
-  return Object.values(selectedRegion.value.schedule).some((queue: any) =>
-    Object.values((queue as Record<string, any>)[dataFetch.value.date_tomorrow] || {}).some((v) => v !== 0),
+  return Object.values(selectedRegion.value.schedule).some((queue: unknown) =>
+    Object.values((queue as Record<string, unknown>)[dataFetch.value.date_tomorrow] || {}).some((v) => v !== 0),
   );
 });
 
