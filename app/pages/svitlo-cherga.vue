@@ -39,15 +39,15 @@
 
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-emerald-500"></div>
+            <div class="w-4 h-4 rounded bg-emerald-500" />
             <span class="text-sm">Електроенергія відсутня</span>
           </div>
           <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-amber-500"></div>
+            <div class="w-4 h-4 rounded bg-amber-500" />
             <span class="text-sm">Електроенергія може бути відсутня</span>
           </div>
           <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-gray-300 dark:bg-gray-600"></div>
+            <div class="w-4 h-4 rounded bg-gray-300 dark:bg-gray-600" />
             <span class="text-sm">Електроенергія розподіляється</span>
           </div>
         </div>
@@ -135,7 +135,7 @@
                       class="w-full h-8 rounded"
                       :class="getCellClass(queue, dateInfo.date, time)"
                       :title="`${queue} | ${time} | ${getCellValue(queue, dateInfo.date, time)}`"
-                    ></div>
+                    />
                   </td>
                 </tr>
               </tbody>
@@ -215,8 +215,8 @@ async function fetchData() {
         selectedRegionCpu.value = khmelnytskaRegion.cpu;
       }
     }
-  } catch (e: any) {
-    error.value = e?.message || String(e);
+  } catch (e: unknown) {
+    error.value = (e as { message?: string }).message || String(e);
   } finally {
     loading.value = false;
   }
