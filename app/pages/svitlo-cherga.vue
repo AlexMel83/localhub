@@ -98,7 +98,7 @@
         <div class="py-8 text-center text-sm text-gray-500">{{ $t('SvitloCherga.selectRegionChart') }}</div>
       </UCard>
 
-      <!-- Графік у шаховому порядку -->
+      <!-- Графік у шаховому порядку (транспонований) -->
       <UCard v-if="isMounted && selectedRegion">
         <template #header>
           <div class="flex flex-col gap-2">
@@ -121,45 +121,43 @@
               </span>
             </div>
 
-            <div v-if="dateInfo.hasData" class="overflow-x-auto border rounded-lg dark:border-gray-700 -mx-2 sm:mx-0">
-              <div class="min-w-[600px]">
-                <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead class="dark:bg-gray-800">
+            <div v-if="dateInfo.hasData" class="border rounded-lg dark:border-gray-700 overflow-hidden">
+              <div class="max-h-[500px] overflow-y-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0 z-20">
                     <tr>
                       <th
-                        class="px-2 sm:px-3 py-2 text-center text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky left-0 bg-gray-50 dark:bg-gray-800 z-10"
+                        class="px-2 sm:px-3 py-2 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky left-0 bg-gray-50 dark:bg-gray-800 z-30"
                       >
                         {{ $t('SvitloCherga.queue') }}
                       </th>
                       <th
-                        v-for="time in times"
-                        :key="time"
-                        class="px-0.5 sm:px-1 py-2 text-center text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400"
-                        :class="{ 'border-l-2 border-gray-300 dark:border-gray-600': time.endsWith(':00') }"
+                        v-for="(queue, index) in sortedQueues"
+                        :key="queue"
+                        class="px-2 py-2 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-800"
+                        :class="{ 'border-l-2 border-gray-400 dark:border-gray-500': index > 0 }"
                       >
-                        <div class="writing-mode-vertical transform rotate-180">
-                          {{ time }}
-                        </div>
+                        {{ queue }}
                       </th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                    <tr v-for="queue in sortedQueues" :key="queue">
+                  <tbody class="bg-white dark:bg-gray-900">
+                    <tr v-for="time in times" :key="time">
                       <td
-                        class="px-2 sm:px-3 py-1 sm:py-2 text-center whitespace-nowrap text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 sticky left-0 bg-white dark:bg-gray-900 z-10"
+                        class="px-2 sm:px-3 py-1 text-center whitespace-nowrap text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 sticky left-0 bg-white dark:bg-gray-900 z-10 border-b border-gray-200 dark:border-gray-700"
                       >
-                        {{ queue }}
+                        {{ time }}
                       </td>
                       <td
-                        v-for="time in times"
-                        :key="time"
-                        class="p-0"
-                        :class="{ 'border-l-2 border-gray-300 dark:border-gray-600': time.endsWith(':00') }"
+                        v-for="(queue, index) in sortedQueues"
+                        :key="queue"
+                        class="p-0 border-b border-gray-200 dark:border-gray-700"
+                        :class="{ 'border-l-2 border-gray-400 dark:border-gray-500': index > 0 }"
                       >
                         <div
-                          class="w-full h-6 sm:h-8"
+                          class="w-full h-8 sm:h-10"
                           :class="getCellClass(queue, dateInfo.date, time)"
-                          :title="`${queue} | ${time} | ${getCellValue(queue, dateInfo.date, time)}`"
+                          :title="`${time} | ${queue} | ${getCellValue(queue, dateInfo.date, time)}`"
                         ></div>
                       </td>
                     </tr>
@@ -336,12 +334,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.writing-mode-vertical {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-}
-
-/* Фіксована ширина для колонки черги */
+/* Фіксована ширина для колонки часу */
 tbody td:first-child,
 thead th:first-child {
   min-width: 60px;
