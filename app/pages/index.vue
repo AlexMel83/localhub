@@ -55,7 +55,7 @@
               </div>
             </div>
           </div>
-          <NuxtLink
+          <!-- <NuxtLink
             :to="`/starkon/${store.slug}/edit`"
             class="absolute top-2 right-8 text-gray-400 hover:text-blue-500"
             @click.stop
@@ -64,7 +64,7 @@
           </NuxtLink>
           <div class="absolute top-2 right-16 text-red-500 cursor-pointer transition-colors duration-300">
             <NuxtLink @click.stop="businessStore.deleteBusiness(store, apiBase)">Delete</NuxtLink>
-          </div>
+          </div> -->
           <!-- Іконка серця -->
           <div
             class="absolute top-2 right-2 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-300"
@@ -164,7 +164,9 @@ await businessStore.getBusiness(apiBase);
 
 const filteredStores = computed(() => {
   const search = searchTerm.value?.toLowerCase() || '';
-  return businessStore.businesses
+  const stores = businessStore.businesses || []; // гарантуємо масив
+
+  return stores
     .map((store) => ({
       ...store,
       slug: String(store.slug || store.id || ''),
