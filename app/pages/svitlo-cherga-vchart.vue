@@ -98,7 +98,7 @@
         <div class="py-8 text-center text-sm text-gray-500">{{ $t('SvitloCherga.selectRegionChart') }}</div>
       </UCard>
 
-      <!-- Транспонована таблиця -->
+      <!-- Графік у шаховому порядку (транспонований) -->
       <UCard v-if="isMounted && selectedRegion">
         <template #header>
           <div class="flex flex-col gap-2">
@@ -122,49 +122,47 @@
             </div>
 
             <div v-if="dateInfo.hasData" class="border rounded-lg dark:border-gray-700 overflow-hidden">
-              <div class="overflow-x-auto">
-                <div class="max-h-[500px] overflow-y-auto">
-                  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <!-- Заголовки: Черга + Час -->
-                    <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0 z-20">
-                      <tr>
-                        <th
-                          class="px-2 sm:px-3 py-2 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky left-0 bg-gray-50 dark:bg-gray-800 z-30"
-                        >
-                          {{ $t('SvitloCherga.queue') }}
-                        </th>
-                        <th
-                          v-for="time in times"
-                          :key="time"
-                          class="px-1 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-800 whitespace-nowrap min-w-[50px]"
-                        >
-                          {{ time }}
-                        </th>
-                      </tr>
-                    </thead>
-                    <!-- Рядки: Кожна черга -->
-                    <tbody class="bg-white dark:bg-gray-900">
-                      <tr v-for="queue in sortedQueues" :key="queue">
-                        <td
-                          class="px-2 sm:px-3 py-1 text-center whitespace-nowrap text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 sticky left-0 bg-white dark:bg-gray-900 z-10 border-b border-gray-200 dark:border-gray-700"
-                        >
-                          {{ queue }}
-                        </td>
-                        <td
-                          v-for="time in times"
-                          :key="time"
-                          class="p-0 border-b border-gray-200 dark:border-gray-700 min-w-[50px]"
-                        >
-                          <div
-                            class="w-full h-8 sm:h-10"
-                            :class="getCellClass(queue, dateInfo.date, time)"
-                            :title="`${time} | ${queue} | ${getCellValue(queue, dateInfo.date, time)}`"
-                          />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+              <div class="max-h-[500px] overflow-y-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0 z-20">
+                    <tr>
+                      <th
+                        class="px-2 sm:px-3 py-2 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky left-0 bg-gray-50 dark:bg-gray-800 z-30"
+                      >
+                        {{ $t('SvitloCherga.queue') }}
+                      </th>
+                      <th
+                        v-for="(queue, index) in sortedQueues"
+                        :key="queue"
+                        class="px-2 py-2 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-800"
+                        :class="{ 'border-l-2 border-gray-400 dark:border-gray-500': index > 0 }"
+                      >
+                        {{ queue }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white dark:bg-gray-900">
+                    <tr v-for="time in times" :key="time">
+                      <td
+                        class="px-2 sm:px-3 py-1 text-center whitespace-nowrap text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 sticky left-0 bg-white dark:bg-gray-900 z-10 border-b border-gray-200 dark:border-gray-700"
+                      >
+                        {{ time }}
+                      </td>
+                      <td
+                        v-for="(queue, index) in sortedQueues"
+                        :key="queue"
+                        class="p-0 border-b border-gray-200 dark:border-gray-700"
+                        :class="{ 'border-l-2 border-gray-400 dark:border-gray-500': index > 0 }"
+                      >
+                        <div
+                          class="w-full h-8 sm:h-10"
+                          :class="getCellClass(queue, dateInfo.date, time)"
+                          :title="`${time} | ${queue} | ${getCellValue(queue, dateInfo.date, time)}`"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -226,6 +224,7 @@ interface Data {
   regions: Region[];
 }
 
+// Використовуємо useFetch як composable
 const {
   data: dataFetch,
   pending: loading,
@@ -236,6 +235,7 @@ const {
   default: () => ({ regions: [], date_today: '', date_tomorrow: '' }) as Data,
 });
 
+// Автоматичний вибір Хмельницької
 const selectedRegionCpu = ref('');
 
 watch(
@@ -249,7 +249,7 @@ watch(
   { immediate: true },
 );
 
-// Генерація часу: 00:00, 00:30, ..., 23:30
+// Генерація часу
 const times = Array.from({ length: 48 }, (_, i) => {
   const h = Math.floor(i / 2)
     .toString()
@@ -273,7 +273,7 @@ const selectedRegion = computed(() => {
 
 const hasAnySchedule = computed(() => selectedRegion.value?.schedule !== null);
 
-// Сортування черг: 1.1, 1.2, 2.1, ...
+// Сортування черг
 const sortedQueues = computed(() => {
   if (!selectedRegion.value?.schedule) return [];
   return Object.keys(selectedRegion.value.schedule).sort((a, b) => {
@@ -334,34 +334,16 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Sticky перший стовпець (черга) */
-thead th:first-child,
-tbody td:first-child {
-  position: sticky;
-  left: 0;
-  z-index: 10;
-  min-width: 70px;
-}
-
-/* Sticky заголовки часу */
-thead th {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-
-/* Фіксована ширина стовпців часу */
-thead th:not(:first-child),
-tbody td:not(:first-child) {
-  min-width: 50px;
-  width: 50px;
+/* Фіксована ширина для колонки часу */
+tbody td:first-child,
+thead th:first-child {
+  min-width: 60px;
 }
 
 @media (min-width: 640px) {
-  thead th:not(:first-child),
-  tbody td:not(:first-child) {
-    min-width: 60px;
-    width: 60px;
+  tbody td:first-child,
+  thead th:first-child {
+    min-width: 80px;
   }
 }
 </style>
