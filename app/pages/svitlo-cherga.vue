@@ -282,7 +282,7 @@ function getCellClass(queue: string, date: string, hour: string): string {
   const v = getHourlyValue(queue, date, hour);
 
   if (v === 2) return 'bg-blue-300 border border-black';
-  if (v === 1) return 'bg-grey-100 border border-black';
+  if (v === 1) return 'bg-gray-100 border border-black';
   return 'bg-gray-500 border border-black';
 }
 
