@@ -163,10 +163,10 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFetch } from 'nuxt/app';
 
+import { useRoute, useRouter } from 'vue-router';
+
 const API = 'https://svitlo-proxy.svitlo-proxy.workers.dev/';
 const { t: $t } = useI18n();
-
-import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
 
@@ -244,7 +244,7 @@ const sortedQueues = computed(() => {
 
 const hasValidTomorrowData = computed(() => {
   if (!selectedRegion.value?.schedule || !dataFetch.value?.date_tomorrow) return false;
-  return Object.values(selectedRegion.value.schedule).some((queue: any) =>
+  return Object.values(selectedRegion.value.schedule).some((queue) =>
     Object.values(queue?.[dataFetch.value.date_tomorrow] || {}).some((v) => v !== 0),
   );
 });
