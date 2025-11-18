@@ -209,7 +209,7 @@ import { useFetch } from 'nuxt/app';
 
 import { useRoute, useRouter } from 'vue-router';
 
-const API = 'https://svitlo-proxy.svitlo-proxy.workers.dev/';
+const API = '/api/svitlo';
 const { t: $t } = useI18n();
 const route = useRoute();
 const router = useRouter();
