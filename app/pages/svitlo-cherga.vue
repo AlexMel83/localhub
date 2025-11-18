@@ -146,12 +146,13 @@
                           {{ $t('SvitloCherga.queue') }}
                         </th>
                         <th
-                          v-for="hour in headTimes"
+                          v-for="(hour, idx) in headTimes"
                           :key="hour"
                           class="text-center text-xs font-medium p-3 sm:px-7 border-b border-gray-300 dark:border-gray-600"
                           :class="{
                             'h-[80px]': true,
                             'sm:h-auto': true,
+                            'bg-yellow-100 dark:bg-yellow-900': isCurrentHour(idx),
                           }"
                         >
                           <div
@@ -172,7 +173,14 @@
                         >
                           {{ queue }}
                         </td>
-                        <td v-for="hour in times" :key="hour" class="p-0 border border-black">
+                        <td
+                          v-for="(hour, idx) in times"
+                          :key="hour"
+                          class="p-0 border border-black relative"
+                          :class="{
+                            'current-hour-cell': isCurrentHour(idx),
+                          }"
+                        >
                           <div
                             class="w-full h-6"
                             :class="getCellClass(queue, dateInfo.date, hour)"
@@ -230,6 +238,7 @@ const {
 
 const selectedRegionCpu = ref('');
 const selectedQueue = ref('all');
+const currentHour = ref(new Date().getHours());
 
 // 1. Пріоритет URL-параметра
 if (route.query.region) {
@@ -268,6 +277,11 @@ const headTimes = Array.from({ length: 24 }, (_, h) => {
   const end = `${((h + 1) % 24).toString().padStart(2, '0')}:00`;
   return `${start} – ${end}`;
 });
+
+// Перевірка чи це поточна година
+const isCurrentHour = (hourIndex: number): boolean => {
+  return hourIndex === currentHour.value;
+};
 
 const regionsOptions = computed(() => {
   return (dataFetch.value?.regions || [])
@@ -439,6 +453,11 @@ const downPeriods = computed(() => {
 const isMounted = ref(false);
 onMounted(() => {
   isMounted.value = true;
+
+  // Оновлення поточної години кожну хвилину
+  setInterval(() => {
+    currentHour.value = new Date().getHours();
+  }, 60000);
 });
 </script>
 
@@ -466,6 +485,38 @@ tbody td:not(:first-child) {
   tbody td:not(:first-child) {
     min-width: 40px;
     width: 40px;
+  }
+}
+
+/* Штрихування для поточної години */
+.current-hour-cell::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 2px,
+    rgba(234, 179, 8, 0.4) 2px,
+    rgba(234, 179, 8, 0.4) 4px
+  );
+  pointer-events: none;
+  border: 2px solid rgb(234, 179, 8);
+}
+
+@media (prefers-color-scheme: dark) {
+  .current-hour-cell::after {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(234, 179, 8, 0.3) 2px,
+      rgba(234, 179, 8, 0.3) 4px
+    );
+    border-color: rgb(202, 138, 4);
   }
 }
 </style>
