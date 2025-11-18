@@ -46,7 +46,9 @@
     "hoursShort": "год",
     "percentage": "Частка відключених годин у черзі:",
     "today": "Сьогодні",
-    "tomorrow": "Завтра"
+    "tomorrow": "Завтра",
+    "legend": "Легенда",
+    "allQueues": "Всі черги"
   },
   "Stores": {
     "collapse": "Згорнути панорами",

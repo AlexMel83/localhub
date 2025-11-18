@@ -5,70 +5,106 @@
       :description="$t('SvitloCherga.description')"
       :image="'/svitlo-cherga.jpg'"
     />
-
-    <!-- Заголовок -->
-    <UCard class="mb-4">
-      <template #header>
-        <div class="flex flex-col gap-3">
-          <div>
-            <h1 class="text-xl sm:text-2xl font-bold">{{ $t('SvitloCherga.title') }}</h1>
-            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-              {{ $t('SvitloCherga.sourceData') }}
-              <a href="https://svitlo.live" target="_blank" class="text-blue-500 hover:underline"> svitlo.live </a>
-            </p>
-          </div>
-
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <select
-              v-model="selectedRegionCpu"
-              class="flex-1 sm:min-w-[220px] px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 text-sm"
-            >
-              <option value="" disabled>{{ $t('SvitloCherga.selectRegion') }}</option>
-              <option v-for="r in regionsOptions" :key="r.value" :value="r.value">
-                {{ r.label }}
-              </option>
-            </select>
-
-            <client-only>
-              <UButton :loading="loading" color="primary" class="w-full sm:w-auto" @click="fetchData">
-                {{ $t('SvitloCherga.update') }}
-              </UButton>
-            </client-only>
-          </div>
-        </div>
-      </template>
-    </UCard>
-
-    <!-- Легенда -->
-    <client-only>
-      <UCard v-if="selectedRegion" class="mb-4">
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-            <div class="text-xs sm:text-sm">
-              {{ $t('SvitloCherga.date') }} <strong>{{ dataFetch?.date_today }}</strong>
+    <div class="flex w-full flex-col sm:flex-row gap-1">
+      <!-- Заголовок -->
+      <UCard class="mb-4 flex-shrink">
+        <template #header>
+          <div class="flex flex-col gap-3">
+            <div>
+              <h1 class="text-xl sm:text-2xl font-bold">{{ $t('SvitloCherga.title') }}</h1>
+              <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                {{ $t('SvitloCherga.sourceData') }}
+                <a href="https://svitlo.live" target="_blank" class="text-blue-500 hover:underline"> svitlo.live </a>
+              </p>
             </div>
-            <div v-if="hasValidTomorrowData" class="text-xs sm:text-sm">
-              {{ $t('SvitloCherga.next') }} <strong>{{ dataFetch?.date_tomorrow }}</strong>
+
+            <div class="flex flex-col gap-2">
+              <!-- Селект області -->
+              <select
+                v-model="selectedRegionCpu"
+                class="flex-1 max-w-50 px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 text-sm"
+              >
+                <option value="" disabled>{{ $t('SvitloCherga.selectRegion') }}</option>
+                <option v-for="r in regionsOptions" :key="r.value" :value="r.value">
+                  {{ r.label }}
+                </option>
+              </select>
+
+              <!-- Селект черги -->
+              <select
+                v-if="selectedRegion"
+                v-model="selectedQueue"
+                class="flex-1 max-w-30 px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 text-sm"
+              >
+                <option value="all">{{ $t('SvitloCherga.allQueues') }}</option>
+                <option v-for="q in sortedQueues" :key="q" :value="q">{{ q }}</option>
+              </select>
+
+              <client-only>
+                <UButton :loading="loading" color="primary" class="max-w-30 text-center" @click="fetchData">
+                  {{ $t('SvitloCherga.update') }}
+                </UButton>
+              </client-only>
             </div>
           </div>
+        </template>
+      </UCard>
+      <!-- Легенда -->
+      <UCard v-if="selectedRegion" class="mb-4 flex-1">
+        <div class="flex flex-col gap-4">
+          <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {{ $t('SvitloCherga.legend') }}
+          </div>
 
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-            <div class="flex items-center gap-2">
-              <div class="w-4 h-4 bg-gray-100 border border-black flex-shrink-0" />
-              <span class="text-xs sm:text-sm">{{ $t('SvitloCherga.electricityUp') }}</span>
+          <!-- Є світло -->
+          <div class="flex flex-col gap-3">
+            <div class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-gray-100 border border-black flex-shrink-0 mt-0.5" />
+              <div>
+                <div class="text-sm font-medium">{{ $t('SvitloCherga.electricityUp') }}</div>
+                <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                  <template v-if="upPeriods.length > 0 && selectedQueue !== 'all'">
+                    <span v-for="(period, i) in upPeriods" :key="i">
+                      {{ period }}
+                      <span v-if="i < upPeriods.length - 1">, </span>
+                    </span>
+                  </template>
+                  <span v-else-if="selectedQueue !== 'all'" class="text-gray-500">{{
+                    $t('SvitloCherga.noPeriods')
+                  }}</span>
+                </div>
+              </div>
             </div>
-            <div class="flex items-center gap-2">
-              <div class="w-4 h-4 bg-blue-300 border border-black flex-shrink-0" />
-              <span class="text-xs sm:text-sm">{{ $t('SvitloCherga.electricityDown') }}</span>
+
+            <!-- Немає світла -->
+            <div class="flex items-start gap-3">
+              <div class="w-5 h-5 bg-blue-300 border border-black flex-shrink-0 mt-0.5" />
+              <div>
+                <div class="text-sm font-medium">{{ $t('SvitloCherga.electricityDown') }}</div>
+                <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                  <template v-if="downPeriods.length > 0 && selectedQueue !== 'all'">
+                    <span v-for="(period, i) in downPeriods" :key="i">
+                      {{ period }}
+                      <span v-if="i < downPeriods.length - 1">, </span>
+                    </span>
+                  </template>
+                  <span v-else-if="selectedQueue !== 'all'" class="text-gray-500">{{
+                    $t('SvitloCherga.noPeriods')
+                  }}</span>
+                </div>
+              </div>
             </div>
-            <div class="flex items-center gap-2">
-              <div class="w-4 h-4 bg-gray-500 border border-black flex-shrink-0" />
-              <span class="text-xs sm:text-sm">{{ $t('SvitloCherga.electricityUnknown') }}</span>
+
+            <!-- Невідомо -->
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 bg-gray-500 border border-black flex-shrink-0" />
+              <span class="text-sm">{{ $t('SvitloCherga.electricityUnknown') }}</span>
             </div>
           </div>
         </div>
       </UCard>
-
+    </div>
+    <client-only>
       <!-- Завантаження / Помилки -->
       <UCard v-if="loading">
         <div class="py-8 text-center">
@@ -89,10 +125,6 @@
 
       <!-- Таблиця -->
       <UCard v-if="isMounted && selectedRegion">
-        <template #header>
-          <h2 class="text-lg sm:text-xl font-semibold">{{ selectedRegion.name_ua }}</h2>
-        </template>
-
         <div v-if="!hasAnySchedule" class="py-8 text-center text-sm text-gray-500">
           {{ $t('SvitloCherga.noSchedule') }}
         </div>
@@ -109,32 +141,36 @@
                     <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0 z-20">
                       <tr>
                         <th
-                          class="px-3 py-2 text-center text-xs font-medium sticky left-0 bg-gray-50 dark:bg-gray-800 z-30"
+                          class="px-1 py-2 text-center text-xs font-medium sticky left-0 bg-gray-50 dark:bg-gray-800 z-30"
                         >
                           {{ $t('SvitloCherga.queue') }}
                         </th>
-
                         <th
                           v-for="hour in times"
                           :key="hour"
-                          class="px-2 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap"
+                          class="p-2 py-5 text-center text-xs font-medium text-gray-500 dark:text-gray-400 relative border border-black"
                         >
-                          {{ hour }}
+                          <div
+                            class="absolute inset-0 flex items-center justify-center rotate-180 [writing-mode:vertical-rl] sm:rotate-0 sm:[writing-mode:horizontal-tb]"
+                          >
+                            <span class="inline-block whitespace-nowrap">
+                              {{ hour }}
+                            </span>
+                          </div>
                         </th>
                       </tr>
                     </thead>
 
                     <tbody class="bg-white dark:bg-gray-900">
-                      <tr v-for="queue in sortedQueues" :key="queue">
+                      <tr v-for="queue in filteredQueues" :key="queue">
                         <td
-                          class="px-3 py-1 text-center text-xs font-medium sticky left-0 bg-white dark:bg-gray-900 z-10 border-b"
+                          class="px-1 py-1 text-center text-xs font-medium sticky left-0 bg-white dark:bg-gray-900 z-10 border-b"
                         >
                           {{ queue }}
                         </td>
-
                         <td v-for="hour in times" :key="hour" class="p-0 border-b">
                           <div
-                            class="w-full h-8 sm:h-10"
+                            class="w-full h-6"
                             :class="getCellClass(queue, dateInfo.date, hour)"
                             :title="`${hour} | ${queue}`"
                           />
@@ -193,11 +229,19 @@ const {
 });
 
 const selectedRegionCpu = ref('');
+const selectedQueue = ref('all');
 
 // 1. Пріоритет URL-параметра
 if (route.query.region) {
   selectedRegionCpu.value = String(route.query.region);
 }
+if (route.query.queue) {
+  selectedQueue.value = String(route.query.queue);
+}
+watch(selectedQueue, (val) => {
+  if (!val) return;
+  router.replace({ query: { ...route.query, queue: val } });
+});
 
 // 2. Якщо не задано — ставимо Хмельницьку
 watch(
@@ -229,6 +273,11 @@ const regionsOptions = computed(() => {
 const selectedRegion = computed(() => {
   if (!selectedRegionCpu.value || !dataFetch.value?.regions) return null;
   return dataFetch.value.regions.find((r) => r.cpu === selectedRegionCpu.value) || null;
+});
+const filteredQueues = computed(() => {
+  if (!selectedRegion.value?.schedule) return [];
+  if (selectedQueue.value === 'all') return sortedQueues.value;
+  return sortedQueues.value.includes(selectedQueue.value) ? [selectedQueue.value] : [];
 });
 
 const hasAnySchedule = computed(() => selectedRegion.value?.schedule !== null);
@@ -286,6 +335,76 @@ function getCellClass(queue: string, date: string, hour: string): string {
   return 'bg-gray-500 border border-black';
 }
 
+function formatPeriods(hours: number[]): string[] {
+  if (hours.length === 0) return [];
+  const sorted = [...hours].sort((a, b) => a - b);
+  const result: string[] = [];
+  let start = sorted[0];
+  let prev = sorted[0];
+
+  for (let i = 1; i <= sorted.length; i++) {
+    const curr = sorted[i] ?? prev + 1;
+    if (curr !== prev + 1 || i === sorted.length) {
+      const startStr = `${start.toString().padStart(2, '0')}:00`;
+      const endStr =
+        prev === start
+          ? startStr
+          : `${prev.toString().padStart(2, '0')}:00–${(prev + 1).toString().padStart(2, '0')}:00`;
+      result.push(prev === start ? startStr : `${startStr}–${(prev + 1).toString().padStart(2, '0')}:00`);
+      start = curr;
+    }
+    prev = curr;
+  }
+  return result;
+}
+
+// Періоди зі світлом (1) та без (2)
+const upPeriods = computed(() => {
+  const hours: number[] = [];
+  if (!selectedRegion.value?.schedule) return [];
+
+  const queues = selectedQueue.value === 'all' ? sortedQueues.value : filteredQueues.value;
+  const dates = displayedDatesInfo.value.map((d) => d.date);
+
+  for (const queue of queues) {
+    for (const date of dates) {
+      for (let h = 0; h < 24; h++) {
+        const hourStr = `${h.toString().padStart(2, '0')}:00`;
+        const val = getHourlyValue(queue, date, hourStr);
+        if (val === 1) {
+          // є світло
+          if (!hours.includes(h)) hours.push(h);
+        }
+      }
+    }
+  }
+
+  return formatPeriods(hours);
+});
+
+const downPeriods = computed(() => {
+  const hours: number[] = [];
+  if (!selectedRegion.value?.schedule) return [];
+
+  const queues = selectedQueue.value === 'all' ? sortedQueues.value : filteredQueues.value;
+  const dates = displayedDatesInfo.value.map((d) => d.date);
+
+  for (const queue of queues) {
+    for (const date of dates) {
+      for (let h = 0; h < 24; h++) {
+        const hourStr = `${h.toString().padStart(2, '0')}:00`;
+        const val = getHourlyValue(queue, date, hourStr);
+        if (val === 2) {
+          // немає світла
+          if (!hours.includes(h)) hours.push(h);
+        }
+      }
+    }
+  }
+
+  return formatPeriods(hours);
+});
+
 const isMounted = ref(false);
 onMounted(() => {
   isMounted.value = true;
@@ -308,15 +427,14 @@ thead th {
 
 thead th:not(:first-child),
 tbody td:not(:first-child) {
-  min-width: 50px;
-  width: 50px;
+  min-width: 15px;
 }
 
 @media (min-width: 640px) {
   thead th:not(:first-child),
   tbody td:not(:first-child) {
-    min-width: 60px;
-    width: 60px;
+    min-width: 40px;
+    width: 40px;
   }
 }
 </style>
