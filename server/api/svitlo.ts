@@ -1,12 +1,12 @@
 interface CacheData {
-  data: any;
+  data: unknown;
   timestamp: number;
 }
 
 const CACHE_DURATION = 30000; // 10 секунд
 let cache: CacheData | null = null;
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
   try {
     const now = Date.now();
 
