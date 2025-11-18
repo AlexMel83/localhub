@@ -46,7 +46,9 @@
     "hoursShort": "hours",
     "percentage": "Percentage of power outages in queue:",
     "today": "Today",
-    "tomorrow": "Tomorrow"
+    "tomorrow": "Tomorrow",
+    "legend": "Legend",
+    "allQueues": "All queues"
   },
   "Stores": {
     "collapse": "Collapse stores",
