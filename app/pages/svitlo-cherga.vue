@@ -1,10 +1,6 @@
 <template>
   <div class="p-2 sm:p-4 max-w-[1600px] mx-auto">
-    <MetaTags
-      :title="$t('SvitloCherga.title')"
-      :description="$t('SvitloCherga.description')"
-      :image="'/svitlo-cherga.jpg'"
-    />
+    <MetaTags :title="pageTitle" :description="$t('SvitloCherga.description')" :image="'/svitlo-cherga.jpg'" />
     <div class="flex w-full flex-col sm:flex-row gap-1">
       <!-- Заголовок -->
       <UCard class="mb-4 flex-shrink">
@@ -18,28 +14,32 @@
               </p>
             </div>
 
-            <div class="flex flex-col gap-2">
-              <!-- Селект області -->
-              <select
-                v-model="selectedRegionCpu"
-                class="flex-1 max-w-50 px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 text-sm"
-              >
-                <option value="" disabled>{{ $t('SvitloCherga.selectRegion') }}</option>
-                <option v-for="r in regionsOptions" :key="r.value" :value="r.value">
-                  {{ r.label }}
-                </option>
-              </select>
+            <div class="flex flex-col gap-2 sm:items-end">
+              <div v-if="selectedRegion">
+                {{ $t('SvitloCherga.region') }}
+                <!-- Селект області -->
+                <select
+                  v-model="selectedRegionCpu"
+                  class="flex-1 max-w-50 px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 text-sm"
+                >
+                  <option value="" disabled>{{ $t('SvitloCherga.selectRegion') }}</option>
+                  <option v-for="r in regionsOptions" :key="r.value" :value="r.value">
+                    {{ r.label }}
+                  </option>
+                </select>
+              </div>
 
               <!-- Селект черги -->
-              <select
-                v-if="selectedRegion"
-                v-model="selectedQueue"
-                class="flex-1 max-w-30 px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 text-sm"
-              >
-                <option value="all">{{ $t('SvitloCherga.allQueues') }}</option>
-                <option v-for="q in sortedQueues" :key="q" :value="q">{{ q }}</option>
-              </select>
-
+              <div v-if="selectedRegion">
+                {{ $t('SvitloCherga.queue') }}
+                <select
+                  v-model="selectedQueue"
+                  class="flex-1 max-w-30 px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 text-sm"
+                >
+                  <option value="all">{{ $t('SvitloCherga.allQueues') }}</option>
+                  <option v-for="q in sortedQueues" :key="q" :value="q">{{ q }}</option>
+                </select>
+              </div>
               <client-only>
                 <UButton :loading="loading" color="primary" class="max-w-30 text-center" @click="fetchData">
                   {{ $t('SvitloCherga.update') }}
@@ -137,23 +137,27 @@
             <div class="border rounded-lg dark:border-gray-700 overflow-hidden">
               <div class="overflow-x-auto">
                 <div class="max-h-[500px] overflow-y-auto">
-                  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <table class="min-w-full">
                     <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0 z-20">
                       <tr>
                         <th
-                          class="px-1 py-2 text-center text-xs font-medium sticky left-0 bg-gray-50 dark:bg-gray-800 z-30"
+                          class="px-1 py-2 text-center text-xs font-medium sticky left-0 bg-gray-50 dark:bg-gray-800 z-30 border-b border-gray-300 dark:border-gray-600"
                         >
                           {{ $t('SvitloCherga.queue') }}
                         </th>
                         <th
-                          v-for="hour in times"
+                          v-for="hour in headTimes"
                           :key="hour"
-                          class="p-2 py-5 text-center text-xs font-medium text-gray-500 dark:text-gray-400 relative border border-black"
+                          class="text-center text-xs font-medium p-3 sm:px-7 border-b border-gray-300 dark:border-gray-600"
+                          :class="{
+                            'h-[80px]': true,
+                            'sm:h-auto': true,
+                          }"
                         >
                           <div
-                            class="absolute inset-0 flex items-center justify-center rotate-180 [writing-mode:vertical-rl] sm:rotate-0 sm:[writing-mode:horizontal-tb]"
+                            class="absolute inset-0 flex items-center justify-center rotate-180 [writing-mode:vertical-rl] sm:rotate-0 sm:[writing-mode:horizontal-tb] sm:flex-col sm:whitespace-normal"
                           >
-                            <span class="inline-block whitespace-nowrap">
+                            <span class="inline-block leading-tight sm:text-center">
                               {{ hour }}
                             </span>
                           </div>
@@ -164,11 +168,11 @@
                     <tbody class="bg-white dark:bg-gray-900">
                       <tr v-for="queue in filteredQueues" :key="queue">
                         <td
-                          class="px-1 py-1 text-center text-xs font-medium sticky left-0 bg-white dark:bg-gray-900 z-10 border-b"
+                          class="px-1 py-1 text-center text-xs font-medium sticky left-0 bg-white dark:bg-gray-900 z-10 border-b border-black dark:border-gray-600"
                         >
                           {{ queue }}
                         </td>
-                        <td v-for="hour in times" :key="hour" class="p-0 border-b">
+                        <td v-for="hour in times" :key="hour" class="p-0 border border-black">
                           <div
                             class="w-full h-6"
                             :class="getCellClass(queue, dateInfo.date, hour)"
@@ -186,11 +190,7 @@
       </UCard>
     </client-only>
 
-    <ShareButtons
-      class="max-w-[800px]"
-      :url="'https://localhub.store/svitlo-cherga'"
-      :page-object="{ title: $t('SvitloCherga.title') }"
-    />
+    <ShareButtons class="max-w-[800px]" :url="currentShareUrl" :page-object="{ title: pageTitle }" />
   </div>
 </template>
 
@@ -263,6 +263,11 @@ watch(selectedRegionCpu, (val) => {
 
 // Генерація погодинно
 const times = Array.from({ length: 24 }, (_, h) => `${h.toString().padStart(2, '0')}:00`);
+const headTimes = Array.from({ length: 24 }, (_, h) => {
+  const start = `${h.toString().padStart(2, '0')}:00`;
+  const end = `${((h + 1) % 24).toString().padStart(2, '0')}:00`;
+  return `${start} – ${end}`;
+});
 
 const regionsOptions = computed(() => {
   return (dataFetch.value?.regions || [])
@@ -278,6 +283,36 @@ const filteredQueues = computed(() => {
   if (!selectedRegion.value?.schedule) return [];
   if (selectedQueue.value === 'all') return sortedQueues.value;
   return sortedQueues.value.includes(selectedQueue.value) ? [selectedQueue.value] : [];
+});
+
+const pageTitle = computed(() => {
+  const base = $t('SvitloCherga.title');
+  const parts: string[] = [base];
+
+  // Використовуємо .value?.name_ua — безпечно
+  if (selectedRegion.value?.name_ua) {
+    parts.push(`${$t('SvitloCherga.region')} ${selectedRegion.value.name_ua}`);
+  }
+
+  if (selectedQueue.value && selectedQueue.value !== 'all') {
+    parts.push(`${$t('SvitloCherga.queue')} ${selectedQueue.value}`);
+  }
+
+  return parts.join(' • ');
+});
+
+const currentShareUrl = computed(() => {
+  const base = 'https://localhub.store/svitlo-cherga';
+  const params = new URLSearchParams();
+
+  if (selectedRegion.value?.cpu) params.append('region', selectedRegion.value.cpu);
+  if (selectedQueue.value && selectedQueue.value !== 'all') params.append('queue', selectedQueue.value);
+
+  return params.toString() ? `${base}?${params}` : base;
+});
+
+watch(pageTitle, (newTitle) => {
+  document.title = newTitle;
 });
 
 const hasAnySchedule = computed(() => selectedRegion.value?.schedule !== null);
@@ -330,9 +365,9 @@ function getHourlyValue(queue: string, date: string, hour: string): number | nul
 function getCellClass(queue: string, date: string, hour: string): string {
   const v = getHourlyValue(queue, date, hour);
 
-  if (v === 2) return 'bg-blue-300 border border-black';
-  if (v === 1) return 'bg-gray-100 border border-black';
-  return 'bg-gray-500 border border-black';
+  if (v === 2) return 'bg-blue-300';
+  if (v === 1) return 'bg-gray-100';
+  return 'bg-gray-500';
 }
 
 function formatPeriods(hours: number[]): string[] {
