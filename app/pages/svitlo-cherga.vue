@@ -346,10 +346,6 @@ function formatPeriods(hours: number[]): string[] {
     const curr = sorted[i] ?? prev + 1;
     if (curr !== prev + 1 || i === sorted.length) {
       const startStr = `${start.toString().padStart(2, '0')}:00`;
-      const endStr =
-        prev === start
-          ? startStr
-          : `${prev.toString().padStart(2, '0')}:00–${(prev + 1).toString().padStart(2, '0')}:00`;
       result.push(prev === start ? startStr : `${startStr}–${(prev + 1).toString().padStart(2, '0')}:00`);
       start = curr;
     }
