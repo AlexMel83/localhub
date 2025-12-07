@@ -2,7 +2,7 @@
   <nav
     :class="[
       'w-full flex flex-col h-[60px] px-3 pt-2 fixed top-0 z-[1500]',
-      isHomePage && appStore.isListView ? 'bg-transparent' : 'relative',
+      isHomePage && !appStore.isListView ? 'bg-transparent' : 'relative',
     ]"
   >
     <div class="w-full flex justify-between items-center">
