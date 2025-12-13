@@ -93,9 +93,6 @@ export default defineNuxtConfig({
       '/api/**': { cors: true, headers: { 'cache-control': 's-maxage=60' } },
     }
   },
-  experimental: {
-    payloadExtraction: false,
-  },
   build: {
     transpile: []
   },
