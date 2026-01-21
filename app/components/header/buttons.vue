@@ -75,11 +75,11 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { useAppStore } from '../../stores/app.store';
-import { useModalStore } from '~/stores/modal.store';
+import { useModalStore } from '../../stores/modal.store';
 import { useI18n } from 'vue-i18n';
 import { useRouter, useRoute } from 'vue-router';
-import { useNuxtApp } from '#app';
-import { useAuthStore } from '~/stores/auth.store';
+import { useNuxtApp } from 'nuxt/app';
+import { useAuthStore } from '../../stores/auth.store';
 
 interface Props {
   isMenuOpen?: boolean;

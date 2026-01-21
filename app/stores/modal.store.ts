@@ -9,7 +9,7 @@ export const useModalStore = defineStore('modal', {
   actions: {
     openLoginModal() {
       console.log('Opening modal');
-      this.isLoginModalOpen = true;
+      this.isLoginModalOpen = !this.isLoginModalOpen;
     },
     closeLoginModal() {
       console.log('Closing modal');
