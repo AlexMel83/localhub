@@ -199,7 +199,6 @@ const toggleTheme = (): void => {
     appStore.toggleDarkMode();
 
     if ($gtag) {
-      //some error here
       $gtag('event', 'theme_change', {
         theme: appStore.isDark ? 'dark' : 'light',
       });
