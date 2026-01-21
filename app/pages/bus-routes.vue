@@ -3,11 +3,7 @@
     <MetaTags :title="pageTitle" :description="pageDescription" :image="pageImage" />
 
     <!-- Карта -->
-    <BusMapContainer
-      v-if="appStore.isListView && isBusRoutesPage"
-      class="h-[calc(100vh-80px)]"
-      @marker-click="openDetails"
-    />
+    <BusMapContainer v-if="appStore.isListView && isBusRoutesPage" class="h-[calc(100vh-80px)]" />
 
     <!-- Список -->
     <!-- Список з пагінацією -->
