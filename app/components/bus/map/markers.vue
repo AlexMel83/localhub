@@ -34,18 +34,18 @@ const createIcon = () => {
   );
 };
 
-const createPopupContent = (store) => {
-  return `
-    <div class="p-1 max-w-xs">
-      <h3 class="font-bold text-lg text-center mb-2">${store.title}</h3>
-      <button 
-        class="bus-stop-detail-btn bg-blue-600 text-white py-1 px-3 mx-auto block rounded text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
-      >
-        Детальніше
-      </button>
-    </div>
-  `;
-};
+// const createPopupContent = (store) => {
+//   return `
+//     <div class="p-1 max-w-xs">
+//       <h3 class="font-bold text-lg text-center mb-2">${store.title}</h3>
+//       <button
+//         class="bus-stop-detail-btn bg-blue-600 text-white py-1 px-3 mx-auto block rounded text-sm font-medium hover:bg-blue-700 transition cursor-pointer"
+//       >
+//         Детальніше
+//       </button>
+//     </div>
+//   `;
+// };
 
 const updateMarkers = () => {
   markerClusterGroup.value.clearLayers();
