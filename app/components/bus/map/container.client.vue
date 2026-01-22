@@ -31,6 +31,7 @@
         @marker-click="$emit('marker-click', $event)"
       />
       <LMarker v-if="busPosition" :lat-lng="busPosition" :icon="busIcon" />
+      <LMarker v-if="busPosition2" :lat-lng="busPosition2" :icon="busIcon2" />
       <LPolyline :lat-lngs="routeLine" :color="routeColor" :weight="5" />
       <LControlScale position="bottomright" :imperial="false" :metric="true" />
     </LMap>
@@ -41,7 +42,6 @@
 import { TILE_PROVIDERS } from '@/constants/map-config';
 import { LControlLayers, LControlScale, LMap, LTileLayer, LMarker, LPolyline } from '@vue-leaflet/vue-leaflet';
 import { route4 } from '@/data/bus-routes/route-4';
-import busSvg from '@/assets/icons/bus.svg';
 
 defineProps({
   stores: { type: Array, default: () => [] },
@@ -90,7 +90,7 @@ const busIcon = createBusIcon('#00db0f'); // Зеленый
 const busIcon2 = createBusIcon('#ff8c00'); // Оранжевый
 
 const busPosition = ref([route4.stops[0].lat, route4.stops[0].lng]);
-const busPosition2 = ref([route4.stops[0].lat, route4.stops[0].lng]);
+const busPosition2 = ref([route4.stops[2].lat, route4.stops[2].lng]);
 let timer = null;
 
 // Парсер часу "HH:MM" в хвилини від початку дня
@@ -151,7 +151,7 @@ const DEMO_MODE = false;
 const DEMO_TIME = '09:15';
 
 // Інтерполяція позиції на маршруті за часом
-function interpolatePosition(tripIndex, stopsSequence, tripTimes, currentMinutes, direction) {
+function interpolatePosition(tripIndex, stopsSequence, tripTimes, currentMinutes) {
   // Знаходимо, між якими зупинками знаходиться автобус
   let currentStopIdx = 0;
   for (let i = 0; i < stopsSequence.length - 1; i++) {
