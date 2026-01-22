@@ -41,6 +41,7 @@
 import { TILE_PROVIDERS } from '@/constants/map-config';
 import { LControlLayers, LControlScale, LMap, LTileLayer, LMarker, LPolyline } from '@vue-leaflet/vue-leaflet';
 import { route4 } from '@/data/bus-routes/route-4';
+import busSvg from '@/assets/icons/bus.svg';
 
 defineProps({
   stores: { type: Array, default: () => [] },
@@ -71,27 +72,22 @@ const routeLine = computed(() => route4.geometry.coordinates.map(([lng, lat]) =>
 
 const routeColor = route4.color;
 
-const busIcon = L.divIcon({
-  className: 'bus-marker',
-  html: `
-   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-     <path fill="currentColor" d="M3 6c-1.11 0-2 .89-2 2v7h2a3 3 0 0 0 3 3a3 3 0 0 0 3-3h6a3 3 0 0 0 3 3a3 3 0 0 0 3-3h2V8c0-1.11-.89-2-2-2zm-.5 1.5h4V10h-4zm5.5 0h4V10H8zm5.5 0h4V10h-4zm5.5 0h2.5V13L19 11zm-13 6A1.5 1.5 0 0 1 7.5 15A1.5 1.5 0 0 1 6 16.5A1.5 1.5 0 0 1 4.5 15A1.5 1.5 0 0 1 6 13.5m12 0a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5"/>
-   </svg>
-  `,
-  iconSize: [32, 32],
-  iconAnchor: [16, 16],
-});
+// Функция для создания иконки автобуса с определенным цветом
+function createBusIcon(color = '#00db0f') {
+  return L.divIcon({
+    className: 'bus-marker',
+    html: `
+     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+       <path fill="${color}" d="M3 6c-1.11 0-2 .89-2 2v7h2a3 3 0 0 0 3 3a3 3 0 0 0 3-3h6a3 3 0 0 0 3 3a3 3 0 0 0 3-3h2V8c0-1.11-.89-2-2-2zm-.5 1.5h4V10h-4zm5.5 0h4V10H8zm5.5 0h4V10h-4zm5.5 0h2.5V13L19 11zm-13 6A1.5 1.5 0 0 1 7.5 15A1.5 1.5 0 0 1 6 16.5A1.5 1.5 0 0 1 4.5 15A1.5 1.5 0 0 1 6 13.5m12 0a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5"/>
+     </svg>
+    `,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+  });
+}
 
-// const busIcon2 = L.divIcon({
-//   className: 'bus-marker-2',
-//   html: `
-//    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-//      <path fill="currentColor" d="M3 6c-1.11 0-2 .89-2 2v7h2a3 3 0 0 0 3 3a3 3 0 0 0 3-3h6a3 3 0 0 0 3 3a3 3 0 0 0 3-3h2V8c0-1.11-.89-2-2-2zm-.5 1.5h4V10h-4zm5.5 0h4V10H8zm5.5 0h4V10h-4zm5.5 0h2.5V13L19 11zm-13 6A1.5 1.5 0 0 1 7.5 15A1.5 1.5 0 0 1 6 16.5A1.5 1.5 0 0 1 4.5 15A1.5 1.5 0 0 1 6 13.5m12 0a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5"/>
-//    </svg>
-//   `,
-//   iconSize: [32, 32],
-//   iconAnchor: [16, 16],
-// });
+const busIcon = createBusIcon('#00db0f'); // Зеленый
+const busIcon2 = createBusIcon('#ff8c00'); // Оранжевый
 
 const busPosition = ref([route4.stops[0].lat, route4.stops[0].lng]);
 const busPosition2 = ref([route4.stops[0].lat, route4.stops[0].lng]);
@@ -151,11 +147,11 @@ function getStopsSequenceForDirection(direction) {
 }
 
 // РЕЖИМ ДЕМОНСТРАЦІЇ
-const DEMO_MODE = true;
+const DEMO_MODE = false;
 const DEMO_TIME = '09:15';
 
 // Інтерполяція позиції на маршруті за часом
-function interpolatePosition(tripIndex, stopsSequence, tripTimes, currentMinutes) {
+function interpolatePosition(tripIndex, stopsSequence, tripTimes, currentMinutes, direction) {
   // Знаходимо, між якими зупинками знаходиться автобус
   let currentStopIdx = 0;
   for (let i = 0; i < stopsSequence.length - 1; i++) {
