@@ -28,6 +28,35 @@ export interface Arrival {
   destination?: string;
 }
 
+interface ScheduleDayMap {
+  sun?: boolean;
+  mon?: boolean;
+  tue?: boolean;
+  wed?: boolean;
+  thu?: boolean;
+  fri?: boolean;
+  sat?: boolean;
+}
+
+interface ScheduleItem {
+  time: string;
+  days?: ScheduleDays;
+}
+
+interface RouteSchedule {
+  route_name: string;
+  schedules?: ScheduleItem[];
+}
+
+interface ScheduleStop {
+  stop_name: string;
+  coordinates?: string;
+  routes?: RouteSchedule[];
+}
+
+type WeekDayKey = 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat';
+type ScheduleDays = Partial<Record<WeekDayKey, boolean>>;
+
 // 1. Static Dictionary of Coordinates
 const COORDINATES: Record<string, { lat: number; lng: number }> = {
   центр: { lat: 49.7556, lng: 27.2208 },
@@ -105,15 +134,15 @@ const getCoords = (name: string) => {
 
 // 2. Process Stops (Driving from the schedule data to ensure matches)
 const processedStopsMap = new Map<string, Stop>();
+const scheduleStops = schedulesData as ScheduleStop[];
 
-// Populate STOPS from schedulesData (the source of truth for arrivals)
-(schedulesData as unknown[]).forEach((s) => {
+scheduleStops.forEach((s) => {
   let lat = 0;
   let lng = 0;
 
   if (s.coordinates) {
-    const parts = s.coordinates.split(',').map((p: string) => parseFloat(p.trim()));
-    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+    const parts = s.coordinates.split(',').map((p) => parseFloat(p.trim()));
+    if (parts.length === 2 && !Number.isNaN(parts[0]) && !Number.isNaN(parts[1])) {
       lat = parts[0];
       lng = parts[1];
     }
@@ -131,9 +160,9 @@ const processedStopsMap = new Map<string, Stop>();
     processedStopsMap.set(s.stop_name, {
       id: s.stop_name,
       name: s.stop_name,
-      lat: lat,
-      lng: lng,
-      description: `Stop in Starokostiantyniv`,
+      lat,
+      lng,
+      description: 'Stop in Starokostiantyniv',
     });
   }
 });
@@ -149,14 +178,14 @@ export const ROUTES: Route[] = routeLinesData.map((r) => ({
 
 // 4. Dynamic Schedule Logic
 export function getRoutesForStop(stopName: string): string[] {
-  const stopList = schedulesData as unknown[];
+  const stopList = scheduleStops;
   const normalizedSearchName = normalize(stopName);
   const targetStop = stopList.find((s) => normalize(s.stop_name) === normalizedSearchName);
 
   if (!targetStop || !targetStop.routes) return [];
 
   const routeIds = new Set<string>();
-  targetStop.routes.forEach((route: unknown) => {
+  targetStop.routes?.forEach((route) => {
     const match = route.route_name.match(/№\s*(\d+)/);
     if (match) routeIds.add(match[1]);
   });
@@ -165,42 +194,38 @@ export function getRoutesForStop(stopName: string): string[] {
 }
 
 export function getArrivalsForStop(stopName: string, date: Date = new Date()): Arrival[] {
-  const daysMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-  const todayKey = daysMap[date.getDay()] as string;
+  const daysMap: WeekDayKey[] = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const todayKey = daysMap[date.getDay()];
 
   const arrivals: Arrival[] = [];
 
   // Find the stop in the dataset using normalization for robustness
-  const stopList = schedulesData as unknown[];
+  const stopList = schedulesData as ScheduleStop[];
   const normalizedSearchName = normalize(stopName);
-  const targetStop = stopList.find((s) => normalize(s.stop_name) === normalizedSearchName);
+  const targetStop = stopList.find((s): s is ScheduleStop => normalize(s.stop_name) === normalizedSearchName);
 
-  if (targetStop && targetStop.routes) {
-    targetStop.routes.forEach((route: unknown) => {
+  if (targetStop?.routes) {
+    targetStop.routes.forEach((route) => {
       const match = route.route_name.match(/№\s*(\d+)/);
       const routeId = match ? match[1] : '?';
 
-      if (route.schedules) {
-        route.schedules.forEach((schedule: unknown) => {
-          const days = (schedule.days || {}) as Record<string, unknown>;
-          if (days[todayKey]) {
-            const parts = (schedule.time as string).split(':').map(Number);
-            const h = parts[0] || 0;
-            const m = parts[1] || 0;
-            const minutesFromMidnight = h * 60 + m;
-            const colors = ROUTE_COLORS as Record<string, string>;
+      route.schedules?.forEach((schedule) => {
+        const days = schedule.days ?? {};
 
-            arrivals.push({
-              routeId: routeId,
-              routeName: route.route_name as string,
-              color: (colors[routeId] || colors['default']) as string,
-              minutes: minutesFromMidnight,
-              time: schedule.time as string,
-              destination: 'See Route',
-            });
-          }
-        });
-      }
+        if (days[todayKey]) {
+          const [h = 0, m = 0] = schedule.time.split(':').map(Number);
+          const minutesFromMidnight = h * 60 + m;
+
+          arrivals.push({
+            routeId,
+            routeName: route.route_name,
+            color: ROUTE_COLORS[routeId] ?? ROUTE_COLORS.default,
+            minutes: minutesFromMidnight,
+            time: schedule.time,
+            destination: 'See Route',
+          });
+        }
+      });
     });
   }
 

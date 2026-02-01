@@ -65,8 +65,6 @@ definePageMeta({
 const isBusRoutesPage = computed(() => {
   return route.path === '/bus-routes' || /^\/[a-z]{2}\/bus-routes$/.test(route.path);
 });
-console.log('isBusRoutesPage:', isBusRoutesPage.value);
-console.log('appStore.isListView:', appStore.isListView);
 </script>
 
 <style scoped>
