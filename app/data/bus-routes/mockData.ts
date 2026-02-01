@@ -28,16 +28,6 @@ export interface Arrival {
   destination?: string;
 }
 
-interface ScheduleDayMap {
-  sun?: boolean;
-  mon?: boolean;
-  tue?: boolean;
-  wed?: boolean;
-  thu?: boolean;
-  fri?: boolean;
-  sat?: boolean;
-}
-
 interface ScheduleItem {
   time: string;
   days?: ScheduleDays;
