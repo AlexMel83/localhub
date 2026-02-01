@@ -3,7 +3,7 @@
     <MetaTags :title="pageTitle" :description="pageDescription" :image="pageImage" />
     <!-- Карта -->
     <!-- <BusMapContainer v-if="appStore.isListView && isBusRoutesPage" class="h-[calc(100vh-80px)]" /> -->
-    <div v-if="appStore.isListView && isBusRoutesPage">
+    <div v-if="appStore.isListView && isBusRoutesPage" class="h-[calc(100vh-80px)]">
       <ClientOnly>
         <BusMap :selected-stop="selectedStop" :selected-routes="selectedRoutes" @select-stop="handleSelectStop" />
         <template #placeholder>
@@ -54,7 +54,7 @@ const pageImage = '/bus-routes.png';
 
 const route = useRoute();
 const appStore = useAppStore();
-//@ts-ignore
+//@ts-expect-error need types
 definePageMeta({
   layout: 'bus-routes',
   title: pageTitle,
@@ -65,6 +65,8 @@ definePageMeta({
 const isBusRoutesPage = computed(() => {
   return route.path === '/bus-routes' || /^\/[a-z]{2}\/bus-routes$/.test(route.path);
 });
+console.log('isBusRoutesPage:', isBusRoutesPage.value);
+console.log('appStore.isListView:', appStore.isListView);
 </script>
 
 <style scoped>

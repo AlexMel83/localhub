@@ -1,5 +1,8 @@
 import schedulesData from './busStops.json';
 
+// 3. Import Routes from external file (user-editable)
+import routeLinesData from './routeLines.json';
+
 // Types
 export interface Stop {
   id: string;
@@ -104,7 +107,7 @@ const getCoords = (name: string) => {
 const processedStopsMap = new Map<string, Stop>();
 
 // Populate STOPS from schedulesData (the source of truth for arrivals)
-(schedulesData as any[]).forEach((s) => {
+(schedulesData as unknown[]).forEach((s) => {
   let lat = 0;
   let lng = 0;
 
@@ -137,26 +140,23 @@ const processedStopsMap = new Map<string, Stop>();
 
 export const STOPS = Array.from(processedStopsMap.values());
 
-// 3. Import Routes from external file (user-editable)
-import routeLinesData from './routeLines.json';
-
-export const ROUTES: Route[] = (routeLinesData as any[]).map((r: any) => ({
+export const ROUTES: Route[] = routeLinesData.map((r) => ({
   id: r.id,
   name: r.name,
-  color: (ROUTE_COLORS as any)[r.id] || ROUTE_COLORS['default'],
+  color: ROUTE_COLORS[r.id] || ROUTE_COLORS['default'],
   path: r.path as [number, number][],
 }));
 
 // 4. Dynamic Schedule Logic
 export function getRoutesForStop(stopName: string): string[] {
-  const stopList = schedulesData as any[];
+  const stopList = schedulesData as unknown[];
   const normalizedSearchName = normalize(stopName);
   const targetStop = stopList.find((s) => normalize(s.stop_name) === normalizedSearchName);
 
   if (!targetStop || !targetStop.routes) return [];
 
   const routeIds = new Set<string>();
-  targetStop.routes.forEach((route: any) => {
+  targetStop.routes.forEach((route: unknown) => {
     const match = route.route_name.match(/№\s*(\d+)/);
     if (match) routeIds.add(match[1]);
   });
@@ -171,18 +171,18 @@ export function getArrivalsForStop(stopName: string, date: Date = new Date()): A
   const arrivals: Arrival[] = [];
 
   // Find the stop in the dataset using normalization for robustness
-  const stopList = schedulesData as any[];
+  const stopList = schedulesData as unknown[];
   const normalizedSearchName = normalize(stopName);
   const targetStop = stopList.find((s) => normalize(s.stop_name) === normalizedSearchName);
 
   if (targetStop && targetStop.routes) {
-    targetStop.routes.forEach((route: any) => {
+    targetStop.routes.forEach((route: unknown) => {
       const match = route.route_name.match(/№\s*(\d+)/);
       const routeId = match ? match[1] : '?';
 
       if (route.schedules) {
-        route.schedules.forEach((schedule: any) => {
-          const days = (schedule.days || {}) as Record<string, any>;
+        route.schedules.forEach((schedule: unknown) => {
+          const days = (schedule.days || {}) as Record<string, unknown>;
           if (days[todayKey]) {
             const parts = (schedule.time as string).split(':').map(Number);
             const h = parts[0] || 0;
@@ -193,7 +193,7 @@ export function getArrivalsForStop(stopName: string, date: Date = new Date()): A
             arrivals.push({
               routeId: routeId,
               routeName: route.route_name as string,
-              color: ((colors as any)[routeId] || colors['default']) as string,
+              color: (colors[routeId] || colors['default']) as string,
               minutes: minutesFromMidnight,
               time: schedule.time as string,
               destination: 'See Route',

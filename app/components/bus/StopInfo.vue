@@ -102,7 +102,7 @@ const highlightedArrivalIndices = computed(() => {
 
 const getRouteStyle = (rid: string) => {
   const isSelected = selectedRoutes.value.includes(rid);
-  const color = (ROUTE_COLORS as any)[rid] || ROUTE_COLORS['default'];
+  const color = (ROUTE_COLORS as Record<string, string>)[rid] || ROUTE_COLORS['default'];
   return {
     backgroundColor: isSelected ? color : 'rgba(255, 255, 255, 0.07)',
     borderColor: isSelected ? color : 'rgba(255, 255, 255, 0.15)',
@@ -122,14 +122,14 @@ const getRouteStyle = (rid: string) => {
         </div>
       </div>
 
-      <div class="scrollable-content" v-if="stop">
+      <div v-if="stop" class="scrollable-content">
         <div class="controls-section">
           <div class="control-group">
             <label for="datetime">Час ({{ dayName }})</label>
             <input
-              type="datetime-local"
               id="datetime"
               v-model="selectedDateTime"
+              type="datetime-local"
               class="custom-input"
               lang="uk-UA"
               step="60"
@@ -140,7 +140,7 @@ const getRouteStyle = (rid: string) => {
             <label>Маршрути</label>
             <div class="route-checkboxes">
               <label v-for="rid in availableRoutes" :key="rid" class="pill-checkbox">
-                <input type="checkbox" :value="rid" v-model="selectedRoutes" />
+                <input v-model="selectedRoutes" type="checkbox" :value="rid" />
                 <span class="pill-text" :style="getRouteStyle(rid)">{{ rid }}</span>
               </label>
             </div>
@@ -149,7 +149,7 @@ const getRouteStyle = (rid: string) => {
 
         <div class="arrivals-list">
           <div v-if="loading" class="loading">
-            <div class="spinner"></div>
+            <div class="spinner" />
           </div>
           <div v-else-if="filteredArrivals.length > 0" class="arrival-items-list">
             <div
