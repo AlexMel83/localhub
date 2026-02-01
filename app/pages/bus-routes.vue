@@ -50,7 +50,7 @@ const handleClosePanel = () => {
 
 const pageTitle = 'Графік міських транспортних маршрутів Старокостянтинова';
 const pageDescription = 'Інтерактивна мапа графіку міських транспортних маршрутів Старокостянтинова.';
-const pageImage = '/bus-routes.png';
+const pageImage = '/bus-routes.jpg';
 
 const route = useRoute();
 const appStore = useAppStore();

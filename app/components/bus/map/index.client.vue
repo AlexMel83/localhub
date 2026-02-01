@@ -11,7 +11,7 @@ const props = defineProps<{
 }>();
 
 const zoom = ref(13);
-const center = ref<[number, number]>([49.7556, 27.2208]); // Starokostiantyniv Center
+const center = ref<[number, number]>([49.755593, 27.193796]); // Starokostiantyniv Center
 const mapOptions = {
   zoomControl: false,
   attributionControl: false,
