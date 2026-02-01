@@ -1,7 +1,7 @@
 import schedulesData from './busStops.json';
 
 // 3. Import Routes from external file (user-editable)
-import routeLinesData from './routeLines.json';
+import routeLinesData from './routeLines.js';
 
 // Types
 export interface Stop {
