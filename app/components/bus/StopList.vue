@@ -10,7 +10,7 @@ const selectedStop = ref<Stop | null>(null);
 const isStopPanelOpen = ref(false);
 
 // Reactive theme from store
-const isDarkMode = computed(() => appStore.isDarkMode);
+const isDarkMode = computed(() => appStore.isDark);
 
 // Get all unique routes across all stops
 const allRoutes = computed(() => {
