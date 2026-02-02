@@ -384,7 +384,7 @@ const getRouteStyle = (rid: string) => {
 /* Mobile: present as bottom drawer with max 50% viewport height */
 @media (max-width: 767px) {
   .stop-panel-container {
-    padding: 8px;
+    padding: 6px;
     align-items: stretch;
   }
 
@@ -401,6 +401,85 @@ const getRouteStyle = (rid: string) => {
     position: sticky;
     top: 0;
     z-index: 12;
+    padding: 8px 10px;
+  }
+
+  .header h2 {
+    font-size: 1rem;
+  }
+
+  .scrollable-content {
+    padding: 8px;
+  }
+
+  .controls-section {
+    padding: 6px;
+    gap: 6px;
+  }
+
+  .pill-text {
+    padding: 3px 8px;
+    font-size: 0.75rem;
+  }
+
+  .arrival-row {
+    padding: 4px 8px;
+    gap: 8px;
+  }
+
+  .arrival-time {
+    font-size: 0.9rem;
+    min-width: 40px;
+  }
+
+  .route-num {
+    font-size: 0.75rem;
+  }
+
+  .custom-input {
+    padding: 4px 8px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Landscape on small devices: present as left drawer, max 50% width */
+@media (max-width: 767px) and (orientation: landscape) {
+  .stop-panel-container {
+    /* occupy left side, full height */
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: 50vw;
+    padding: 0;
+    justify-content: flex-start;
+    transform: translateX(-110%);
+    align-items: stretch;
+  }
+
+  .stop-panel-container.open {
+    transform: translateX(0);
+  }
+
+  .stop-panel {
+    height: 100vh;
+    max-height: none;
+    width: 100%;
+    border-radius: 0 12px 12px 0;
+    margin: 0;
+    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.6);
+  }
+
+  .fixed-header {
+    position: sticky;
+    top: 0;
+    z-index: 12;
+    padding: 10px;
+  }
+
+  .scrollable-content {
+    padding: 8px;
+    max-height: calc(100vh - 56px);
   }
 }
 
