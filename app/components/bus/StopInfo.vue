@@ -176,7 +176,7 @@ const getRouteStyle = (rid: string) => {
 
 <style scoped>
 .stop-panel-container {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
@@ -378,6 +378,29 @@ const getRouteStyle = (rid: string) => {
   }
   .stop-panel-container.open {
     transform: translateX(0);
+  }
+}
+
+/* Mobile: present as bottom drawer with max 50% viewport height */
+@media (max-width: 767px) {
+  .stop-panel-container {
+    padding: 8px;
+    align-items: stretch;
+  }
+
+  .stop-panel {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+    max-height: 50vh;
+  }
+
+  /* Ensure header stays visible and content scrolls */
+  .fixed-header {
+    position: sticky;
+    top: 0;
+    z-index: 12;
   }
 }
 
