@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useAppStore } from '../../stores/app.store';
 import { type Stop, STOPS, getRoutesForStop, getArrivalsForStop, ROUTE_COLORS } from '../../data/bus-routes/mockData';
 
@@ -50,19 +50,6 @@ const filteredStops = computed(() => {
   return result;
 });
 
-// Get arrivals for selected stop
-const stopArrivals = computed(() => {
-  if (!selectedStop.value) return [];
-  const now = new Date();
-  return getArrivalsForStop(selectedStop.value.name, now);
-});
-
-// Get routes for selected stop
-const stopRoutes = computed(() => {
-  if (!selectedStop.value) return [];
-  return getRoutesForStop(selectedStop.value.name);
-});
-
 const getRouteColor = (routeId: string) => {
   return ROUTE_COLORS[routeId] || ROUTE_COLORS['default'];
 };
@@ -91,13 +78,6 @@ const toggleRoute = (routeId: string) => {
 const clearFilters = () => {
   searchQuery.value = '';
   selectedRoutes.value = [...allRoutes.value];
-};
-
-// Format time display
-const formatTime = (minutes: number): string => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
 };
 
 // Calculate next arrival for a specific stop
@@ -160,7 +140,7 @@ const getNextArrival = (stop: Stop) => {
       <div class="stops-list">
         <div v-if="filteredStops.length === 0" class="empty-state">
           <p>Остановок не знайдено</p>
-          <button @click="clearFilters" class="retry-btn">Скинути фільтри</button>
+          <button class="retry-btn" @click="clearFilters">Скинути фільтри</button>
         </div>
 
         <div v-for="stop in filteredStops" :key="stop.id" class="stop-card" @click="openStopPanel(stop)">
