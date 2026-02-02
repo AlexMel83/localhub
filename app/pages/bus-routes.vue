@@ -3,7 +3,7 @@
     <MetaTags :title="pageTitle" :description="pageDescription" :image="pageImage" />
     <!-- Карта -->
     <!-- <BusMapContainer v-if="appStore.isListView && isBusRoutesPage" class="h-[calc(100vh-80px)]" /> -->
-    <div v-if="appStore.isListView && isBusRoutesPage" class="h-[calc(100vh-80px)]">
+    <div v-if="appStore.isListView && isBusRoutesPage" class="h-[calc(100vh)]">
       <ClientOnly>
         <BusMap :selected-stop="selectedStop" :selected-routes="selectedRoutes" @select-stop="handleSelectStop" />
         <template #placeholder>

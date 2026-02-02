@@ -155,6 +155,7 @@ const toggleLanguage = async (): Promise<void> => {
     emit('language-changed', newLang);
 
     if ($gtag) {
+      //@ts-expect-error need types
       $gtag('event', 'language_change', {
         new_language: newLang,
         previous_language: currentLocale.value,
@@ -172,6 +173,7 @@ const toggleTheme = (): void => {
     appStore.toggleDarkMode();
 
     if ($gtag) {
+      //@ts-expect-error need types
       $gtag('event', 'theme_change', {
         theme: appStore.isDark ? 'dark' : 'light',
       });

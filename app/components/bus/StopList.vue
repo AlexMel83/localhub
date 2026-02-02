@@ -88,6 +88,11 @@ const getNextArrival = (stop: Stop) => {
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
   return arrivals.find((a) => a.minutes >= currentMinutes);
 };
+
+// Get all arrivals for a stop (for display)
+const getAllArrivals = (stop: Stop) => {
+  return getArrivalsForStop(stop.name, new Date());
+};
 </script>
 
 <template>
@@ -161,11 +166,21 @@ const getNextArrival = (stop: Stop) => {
           </div>
 
           <div class="next-arrival">
-            <template v-if="getNextArrival(stop)">
-              <span class="arrival-label">Наступний рейс:</span>
-              <span class="arrival-time">{{ getNextArrival(stop)!.time }}</span>
-            </template>
-            <span v-else class="no-arrivals">Немає рейсів сьогодні</span>
+            <div class="arrivals-preview">
+              <span v-if="getAllArrivals(stop).length > 0" class="arrival-label">Рейси:</span>
+              <div v-if="getAllArrivals(stop).length > 0" class="times-list">
+                <span
+                  v-for="(arrival, idx) in getAllArrivals(stop)"
+                  :key="idx"
+                  class="time-badge"
+                  :style="{ backgroundColor: arrival.color }"
+                  :class="{ 'white-text': ['4', '7'].includes(arrival.routeId) }"
+                >
+                  {{ arrival.time }}
+                </span>
+              </div>
+              <span v-else class="no-arrivals">Немає рейсів сьогодні</span>
+            </div>
           </div>
 
           <div class="click-hint">Натисніть для деталей →</div>
@@ -447,28 +462,52 @@ const getNextArrival = (stop: Stop) => {
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.arrivals-preview {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
 }
 
 .arrival-label {
   font-size: 0.85rem;
   /* color: rgba(255, 255, 255, 0.6); */
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.arrival-time {
-  font-size: 1rem;
+.times-list {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.time-badge {
+  font-size: 0.8rem;
   font-weight: 700;
-  color: rgba(59, 130, 246, 1);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
 }
 
-.no-arrivals {
-  font-size: 0.85rem;
-  /* color: rgba(255, 255, 255, 0.4); */
+.time-badge.white-text {
+  color: #ffffff;
 }
 
 .click-hint {
   font-size: 0.75rem;
   /* color: rgba(255, 255, 255, 0.3); */
   text-align: right;
+}
+
+.no-arrivals {
+  font-size: 0.85rem;
+  /* color: rgba(255, 255, 255, 0.4); */
 }
 
 .empty-state {
