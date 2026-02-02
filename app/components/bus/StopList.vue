@@ -79,16 +79,6 @@ const clearFilters = () => {
   searchQuery.value = '';
   selectedRoutes.value = [...allRoutes.value];
 };
-
-// Calculate next arrival for a specific stop
-const getNextArrival = (stop: Stop) => {
-  const arrivals = getArrivalsForStop(stop.name, new Date());
-  if (arrivals.length === 0) return null;
-  const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  return arrivals.find((a) => a.minutes >= currentMinutes);
-};
-
 // Get all arrivals for a stop (for display)
 const getAllArrivals = (stop: Stop) => {
   return getArrivalsForStop(stop.name, new Date());
