@@ -18,7 +18,7 @@
       />
     </div>
     <!-- Список зупинок -->
-    <div v-else class="p-4 max-w-7xl mx-auto">another page</div>
+    <BusStopList v-else />
   </div>
 </template>
 

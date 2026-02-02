@@ -201,8 +201,10 @@ export function getArrivalsForStop(stopName: string, date: Date = new Date()): A
 
       route.schedules?.forEach((schedule) => {
         const days = schedule.days ?? {};
+        // Check if this day is enabled (explicitly true, not just truthy)
+        const isDayActive = days[todayKey] === true;
 
-        if (days[todayKey]) {
+        if (isDayActive) {
           const [h = 0, m = 0] = schedule.time.split(':').map(Number);
           const minutesFromMidnight = h * 60 + m;
 
