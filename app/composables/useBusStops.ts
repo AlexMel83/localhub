@@ -1,4 +1,3 @@
-
 import routeLinesData from '../data/bus-routes/routeLines.js';
 
 export interface Stop {
