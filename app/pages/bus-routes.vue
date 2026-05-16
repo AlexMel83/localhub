@@ -23,10 +23,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, provide } from 'vue';
 import { useAppStore } from '../stores/app.store';
 import { useRoute } from 'vue-router';
 import type { Stop } from '../composables/useBusStops';
+import { useBusStops } from '../composables/useBusStops';
+import { BUS_STOPS_KEY } from '../composables/useBusStopsContext';
 
 const selectedStop = ref<Stop | null>(null);
 const isPanelOpen = ref(false);
@@ -54,7 +56,7 @@ const pageImage = '/bus-routes.jpg';
 
 const route = useRoute();
 const appStore = useAppStore();
-//@ts-expect-error need types
+
 definePageMeta({
   layout: 'bus-routes',
   title: pageTitle,
@@ -65,7 +67,14 @@ definePageMeta({
 const isBusRoutesPage = computed(() => {
   return route.path === '/bus-routes' || /^\/[a-z]{2}\/bus-routes$/.test(route.path);
 });
+
+// ── Single fetch for the entire page ──────────────────────────────────────────
+// All child components (BusMap, BusStopList, BusStopInfo) share this one instance
+// via provide/inject — no duplicate requests when switching between map and list view.
+const busStops = useBusStops();
+provide(BUS_STOPS_KEY, busStops);
 </script>
+
 
 <style scoped>
 .loading-map {

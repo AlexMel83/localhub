@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch, onMounted } from 'vue';
-import { useBusStops, type Stop } from '../../composables/useBusStops';
+import { computed, ref, watch, onMounted, inject } from 'vue';
+import type { Stop } from '../../composables/useBusStops';
+import { BUS_STOPS_KEY } from '../../composables/useBusStopsContext';
 
-const { getArrivalsForStop, getRoutesForStop, ROUTE_COLORS } = useBusStops();
+const busCtx = inject(BUS_STOPS_KEY);
+if (!busCtx) throw new Error('BusStopInfo: BUS_STOPS_KEY not provided');
+const { getArrivalsForStop, getRoutesForStop, ROUTE_COLORS } = busCtx;
 
 const props = defineProps<{
   stop: Stop | null;

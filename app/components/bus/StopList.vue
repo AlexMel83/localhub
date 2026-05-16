@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, inject } from 'vue';
 import { useAppStore } from '../../stores/app.store';
-import { useBusStops, type Stop } from '../../composables/useBusStops';
+import type { Stop } from '../../composables/useBusStops';
+import { BUS_STOPS_KEY } from '../../composables/useBusStopsContext';
 
-const { STOPS, getRoutesForStop, getArrivalsForStop, ROUTE_COLORS, pending } = useBusStops();
+// Shared context — data already fetched by the parent page (bus-routes.vue)
+const busCtx = inject(BUS_STOPS_KEY);
+if (!busCtx) throw new Error('BusStopList: BUS_STOPS_KEY not provided');
+const { STOPS, getRoutesForStop, getArrivalsForStop, ROUTE_COLORS, pending } = busCtx;
+
+// Show loader only while data is truly absent
+const isLoading = computed(() => pending.value && STOPS.value.length === 0);
+
 const appStore = useAppStore();
 const searchQuery = ref('');
 const selectedRoutes = ref<string[]>([]);
@@ -16,7 +24,7 @@ const isDarkMode = computed(() => appStore.isDark);
 // Get all unique routes across all stops
 const allRoutes = computed(() => {
   const routeSet = new Set<string>();
-  STOPS.forEach((stop) => {
+  STOPS.value.forEach((stop) => {
     const routes = getRoutesForStop(stop.name);
     routes.forEach((r) => routeSet.add(r));
   });
@@ -32,7 +40,7 @@ onMounted(() => {
 
 // Filter stops by search query and selected routes
 const filteredStops = computed(() => {
-  let result = STOPS;
+  let result = STOPS.value;
 
   // Filter by search query
   if (searchQuery.value.trim()) {
@@ -88,11 +96,11 @@ const getAllArrivals = (stop: Stop) => {
 
 <template>
   <div class="bus-stops-list" :class="{ 'light-mode': !isDarkMode }">
-    <div v-if="pending" class="loader-overlay">
+    <div v-if="isLoading" class="loader-overlay">
       <div class="spinner" />
       <div>Завантаження маршрутів...</div>
     </div>
-    <div v-else class="list-container">
+    <div v-else-if="!isLoading" class="list-container">
       <!-- Header -->
       <div class="header-section">
         <h1 class="page-title">Розклад автобусів</h1>
@@ -202,10 +210,8 @@ const getAllArrivals = (stop: Stop) => {
   /* color: #ffffff; */
 }
 
-.bus-stops-list.light-mode {
-  /* background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); */
-  /* color: #1a202c; */
-}
+
+
 
 .loader-overlay {
   display: flex;
@@ -251,10 +257,6 @@ const getAllArrivals = (stop: Stop) => {
   letter-spacing: -0.5px;
 }
 
-.light-mode .page-title {
-  /* color: #1a202c; */
-}
-
 .list-container {
   max-width: 900px;
   margin: 0 auto;
@@ -269,11 +271,6 @@ const getAllArrivals = (stop: Stop) => {
   margin-bottom: 20px;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
-}
-
-.light-mode .search-filter-section {
-  /* background: rgba(255, 255, 255, 0.7); */
-  /* border-color: rgba(0, 0, 0, 0.1); */
 }
 
 .search-box {
@@ -293,24 +290,10 @@ const getAllArrivals = (stop: Stop) => {
   transition: all 0.2s;
 }
 
-.search-input::placeholder {
-  /* color: rgba(255, 255, 255, 0.4); */
-}
-
 .search-input:focus {
   border-color: rgba(59, 130, 246, 0.5);
   /* background: rgba(0, 0, 0, 0.6); */
   box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
-}
-
-.light-mode .search-input {
-  /* background: rgba(255, 255, 255, 0.9); */
-  /* border-color: rgba(0, 0, 0, 0.15); */
-  /* color: #1a202c; */
-}
-
-.light-mode .search-input::placeholder {
-  /* color: rgba(0, 0, 0, 0.4); */
 }
 
 .light-mode .search-input:focus {
@@ -331,10 +314,6 @@ const getAllArrivals = (stop: Stop) => {
   transition: color 0.2s;
 }
 
-.clear-search:hover {
-  /* color: rgba(255, 255, 255, 0.8); */
-}
-
 .route-filter {
   margin-bottom: 16px;
 }
@@ -346,10 +325,6 @@ const getAllArrivals = (stop: Stop) => {
   text-transform: uppercase;
   margin-bottom: 8px;
   display: block;
-}
-
-.light-mode .filter-label {
-  /* color: rgba(0, 0, 0, 0.6); */
 }
 
 .route-pills {
@@ -372,10 +347,6 @@ const getAllArrivals = (stop: Stop) => {
 
 .route-pill:hover {
   border-color: rgba(255, 255, 255, 0.3);
-}
-
-.route-pill.active {
-  /* color: #ffffff; */
 }
 
 .clear-filters-btn {
@@ -449,10 +420,6 @@ const getAllArrivals = (stop: Stop) => {
   font-weight: 700;
   /* color: #ffffff; */
   flex: 1;
-}
-
-.light-mode .stop-name {
-  /* color: #1a202c; */
 }
 
 .routes-badge {

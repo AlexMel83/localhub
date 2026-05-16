@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, inject } from 'vue';
 import 'leaflet/dist/leaflet.css';
 import { LMap, LTileLayer, LMarker, LPolyline, LTooltip } from '@vue-leaflet/vue-leaflet';
 import L from 'leaflet';
-import { useBusStops, type Stop } from '../../../composables/useBusStops';
+import type { Stop } from '../../../composables/useBusStops';
+import { BUS_STOPS_KEY } from '../../../composables/useBusStopsContext';
 
 const props = defineProps<{
   selectedStop: Stop | null;
@@ -17,7 +18,9 @@ const mapOptions = {
   attributionControl: false,
 };
 
-const { STOPS, ROUTES, getRoutesForStop, pending } = useBusStops();
+const busCtx = inject(BUS_STOPS_KEY);
+if (!busCtx) throw new Error('BusMap: BUS_STOPS_KEY not provided');
+const { STOPS, ROUTES, getRoutesForStop, pending } = busCtx;
 
 // Fix default icon issues by creating a custom one or just resetting
 // For a premium look, let's create a custom DivIcon factory
