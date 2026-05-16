@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import 'leaflet/dist/leaflet.css';
 import { LMap, LTileLayer, LMarker, LPolyline, LTooltip } from '@vue-leaflet/vue-leaflet';
 import L from 'leaflet';
-import { STOPS, ROUTES, type Stop, getRoutesForStop } from '../../../data/bus-routes/mockData';
+import { useBusStops, type Stop } from '../../../composables/useBusStops';
 
 const props = defineProps<{
   selectedStop: Stop | null;
@@ -16,6 +16,9 @@ const mapOptions = {
   zoomControl: false,
   attributionControl: false,
 };
+
+const { STOPS, ROUTES, getRoutesForStop, pending } = useBusStops();
+
 
 // Fix default icon issues by creating a custom one or just resetting
 // For a premium look, let's create a custom DivIcon factory
@@ -45,6 +48,10 @@ const visibleRoutes = computed(() => {
 
 <template>
   <div class="map-container">
+    <div v-if="pending" class="loader-overlay">
+      <div class="spinner"></div>
+      <div>Завантаження маршрутів...</div>
+    </div>
     <LMap ref="map" v-model:zoom="zoom" v-model:center="center" :use-global-leaflet="false" :options="mapOptions">
       <!-- Dark mode map style or Standard implementation -->
       <!-- Using CartoDB Voyager for a clean look -->
@@ -92,6 +99,34 @@ const visibleRoutes = computed(() => {
   height: 100%;
   position: relative;
   z-index: 1;
+}
+
+.loader-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 2000;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .map-controls {

@@ -26,7 +26,7 @@
 import { ref, computed } from 'vue';
 import { useAppStore } from '../stores/app.store';
 import { useRoute } from 'vue-router';
-import type { Stop } from '../data/bus-routes/mockData';
+import type { Stop } from '../composables/useBusStops';
 
 const selectedStop = ref<Stop | null>(null);
 const isPanelOpen = ref(false);
