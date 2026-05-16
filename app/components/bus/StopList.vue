@@ -89,7 +89,7 @@ const getAllArrivals = (stop: Stop) => {
 <template>
   <div class="bus-stops-list" :class="{ 'light-mode': !isDarkMode }">
     <div v-if="pending" class="loader-overlay">
-      <div class="spinner"></div>
+      <div class="spinner" />
       <div>Завантаження маршрутів...</div>
     </div>
     <div v-else class="list-container">
@@ -228,8 +228,12 @@ const getAllArrivals = (stop: Stop) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .header-section {

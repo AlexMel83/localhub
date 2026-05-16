@@ -2,7 +2,7 @@
 import { computed, ref, watch, onMounted } from 'vue';
 import { useBusStops, type Stop } from '../../composables/useBusStops';
 
-const { getArrivalsForStop, getRoutesForStop, ROUTE_COLORS, pending } = useBusStops();
+const { getArrivalsForStop, getRoutesForStop, ROUTE_COLORS } = useBusStops();
 
 const props = defineProps<{
   stop: Stop | null;

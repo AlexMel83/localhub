@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { useFetch } from '#imports';
 import routeLinesData from '../data/bus-routes/routeLines.js';
 
@@ -124,16 +124,20 @@ export const ROUTES: Route[] = routeLinesData.map((r) => ({
 }));
 
 export const useBusStops = () => {
-  const { data: rawStops, pending, error } = useFetch<ScheduleStop[]>('/api/stops', {
+  const {
+    data: rawStops,
+    pending,
+    error,
+  } = useFetch<ScheduleStop[]>('/api/stops', {
     key: 'bus-stops-dynamic-data',
-    default: () => []
+    default: () => [],
   });
 
   const STOPS = computed<Stop[]>(() => {
     if (!rawStops.value) return [];
-    
+
     const processedStopsMap = new Map<string, Stop>();
-    
+
     rawStops.value.forEach((s) => {
       let lat = 0;
       let lng = 0;
@@ -164,7 +168,7 @@ export const useBusStops = () => {
         });
       }
     });
-    
+
     return Array.from(processedStopsMap.values());
   });
 
@@ -191,7 +195,15 @@ export const useBusStops = () => {
 
   const getArrivalsForStop = (stopName: string, date: Date = new Date()): Arrival[] => {
     if (!rawStops.value) return [];
-    const daysMap: Array<'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat'> = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const daysMap: Array<'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat'> = [
+      'sun',
+      'mon',
+      'tue',
+      'wed',
+      'thu',
+      'fri',
+      'sat',
+    ];
     const todayKey = daysMap[date.getDay()];
 
     const arrivals: Arrival[] = [];
@@ -237,6 +249,6 @@ export const useBusStops = () => {
     getRoutesForStop,
     getArrivalsForStop,
     ROUTES,
-    ROUTE_COLORS
+    ROUTE_COLORS,
   };
 };

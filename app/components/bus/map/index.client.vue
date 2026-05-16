@@ -19,7 +19,6 @@ const mapOptions = {
 
 const { STOPS, ROUTES, getRoutesForStop, pending } = useBusStops();
 
-
 // Fix default icon issues by creating a custom one or just resetting
 // For a premium look, let's create a custom DivIcon factory
 const createIcon = (color = '#4f46e5') => {
@@ -49,7 +48,7 @@ const visibleRoutes = computed(() => {
 <template>
   <div class="map-container">
     <div v-if="pending" class="loader-overlay">
-      <div class="spinner"></div>
+      <div class="spinner" />
       <div>Завантаження маршрутів...</div>
     </div>
     <LMap ref="map" v-model:zoom="zoom" v-model:center="center" :use-global-leaflet="false" :options="mapOptions">
@@ -103,7 +102,10 @@ const visibleRoutes = computed(() => {
 
 .loader-overlay {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -125,8 +127,12 @@ const visibleRoutes = computed(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .map-controls {
