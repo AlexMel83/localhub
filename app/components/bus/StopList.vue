@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
 import { useAppStore } from '../../stores/app.store';
-import { type Stop, STOPS, getRoutesForStop, getArrivalsForStop, ROUTE_COLORS } from '../../data/bus-routes/mockData';
+import { useBusStops, type Stop } from '../../composables/useBusStops';
 
+const { STOPS, getRoutesForStop, getArrivalsForStop, ROUTE_COLORS, pending } = useBusStops();
 const appStore = useAppStore();
 const searchQuery = ref('');
 const selectedRoutes = ref<string[]>([]);
@@ -87,7 +88,11 @@ const getAllArrivals = (stop: Stop) => {
 
 <template>
   <div class="bus-stops-list" :class="{ 'light-mode': !isDarkMode }">
-    <div class="list-container">
+    <div v-if="pending" class="loader-overlay">
+      <div class="spinner" />
+      <div>Завантаження маршрутів...</div>
+    </div>
+    <div v-else class="list-container">
       <!-- Header -->
       <div class="header-section">
         <h1 class="page-title">Розклад автобусів</h1>
@@ -200,6 +205,35 @@ const getAllArrivals = (stop: Stop) => {
 .bus-stops-list.light-mode {
   /* background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); */
   /* color: #1a202c; */
+}
+
+.loader-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .header-section {

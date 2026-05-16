@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from 'vue';
-import { type Stop, getArrivalsForStop, getRoutesForStop, ROUTE_COLORS } from '../../data/bus-routes/mockData';
+import { useBusStops, type Stop } from '../../composables/useBusStops';
+
+const { getArrivalsForStop, getRoutesForStop, ROUTE_COLORS } = useBusStops();
 
 const props = defineProps<{
   stop: Stop | null;
