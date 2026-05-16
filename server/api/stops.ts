@@ -1,7 +1,7 @@
 import { defineEventHandler } from 'h3';
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/13bxKXO-CFVkvYYnrq0UnUg7nW3_AnRECorQKOSP5Nvg/export?format=csv';
-
+// --
 function parseCSVRow(row) {
   const result = [];
   let inQuotes = false;
