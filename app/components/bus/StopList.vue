@@ -210,9 +210,6 @@ const getAllArrivals = (stop: Stop) => {
   /* color: #ffffff; */
 }
 
-
-
-
 .loader-overlay {
   display: flex;
   flex-direction: column;
