@@ -11,15 +11,4 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": [
-    "types/**/*.d.ts",
-    ".nuxt/imports.d.ts",
-    "plugins/**/*",
-    "components/**/*",
-    "pages/**/*",
-    "stores/**/*",
-    "server/**/*",
-    "nuxt.config.ts"
-  ],
-  "exclude": ["node_modules", ".nuxt/dist", "dist"]
 }

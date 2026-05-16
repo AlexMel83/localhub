@@ -2,8 +2,8 @@ import { defineEventHandler } from 'h3';
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/13bxKXO-CFVkvYYnrq0UnUg7nW3_AnRECorQKOSP5Nvg/export?format=csv';
 // --
-function parseCSVRow(row) {
-  const result = [];
+function parseCSVRow(row: string): string[] {
+  const result: string[] = [];
   let inQuotes = false;
   let currentVal = '';
   for (let i = 0; i < row.length; i++) {
@@ -38,7 +38,7 @@ export default defineEventHandler(async () => {
 
     let startIndex = -1;
     for (let i = 0; i < lines.length; i++) {
-      if (lines[i].startsWith('Зупинка')) {
+      if (lines[i]?.startsWith('Зупинка')) {
         startIndex = i + 1;
         break;
       }
@@ -51,7 +51,7 @@ export default defineEventHandler(async () => {
     const stopsMap = new Map();
 
     for (let i = startIndex; i < lines.length; i++) {
-      const line = lines[i].trim();
+      const line = lines[i]?.trim();
       if (!line) continue;
 
       const cols = parseCSVRow(line);
@@ -67,7 +67,7 @@ export default defineEventHandler(async () => {
 
       if (!stopName || !routeName) continue;
 
-      const parseBool = (val) => val.toUpperCase() === 'TRUE';
+      const parseBool = (val?: string) => val?.toUpperCase() === 'TRUE';
 
       const days = {
         mon: parseBool(cols[15]),
@@ -93,7 +93,7 @@ export default defineEventHandler(async () => {
       }
 
       if (time) {
-        if (time.startsWith('0')) {
+        if (time?.startsWith('0')) {
           time = time.substring(1);
         }
         stopObj.routesMap.get(routeName).push({
@@ -104,7 +104,7 @@ export default defineEventHandler(async () => {
     }
 
     const finalResult = [];
-    for (const [stopObj] of stopsMap.entries()) {
+    for (const stopObj of stopsMap.values()) {
       const routes = [];
       for (const [routeName, schedules] of stopObj.routesMap.entries()) {
         routes.push({

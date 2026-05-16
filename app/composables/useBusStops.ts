@@ -1,5 +1,4 @@
-import { computed } from 'vue';
-import { useFetch } from '#imports';
+
 import routeLinesData from '../data/bus-routes/routeLines.js';
 
 export interface Stop {
@@ -119,7 +118,7 @@ const getCoords = (name: string) => {
 export const ROUTES: Route[] = routeLinesData.map((r) => ({
   id: r.id,
   name: r.name,
-  color: ROUTE_COLORS[r.id] || ROUTE_COLORS['default'],
+  color: ROUTE_COLORS[r.id] || ROUTE_COLORS['default'] || '#6b7280',
   path: r.path as [number, number][],
 }));
 
@@ -145,8 +144,8 @@ export const useBusStops = () => {
       if (s.coordinates) {
         const parts = s.coordinates.split(',').map((p) => parseFloat(p.trim()));
         if (parts.length === 2 && !Number.isNaN(parts[0]) && !Number.isNaN(parts[1])) {
-          lat = parts[0];
-          lng = parts[1];
+          lat = parts[0] ?? 0;
+          lng = parts[1] ?? 0;
         }
       }
 
@@ -183,7 +182,7 @@ export const useBusStops = () => {
     const routeIds = new Set<string>();
     targetStop.routes?.forEach((route) => {
       const match = route.route_name.match(/№\s*([\dа-яА-Яa-zA-Z]+)/);
-      if (match) routeIds.add(match[1]);
+      if (match && match[1]) routeIds.add(match[1]);
     });
 
     return Array.from(routeIds).sort((a, b) => {
@@ -204,7 +203,7 @@ export const useBusStops = () => {
       'fri',
       'sat',
     ];
-    const todayKey = daysMap[date.getDay()];
+    const todayKey = daysMap[date.getDay()] ?? 'mon';
 
     const arrivals: Arrival[] = [];
 
@@ -215,7 +214,7 @@ export const useBusStops = () => {
     if (targetStop?.routes) {
       targetStop.routes.forEach((route) => {
         const match = route.route_name.match(/№\s*([\dа-яА-Яa-zA-Z]+)/);
-        const routeId = match ? match[1] : '?';
+        const routeId = match && match[1] ? match[1] : '?';
 
         route.schedules?.forEach((schedule) => {
           const days = schedule.days ?? {};
@@ -228,7 +227,7 @@ export const useBusStops = () => {
             arrivals.push({
               routeId,
               routeName: route.route_name,
-              color: ROUTE_COLORS[routeId] ?? ROUTE_COLORS.default,
+              color: ROUTE_COLORS[routeId] ?? ROUTE_COLORS.default ?? '#6b7280',
               minutes: minutesFromMidnight,
               time: schedule.time,
               destination: 'Переглянути маршрут',
