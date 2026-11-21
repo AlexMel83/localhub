@@ -92,7 +92,7 @@
       </div>
       <ShareButtons
         class="max-w-[800px]"
-        :url="'https://localhub.store'"
+        :url="'https://json63.pp.ua'"
         :page-object="{ title: 'LocalHub - Starkon' }"
       />
     </div>
@@ -102,7 +102,7 @@
 <script setup>
 import { useAppStore } from '~/stores/app.store';
 import { useRuntimeConfig } from '#imports';
-const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
+const apiBase = useRuntimeConfig().public.apiBase || 'https://api.json63.pp.ua';
 const appStore = useAppStore();
 const businessStore = useBusinessStore();
 

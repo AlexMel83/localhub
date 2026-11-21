@@ -104,7 +104,7 @@ import { useRuntimeConfig } from '#imports';
 
 import { useValidate } from '~/composables/useValidate';
 import { useGeoCode } from '~/composables/useGeoCode';
-const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
+const apiBase = useRuntimeConfig().public.apiBase || 'https://api.json63.pp.ua';
 
 const { phoneError, validatePhone, normalizePhone } = useValidate();
 const { reverseGeoCode, geoCodeAddress } = useGeoCode();

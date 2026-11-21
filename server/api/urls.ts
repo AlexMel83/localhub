@@ -1,8 +1,8 @@
 import { defineSitemapEventHandler } from '#imports';
 
 export default defineSitemapEventHandler(async () => {
-  const siteUrl = process.env.SITE_URL || 'https://localhub.store';
-  const apiBase = process.env.API_BASE_URL || 'https://api.localhub.store';
+  const siteUrl = process.env.SITE_URL || 'https://json63.pp.ua';
+  const apiBase = process.env.API_BASE_URL || 'https://api.json63.pp.ua';
   const defaultLocale = 'uk';
   const locales = ['uk', 'en'];
 

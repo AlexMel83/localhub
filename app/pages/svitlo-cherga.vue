@@ -316,7 +316,7 @@ const pageTitle = computed(() => {
 });
 
 const currentShareUrl = computed(() => {
-  const base = 'https://localhub.store/svitlo-cherga';
+  const base = 'https://json63.pp.ua/svitlo-cherga';
   const params = new URLSearchParams();
 
   if (selectedRegion.value?.cpu) params.append('region', selectedRegion.value.cpu);

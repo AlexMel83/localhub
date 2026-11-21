@@ -196,7 +196,7 @@
     </client-only>
     <ShareButtons
       class="max-w-[800px]"
-      :url="'https://localhub.store/svitlo-cherga'"
+      :url="'https://json63.pp.ua/svitlo-cherga'"
       :page-object="{ title: $t('SvitloCherga.title') }"
     />
   </div>

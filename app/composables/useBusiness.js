@@ -2,7 +2,7 @@ import { useRuntimeConfig } from 'nuxt/app';
 
 export const useBusiness = () => {
   const config = useRuntimeConfig();
-  const apiBase = config.public.apiBase || 'https://api.localhub.store';
+  const apiBase = config.public.apiBase || 'https://api.json63.pp.ua';
 
   const business = useState('business', () => {});
   const businesses = useState('businesses', () => []);

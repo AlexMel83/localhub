@@ -49,7 +49,7 @@ const props = defineProps({
 // Базова URL (SSR-safe)
 const config = useRuntimeConfig();
 const route = useRoute();
-const baseUrl = config.public.baseURL || 'https://localhub.store';
+const baseUrl = config.public.baseURL || 'https://json63.pp.ua';
 const { locale } = useI18n();
 
 // Повна URL-адреса сторінки
@@ -59,10 +59,10 @@ const currentUrl = computed(() => {
 
 // Повна URL для зображення з обробкою помилок
 const urlImage = computed(() => {
-  if (!props.image) return 'https://localhub.store/panoimg/Mototehnika.jpg';
+  if (!props.image) return 'https://json63.pp.ua/panoimg/Mototehnika.jpg';
   return props.image.startsWith('http')
     ? props.image
-    : `https://localhub.store${props.image.startsWith('/') ? '' : '/'}${props.image}`;
+    : `https://json63.pp.ua${props.image.startsWith('/') ? '' : '/'}${props.image}`;
 });
 
 const localizedTitle = computed(() => {

@@ -113,7 +113,7 @@ import { onMounted, reactive, ref, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import type { SelectItem } from '@nuxt/ui';
 import { useRuntimeConfig } from '#imports';
-const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
+const apiBase = useRuntimeConfig().public.apiBase || 'https://api.json63.pp.ua';
 
 const { phoneError, validatePhone, normalizePhone } = useValidate();
 // const { createBusiness } = useBusiness();
@@ -150,7 +150,7 @@ const form: Form = reactive({
     'https://script.google.com/macros/s/AKfycbzfUqCk_D9bM1tmHgTeA_v8wmRzSMqYFI1qSPW0Ln8TpI5LNqxKHZs8lr0ffu8Vy4tM/exec',
   latitude: Number(route.query.lat) || 49.7550101,
   longitude: Number(route.query.lng) || 27.1874278,
-  thumbnail_url: 'https://localhub.store/panoimg/Instrument-Shop.jpg',
+  thumbnail_url: 'https://json63.pp.ua/panoimg/Instrument-Shop.jpg',
 });
 
 const successMessage = ref('');
@@ -239,7 +239,7 @@ const resetForm = () => {
   form.type = 'store';
   form.latitude = 49.7550101;
   form.longitude = 27.1874278;
-  form.thumbnail_url = 'https://localhub.store/panoimg/Instrument-Shop.jpg';
+  form.thumbnail_url = 'https://json63.pp.ua/panoimg/Instrument-Shop.jpg';
   form.working_hours_start = '09:00';
   form.working_hours_end = '18:00';
   form.price = 'https://docs.google.com/spreadsheets/d/1lAT-AuKNSjmruKh59ePe8jt63QSSbm_4gWdWPxsU7-8/edit?usp=sharing';

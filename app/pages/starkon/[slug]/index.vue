@@ -138,7 +138,7 @@
 import { ref, defineAsyncComponent } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRuntimeConfig } from '#imports';
-const apiBase = useRuntimeConfig().public.apiBase || 'https://api.localhub.store';
+const apiBase = useRuntimeConfig().public.apiBase || 'https://api.json63.pp.ua';
 const route = useRoute();
 
 const businessStore = useBusinessStore();

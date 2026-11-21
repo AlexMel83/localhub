@@ -4,7 +4,7 @@
       :title="'Джерела інформації про бізнес у LocalHub'"
       :description="'LocalHub збирає дані про місцевий бізнес із відкритих джерел, матеріалів користувачів та власників компаній. Якщо певна інформація некоректна — ви можете надіслати запит на її зміну або видалення.'"
       :image="'/panoimg/Localhub-logo-320.jpg'"
-      :url="'https://localhub.store/info-source'"
+      :url="'https://json63.pp.ua/info-source'"
       :keywords="'LocalHub, джерела інформації, місцевий бізнес, відкриті дані, Старокостянтинів, підприємці'"
       :structured-data="{
         '@context': 'https://schema.org',
@@ -12,14 +12,14 @@
         name: 'Джерела інформації про бізнес у LocalHub',
         description:
           'LocalHub отримує інформацію про місцеві компанії з відкритих джерел, матеріалів користувачів та власників бізнесу.',
-        url: 'https://localhub.store/info-source',
+        url: 'https://json63.pp.ua/info-source',
         publisher: {
           '@type': 'Organization',
           name: 'LocalHub',
-          url: 'https://localhub.store',
+          url: 'https://json63.pp.ua',
           logo: {
             '@type': 'ImageObject',
-            url: 'https://localhub.store/Localhub-logo-320.jpg',
+            url: 'https://json63.pp.ua/Localhub-logo-320.jpg',
           },
         },
       }"
