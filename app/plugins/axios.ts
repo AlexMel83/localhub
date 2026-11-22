@@ -1,21 +1,27 @@
 import type { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
 import { useAuthStore } from '~/stores/auth.store';
+import { useModalStore } from '~/stores/modal.store';
 import apiModule from '~/api/index';
-import { defineNuxtPlugin, useRuntimeConfig, navigateTo, useNuxtApp } from '#app';
+import { defineNuxtPlugin, useRuntimeConfig, useNuxtApp } from '#app';
 
 interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
+// Auth endpoints report their own errors in the sign-in window: no global
+// toast and no refresh-and-retry for them.
+const AUTH_ENDPOINT = /\/(login|registration|logout|refresh|activate|auth-user|social-login)(\/|$|\?)/;
+
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig();
   const authStore = useAuthStore();
-  const baseURL = config.public.apiBase || 'http://localhost:5050';
+  const baseURL = config.public.apiBase || 'http://localhost:4040';
 
   const axiosInstance: AxiosInstance = axios.create({
     baseURL,
     timeout: 15000,
+    // The refresh token lives in an httpOnly cookie of the API domain.
     withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
@@ -25,79 +31,19 @@ export default defineNuxtPlugin(() => {
 
   const api = apiModule(axiosInstance);
 
-  // === Додаємо токен при кожному запиті ===
-  const getAccessToken = () => authStore.userData?.tokens?.accessToken || null;
-
-  const setAuthHeader = (token: string | null = null) => {
-    const accessToken = token || getAccessToken();
-    if (accessToken) axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-    else delete axiosInstance.defaults.headers.common['Authorization'];
+  // One refresh at a time; parallel 401s wait for it.
+  let refreshing: Promise<boolean> | null = null;
+  const refreshSession = () => {
+    refreshing ??= authStore.refresh().finally(() => {
+      refreshing = null;
+    });
+    return refreshing;
   };
 
-  // === Рефреш токенів ===
-  let isRefreshing = false;
-  let refreshSubscribers: Array<(token: string) => void> = [];
-
-  const subscribeTokenRefresh = (cb: (token: string) => void) => {
-    refreshSubscribers.push(cb);
-  };
-  const onRefreshed = (token: string) => {
-    refreshSubscribers.forEach((cb) => cb(token));
-    refreshSubscribers = [];
-  };
-
-  const refreshToken = async (): Promise<boolean> => {
-    const refreshTokenValue = authStore.userData?.tokens?.refreshToken;
-    if (!refreshTokenValue) {
-      console.warn('Refresh token відсутній, виконується вихід');
-      await authStore.logout();
-      return false;
-    }
-
-    if (isRefreshing) {
-      return new Promise((resolve) => subscribeTokenRefresh((token) => resolve(!!token)));
-    }
-
-    isRefreshing = true;
-
-    try {
-      delete axiosInstance.defaults.headers.common['Authorization'];
-      const response = await api.auth.refresh(refreshTokenValue);
-
-      const newAccess = response.data?.tokens?.accessToken;
-      if (!newAccess) throw new Error('Не вдалося оновити access token');
-
-      const updatedData = {
-        ...authStore.userData,
-        tokens: {
-          ...authStore.userData!.tokens,
-          accessToken: newAccess,
-          refreshToken: response.data?.tokens?.refreshToken || authStore.userData!.tokens.refreshToken,
-        },
-      };
-
-      authStore.saveUserData(updatedData);
-      setAuthHeader(newAccess);
-      onRefreshed(newAccess);
-
-      return true;
-    } catch (error) {
-      console.error('Помилка оновлення токену:', error);
-      await authStore.logout();
-      onRefreshed('');
-      if (import.meta.client) await navigateTo('/login');
-      return false;
-    } finally {
-      isRefreshing = false;
-    }
-  };
-
-  // === Interceptors ===
   axiosInstance.interceptors.request.use(
-    (config) => {
-      const accessToken = getAccessToken();
-      if (accessToken && config.headers) config.headers.Authorization = `Bearer ${accessToken}`;
-      return config;
+    (req) => {
+      if (authStore.accessToken && req.headers) req.headers.Authorization = `Bearer ${authStore.accessToken}`;
+      return req;
     },
     (error) => Promise.reject(error),
   );
@@ -105,37 +51,41 @@ export default defineNuxtPlugin(() => {
   axiosInstance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-      const originalRequest = error.config as ExtendedAxiosRequestConfig;
+      const req = error.config as ExtendedAxiosRequestConfig | undefined;
+      const isAuthCall = AUTH_ENDPOINT.test(req?.url ?? '');
+      const status = error.response?.status;
 
-      if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
-        originalRequest._retry = true;
-        const success = await refreshToken();
-
-        if (success) {
-          const newToken = getAccessToken();
-          if (newToken && originalRequest.headers) originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          return axiosInstance(originalRequest);
+      if (req && !isAuthCall && (status === 401 || status === 403) && !req._retry && authStore.isAuthed) {
+        req._retry = true;
+        if (await refreshSession()) {
+          if (req.headers) req.headers.Authorization = `Bearer ${authStore.accessToken}`;
+          return axiosInstance(req);
         }
+        // Session is over: ask to sign in again.
+        if (import.meta.client) useModalStore().openLoginModal();
       }
 
-      // Показ помилок
-      if (import.meta.client && error.response) {
-        const { $toast, $t } = useNuxtApp();
-        const code = error.response.status;
+      if (import.meta.client && error.response && !isAuthCall) {
+        const { $toast, $t } = useNuxtApp() as unknown as {
+          $toast: { error: (m: string) => void };
+          $t: (key: string) => string;
+        };
         const messages: Record<number, string> = {
           400: $t('errors.badRequest'),
           404: $t('errors.notFound'),
           500: $t('errors.serverError'),
           503: $t('errors.serviceUnavailable'),
         };
-        if (messages[code]) $toast.error(messages[code]);
+        const text = status ? messages[status] : undefined;
+        if (text) $toast.error(text);
       }
 
       return Promise.reject(error);
     },
   );
 
-  if (import.meta.client) setAuthHeader();
+  // Session saved in this browser (localStorage / sessionStorage).
+  if (import.meta.client) authStore.restore();
 
   return {
     provide: {
