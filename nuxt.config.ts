@@ -5,7 +5,8 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   modules: [
     "@nuxt/eslint",
-    "@pinia/nuxt", 
+    "@pinia/nuxt",
+    "@vueuse/nuxt",
     "@nuxt/image",
     "@nuxt/ui",
     "@nuxt/icon",

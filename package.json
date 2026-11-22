@@ -13,7 +13,11 @@
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
     "precommit": "eslint --fix \"./**/*.{js,ts,vue}\" && prettier --write \"./**/*.{js,ts,vue,css,scss}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@gtm-support/vue-gtm": "^3.1.0",
@@ -27,12 +31,13 @@
     "@nuxtjs/sitemap": "^7.4.3",
     "@pinia/nuxt": "^0.11.2",
     "@unhead/vue": "^2.0.14",
+    "@vue-leaflet/vue-leaflet": "^0.10.1",
     "@vueuse/core": "^13.9.0",
+    "@vueuse/nuxt": "^13.9.0",
     "axios": "^1.11.0",
     "better-sqlite3": "^12.2.0",
-    "leaflet.markercluster": "^1.5.3",
-    "@vue-leaflet/vue-leaflet": "^0.10.1",
     "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
     "nuxt": "^4.1.1",
     "pinia": "^3.0.3",
     "vanilla-cookieconsent": "^3.1.0",
@@ -51,19 +56,34 @@
     "@iconify-json/mdi": "^1.2.3",
     "@iconify-json/mdi-light": "^1.2.2",
     "@iconify-json/simple-icons": "^1.2.61",
-    "@types/node": "^24.10.1",
+    "@nuxt/test-utils": "^4.4.0",
+    "@playwright/test": "^1.65.1",
     "@types/leaflet": "^1.9.21",
+    "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.1.0",
     "@typescript-eslint/parser": "^8.1.0",
+    "@vue/test-utils": "^2.6.0",
     "autoprefixer": "^10.4.20",
     "baseline-browser-mapping": "^2.9.4",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-vue": "^9.27.0",
+    "happy-dom": "^21.0.4",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.3",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.12",
+    "vue-tsc": "^3.3.14"
+  },
+  "lint-staged": {
+    "*.{js,ts,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,scss}": [
+      "prettier --write"
+    ]
   }
 }
