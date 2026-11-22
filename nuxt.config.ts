@@ -23,7 +23,7 @@ export default defineNuxtConfig({
   sitemap: {
     siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://json63.pp.ua',
     autoI18n: false,
-    sources: ['/api/urls'],
+    sources: ['/api/urls', '/api/__sitemap__/svitlo'],
     gzip: true,
     debug: process.env.NODE_ENV === 'development',
     defaults: {
@@ -97,6 +97,7 @@ export default defineNuxtConfig({
     routeRules: {
       '/': { prerender: true },
       '/en': { prerender: true },
+      '/svitlo-cherga-vchart': { redirect: { to: '/svitlo-cherga', statusCode: 301 } },
       '/api/**': { cors: true, headers: { 'cache-control': 's-maxage=60' } },
       '/api/svitlo/**': {
         cors: true,

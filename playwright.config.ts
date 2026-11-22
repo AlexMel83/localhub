@@ -6,7 +6,8 @@ export default defineConfig({
   testDir: 'test/e2e',
   timeout: 30_000,
   retries: process.env.CI ? 1 : 0,
-  use: { baseURL, trace: 'retain-on-failure' },
+  // PW_CHANNEL=chrome uses the locally installed Chrome instead of downloaded browsers.
+  use: { baseURL, trace: 'retain-on-failure', channel: process.env.PW_CHANNEL || undefined },
   projects: [
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },

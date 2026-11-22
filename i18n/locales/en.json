@@ -118,7 +118,6 @@
     "title": "Terms of the public offer of LocalHub",
     "contractTitle": "CONTRACT of the public offer for the provision of charitable donations",
     "description": "This public offer (hereinafter referred to as the “Offer”) is addressed to an unspecified number of persons – individuals and legal entities (hereinafter referred to as the “Benefactor”) who are visitors to the website https://json63.pp.ua (hereinafter referred to as the “Site”). The Offer is an official and public proposal of the Charitable Organization “Charitable Fund for Social Reforms and Support “Nadiya” (EDRPOU code 26220897), represented by the Director Meleshko Oleksandr Mykolayovych, acting on the basis of the Charter (hereinafter referred to as the “Fund”), to conclude an agreement on the provision of a charitable donation (hereinafter referred to as the “Agreement”) on the terms set out below.",
-
     "definitionTitle": "1. Terms and definitions",
     "definition1": [
       "Public offer (Offer)",
@@ -136,12 +135,10 @@
       "Benefactor (Donor)",
       " – an individual or legal entity who has voluntarily made a charitable donation and accepted this Offer."
     ],
-
     "subjectTitle": "2. Subject of the agreement",
     "subjectDescription1": "2.1. The subject of this Agreement is the voluntary and gratuitous transfer by the Benefactor to the ownership of the Fund of funds in the form of a charitable donation to support and develop the LocalHub Starokostyantyniv platform, in particular: development of digital services for community entrepreneurs, support for internally displaced persons (IDPs), promotion of employment and self-employment, development of local businesses, cultural and educational initiatives.",
     "subjectDescription2": "2.2. The benefactor independently determines the size and purpose of his charitable donation.",
     "subjectDescription3": "2.3. Charitable donations are not intended to generate profit for the Benefactor or the Foundation and are directed solely to the implementation of the Foundation's statutory activities and LocalHub programs.",
-
     "contactsTitle": "11. Fund details",
     "fondName": "Charity Fund for Social Reforms and Support Hope",
     "edrpou": "EDRPOU 26220897",
@@ -156,8 +153,14 @@
     "intro": "LocalHub Starokostyantyniv is a platform that helps support and develop the local economy during martial law, unite the community, and create new opportunities for entrepreneurs and residents. Your participation will make our common space stronger and more useful!",
     "volonters": "We are looking for volunteers!",
     "volontersDescription": "We need active people to help develop the platform and make it more convenient for residents, entrepreneurs, and visitors of the city. You can choose the direction where your knowledge and experience will be most useful to the community:",
-    "designers": ["Designers", " — to improve visual style and create an attractive space for users."],
-    "QA": ["QA", " — to test the functionality of the application and ensure the quality of the services."],
+    "designers": [
+      "Designers",
+      " — to improve visual style and create an attractive space for users."
+    ],
+    "QA": [
+      "QA",
+      " — to test the functionality of the application and ensure the quality of the services."
+    ],
     "lawyers": [
       "Lawyers",
       " — to prepare useful materials for entrepreneurs, IDPs and community residents (contracts, consultations, handbooks)."
@@ -170,36 +173,31 @@
     "ifYouStarterAfterLink": ". This is a good opportunity to gain experience working on a real project and become part of the changes in the city.",
     "supportTitle": "Support",
     "supportDescription": "The funds we receive go towards technical support, promotion, and launching new features that are useful for users and the community. As well as for the implementation of social projects to support IDPs. Even a small contribution will help us grow faster and the platform be more efficient!",
-
     "joinTitle": "Partnership and cooperation",
     "joinDescriptionText": "We are open to cooperation with entrepreneurs, public organizations and active residents. If you want to get involved or propose a partnership, contact us ",
     "joinDescriptionAfterLink": ". Together we can create a platform that will drive community development.",
-    "aboutCompany": ["Initiator of the project: ", "Charitable fund of social reforms and support Hope"]
+    "aboutCompany": [
+      "Initiator of the project: ",
+      "Charitable fund of social reforms and support Hope"
+    ]
   },
   "PrivacyPolicy": {
     "title": "Privacy Policy",
     "subTitle": "LocalHub Starokostyantyniv — platform for the community and local business",
     "fundName": "Initiator and operator: Charitable fund of social reforms and support Hope",
     "ourSite": "Official website of the platform:",
-
     "collectInfoTitle": "What information we collect and why",
     "collectInfoDescription": "We process only the minimum data necessary for the operation of the LocalHub service: account data (name, email), business profiles (title, description, contacts, address, categories, schedule), geodata of points on the map (coordinates), content that you voluntarily publish (promotions, images, price lists, links), technical logs (IP, user-agent, security events). If you order paid services, payments are processed by the payment provider; we store only the fact of payment and the transaction identifier. If you provide permission in the browser, we temporarily process the approximate coordinates of your location for the nearby function - this data is not stored. The data is used to display the catalog and map, search and recommendations, improve the quality of the service, contact you, and fulfill legal obligations.",
-
     "cookieTitle": "Cookies and similar technologies",
     "cookieDescription": "We use three types of cookies: (1) necessary cookies for login, language settings, and security; (2) functional cookies to store your preferences (e.g., catalog filters); (3) analytical cookies to measure traffic and improve the service in an anonymized form. You can manage cookies in your browser settings; disabling necessary cookies may limit the functionality of the site.",
-
     "anotherTitle": "Third-party services and links",
     "anotherDescription": "The platform may contain links to business websites and integrate third-party services (e.g. maps, virtual tours, payment providers). We do not control the privacy policies of third parties - we recommend that you read them separately. We adhere to the principle of minimization before transferring data to third parties.",
-
     "dataTitle": "Storage, security and retention",
     "dataDescription": "We use technical and organizational security measures: connection encryption (HTTPS), access separation, backup. Personal data is stored no longer than is necessary for the purposes of processing or as required by law. Public business profiles and promotions are stored as long as the owner maintains them or it is necessary in the interests of the community. The account can be deleted upon request.",
-
     "rightsTitle": "Your rights",
     "rightsDescription": "You have the right to: (1) access your data; (2) rectification of inaccuracies; (3) erasure (“right to be forgotten”) where there are no legitimate grounds for retention; (4) restriction of processing; (5) objection to processing; (6) data portability. You can also withdraw consent where the processing is based on consent. To exercise your rights, please contact us by email.",
-
     "changeTitle": "Policy update",
     "changeDescription": "We periodically update this policy in the event of changes to the services or the law. The current version is always available on this page; we may notify you of significant changes in the service.",
-
     "contactsTitle": "Contacts",
     "contactsDescription": "For questions regarding the processing of personal data, please contact us by e-mail:"
   },
@@ -245,8 +243,17 @@
     "paragraph4": "Want even more customers? You can connect additional paid services. We will use the funds received to develop the platform and support IDPs.",
     "subTitle5": "How effective is it?",
     "callToAction": "Go to registration",
-    "contactUs": ["Have any questions?", "Write to us - and we will be happy to help!"],
-    "paragraph5": ["Two simple steps:", "log in", "add a company", "and", "get new customers"],
+    "contactUs": [
+      "Have any questions?",
+      "Write to us - and we will be happy to help!"
+    ],
+    "paragraph5": [
+      "Two simple steps:",
+      "log in",
+      "add a company",
+      "and",
+      "get new customers"
+    ],
     "paragraph6": " is a service that helps residents find the services and goods they need nearby, and businesses gain new regular customers.",
     "paragraph7": [
       "You can add a business to LocalHub",
@@ -268,5 +275,138 @@
   "enabled": "Enabled",
   "disabled": "Disabled",
   "necessary": "Necessary",
-  "optional": "Optional"
+  "optional": "Optional",
+  "Svitlo": {
+    "title": "Power outage schedule",
+    "metaDescription": "Hourly power outage schedules by queue: status now, countdown to the next outage, today and tomorrow. Khmelnytskyi Oblast and all of Ukraine.",
+    "regionTitle": "Power outage schedule — {region}",
+    "regionDescription": "Hourly power outages, {region}: all queues today and tomorrow, who is without power now, find your queue by address.",
+    "queueTitle": "Queue {queue}: power outage schedule — {region}",
+    "queueTitleTomorrow": "Queue {queue}: tomorrow’s outage schedule — {region}",
+    "queueDescription": "When power is off for queue {queue} ({region}), {date}: {summary}. Status now and countdown to the next outage.",
+    "summaryNone": "no outages planned",
+    "summaryUnknown": "schedule not published yet",
+    "queue": "Queue {queue}",
+    "now": {
+      "on": "Power is on according to the schedule",
+      "off": "Power is off according to the schedule",
+      "maybe": "A power outage is possible now",
+      "unknown": "The schedule for this time is not known yet"
+    },
+    "next": {
+      "off": "Outage in {in}",
+      "on": "Power returns in {in}",
+      "maybe": "Possible outage in {in}",
+      "unknown": "No schedule published after {time}",
+      "at": "at {time}"
+    },
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "view": {
+      "line": "Timeline",
+      "ring": "Clock"
+    },
+    "legend": {
+      "on": "Power on",
+      "off": "Power off",
+      "maybe": "Possible outage",
+      "unknown": "No data",
+      "now": "Now"
+    },
+    "timelineLabel": "Day timeline {date}: {summary}",
+    "intervals": {
+      "title": "Outage periods",
+      "finished": "Finished as scheduled",
+      "ongoing": "Ongoing",
+      "maybe": "Possible outage",
+      "off": "No power"
+    },
+    "totals": {
+      "off": "Without power today",
+      "on": "With power",
+      "maybe": "Possible"
+    },
+    "duration": {
+      "h": "{h} h",
+      "m": "{m} min",
+      "hm": "{h} h {m} min"
+    },
+    "states": {
+      "not_published": {
+        "title": "Schedule not published yet",
+        "text": "Tomorrow’s schedule usually appears in the evening. No schedule does not mean power will be on."
+      },
+      "empty": {
+        "title": "No outages planned",
+        "text": "The operator plans no outages for this queue on this date."
+      },
+      "emergency": {
+        "title": "Emergency outages in effect",
+        "text": "The hourly schedule may not apply. Follow the operator’s announcements."
+      },
+      "stale": {
+        "title": "Data may be outdated",
+        "text": "A fresh update could not be fetched. Showing the last saved data."
+      },
+      "disagree": {
+        "title": "Sources disagree",
+        "text": "The official site and the aggregator differ. Check the operator’s website."
+      },
+      "error": {
+        "title": "Could not load the schedule",
+        "text": "Please try again in a minute."
+      }
+    },
+    "source": {
+      "label": "Source",
+      "updated": "updated {time}",
+      "checked": "checked {time}",
+      "disclaimer": "The schedule is a plan, not a measurement. Emergency outages may happen outside it.",
+      "official": "Official operator schedule",
+      "compare": "Other services: alerts.energy"
+    },
+    "changes": {
+      "title": "Schedule changes",
+      "empty": "No changes for this date yet",
+      "published": "Schedule published",
+      "updated": "Schedule changed",
+      "added": "added {range}",
+      "removed": "cancelled {range}"
+    },
+    "matrix": {
+      "title": "All queues",
+      "offNow": "Scheduled without power now: {queues}",
+      "noneOffNow": "All queues have power according to the schedule now",
+      "hour": "Hour"
+    },
+    "picker": {
+      "region": "Region",
+      "queue": "Choose your subqueue",
+      "yourQueue": "Your queue {queue}",
+      "change": "Change",
+      "save": "Make it my queue",
+      "savedToast": "Queue {queue} saved",
+      "open": "Open schedule",
+      "noQueues": "Queues are not configured for this region yet. See the source below."
+    },
+    "address": {
+      "title": "Find your queue by address",
+      "settlement": "Settlement",
+      "settlementPlaceholder": "e.g. Starokostiantyniv",
+      "street": "Street and house number",
+      "placeholder": "e.g. Ostrozkoho 10",
+      "search": "Search",
+      "none": "Address not found. Check the spelling or ask the operator.",
+      "hint": "Add a house number to see the exact queue",
+      "multiple": "The building has several connections — check your line with the building manager or operator",
+      "fileDate": "Per operator files of {date}",
+      "unavailable": "Address search is temporarily unavailable",
+      "official": "Check on the operator’s website",
+      "onlyKhmelnytska": "Address search is available for Khmelnytskyi Oblast for now"
+    },
+    "refresh": "Refresh",
+    "shareTitle": "Power outage schedule, queue {queue} ({region})",
+    "backToRegion": "All queues of the region",
+    "otherQueues": "Other queues"
+  }
 }
