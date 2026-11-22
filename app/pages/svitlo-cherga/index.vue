@@ -6,6 +6,8 @@
 import { DEFAULT_REGION, SVITLO_REGIONS } from '#shared/utils/svitloRegions';
 import { paramToQueue, queueToParam } from '#shared/utils/svitloTime';
 
+definePageMeta({ layout: 'svitlo' });
+
 // Old links used ?region=<svitlo cpu>&queue=<1.1|all>; send them to the new URLs.
 const route = useRoute();
 const localePath = useLocalePath();

@@ -1,15 +1,24 @@
 <template>
   <section class="space-y-3">
-    <p v-if="offNow !== null" class="flex items-start gap-2 text-sm font-medium">
-      <UIcon
-        :name="offNow.length ? 'i-lucide-lightbulb-off' : 'i-lucide-lightbulb'"
-        class="mt-0.5 size-4 shrink-0"
-        aria-hidden="true"
-      />
-      <span>{{
-        offNow.length ? t('Svitlo.matrix.offNow', { queues: offNow.join(', ') }) : t('Svitlo.matrix.noneOffNow')
-      }}</span>
-    </p>
+    <div v-if="offNow !== null" class="flex flex-col gap-2.5">
+      <h3 class="svitlo-display text-xl">{{ t('Svitlo.matrix.offNowTitle') }}</h3>
+      <ul v-if="offNow.length" class="grid grid-cols-3 gap-2 sm:grid-cols-6">
+        <li v-for="o in offNow" :key="o.queue">
+          <NuxtLink
+            :to="queueLink(o.queue)"
+            class="svitlo-slot-off flex min-h-18 flex-col justify-center border border-[var(--svitlo-line)] px-3 py-2 text-white"
+          >
+            <span class="svitlo-display text-2xl">{{ o.queue }}</span>
+            <span class="text-[13px]">{{ t('Svitlo.matrix.until', { time: o.until }) }}</span>
+          </NuxtLink>
+        </li>
+      </ul>
+      <p v-else class="flex items-center gap-2 text-sm font-medium">
+        <UIcon name="i-lucide-lightbulb" class="size-4 shrink-0" aria-hidden="true" />{{
+          t('Svitlo.matrix.noneOffNow')
+        }}
+      </p>
+    </div>
     <div class="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
       <table class="w-full min-w-[640px] border-separate border-spacing-y-1 text-xs">
         <caption class="sr-only">
@@ -38,23 +47,20 @@
             <th scope="row" class="pr-2 text-left">
               <NuxtLink
                 :to="queueLink(q.queue)"
-                class="inline-flex min-h-8 items-center font-semibold text-primary hover:underline"
+                class="svitlo-display inline-flex min-h-8 items-center text-base hover:underline"
+                :class="highlight === q.queue && 'text-primary'"
               >
                 {{ q.queue }}
               </NuxtLink>
             </th>
             <td v-for="h in 24" :key="h" class="p-0" :class="currentHour === h - 1 && 'bg-primary/10'">
-              <div class="flex h-6 overflow-hidden rounded-sm">
+              <div class="flex h-7 gap-px overflow-hidden">
                 <span
                   v-for="half in [0, 1]"
                   :key="half"
                   class="h-full w-1/2"
-                  :class="q.slots[(h - 1) * 2 + half] === 'maybe' && 'svitlo-maybe-pattern'"
-                  :style="
-                    q.slots[(h - 1) * 2 + half] === 'maybe'
-                      ? undefined
-                      : { background: `var(--svitlo-${q.slots[(h - 1) * 2 + half]})` }
-                  "
+                  :class="`svitlo-slot-${q.slots[(h - 1) * 2 + half]}`"
+                  :style="slotNow !== null && (h - 1) * 2 + half < slotNow ? { opacity: 0.4 } : undefined"
                   :title="`${q.queue} ${slotLabel((h - 1) * 2 + half)} — ${t(`Svitlo.legend.${q.slots[(h - 1) * 2 + half]}`)}`"
                 />
               </div>
@@ -104,9 +110,17 @@ const slotNow = computed(() => {
 
 const currentHour = computed(() => (slotNow.value === null ? null : Math.floor(slotNow.value / 2)));
 
+const slotTime = (i: number) => `${String(Math.floor(i / 2)).padStart(2, '0')}:${i % 2 ? '30' : '00'}`;
+
 const offNow = computed(() => {
   const i = slotNow.value;
   if (i === null) return null;
-  return props.queues.filter((q) => q.slots[i] === 'off').map((q) => q.queue);
+  return props.queues
+    .filter((q) => q.slots[i] === 'off')
+    .map((q) => {
+      let end = i;
+      while (end < q.slots.length && q.slots[end] === 'off') end++;
+      return { queue: q.queue, until: slotTime(end) };
+    });
 });
 </script>

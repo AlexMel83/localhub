@@ -1,90 +1,95 @@
 <template>
-  <main class="mx-auto w-full max-w-4xl space-y-6 px-4 py-6">
-    <header class="space-y-1">
-      <h1 class="text-2xl font-bold sm:text-3xl">{{ t('Svitlo.regionTitle', { region: name }) }}</h1>
-      <p class="text-muted">{{ t('Svitlo.regionDescription', { region: name }) }}</p>
-    </header>
+  <div class="svitlo-page">
+    <main class="mx-auto w-full max-w-[1320px] space-y-6 px-4 py-6 sm:px-10 sm:py-10">
+      <header class="flex flex-col gap-3">
+        <span v-if="today" class="svitlo-eyebrow">{{ dayLabel(today.date) }}</span>
+        <h1 class="svitlo-display text-[2.75rem] sm:text-7xl">
+          {{ t('Svitlo.title') }}
+          <span class="block text-[var(--svitlo-accent-ink)]">{{ name }}</span>
+        </h1>
+        <p class="max-w-2xl text-[var(--svitlo-muted)]">{{ t('Svitlo.regionDescription', { region: name }) }}</p>
+      </header>
 
-    <UCard v-if="savedHere" :ui="{ body: 'p-4 sm:p-4' }" class="ring-primary/40">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="font-semibold">{{ t('Svitlo.picker.yourQueue', { queue: savedHere }) }}</p>
-        <UButton
-          :to="localePath(`/svitlo-cherga/${region}/${queueToParam(savedHere)}`)"
-          size="lg"
-          class="min-h-11"
-          trailing-icon="i-lucide-arrow-right"
-        >
-          {{ t('Svitlo.picker.open') }}
-        </UButton>
-      </div>
-    </UCard>
+      <NuxtLink
+        v-if="savedHere"
+        :to="localePath(`/svitlo-cherga/${region}/${queueToParam(savedHere)}`)"
+        class="svitlo-cut flex items-center gap-4 bg-[var(--svitlo-accent)] p-4 text-black sm:max-w-xl"
+      >
+        <UIcon name="i-lucide-bookmark-check" class="size-8 shrink-0" aria-hidden="true" />
+        <span class="flex flex-1 flex-col">
+          <span class="text-[13px] font-bold">{{ t('Svitlo.picker.yourQueue', { queue: savedHere }) }}</span>
+          <span class="svitlo-display text-2xl leading-tight">{{ t('Svitlo.picker.open') }}</span>
+        </span>
+        <UIcon name="i-lucide-arrow-up-right" class="size-6 shrink-0" aria-hidden="true" />
+      </NuxtLink>
 
-    <UCard>
-      <SvitloQueuePicker :regions="regions" :region="region" :current="savedHere" />
-    </UCard>
+      <UCard class="rounded-none">
+        <SvitloQueuePicker :regions="regions" :region="region" :current="savedHere" />
+      </UCard>
 
-    <UCard v-if="region === 'khmelnytska-oblast'">
-      <SvitloAddressSearch :region="region" :default-settlement="locale === 'en' ? '' : 'Старокостянтинів'" />
-    </UCard>
+      <UCard v-if="region === 'khmelnytska-oblast'" id="address" class="scroll-mt-24 rounded-none">
+        <SvitloAddressSearch :region="region" :default-settlement="locale === 'en' ? '' : 'Старокостянтинів'" />
+      </UCard>
 
-    <UCard>
-      <template #header>
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <h2 class="text-lg font-semibold">{{ t('Svitlo.matrix.title') }}</h2>
-          <div class="flex gap-1" role="tablist">
-            <UButton
-              v-for="d in days"
-              :key="d.key"
-              role="tab"
-              :aria-selected="activeDay === d.key"
-              :color="activeDay === d.key ? 'primary' : 'neutral'"
-              :variant="activeDay === d.key ? 'solid' : 'ghost'"
-              class="min-h-11"
-              @click="setDay(d.key)"
-            >
-              {{ d.label }}
-            </UButton>
+      <UCard class="rounded-none">
+        <template #header>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="svitlo-display text-2xl sm:text-3xl">{{ t('Svitlo.matrix.title') }}</h2>
+            <div class="flex gap-1" role="tablist">
+              <UButton
+                v-for="d in days"
+                :key="d.key"
+                role="tab"
+                :aria-selected="activeDay === d.key"
+                :color="activeDay === d.key ? 'primary' : 'neutral'"
+                :variant="activeDay === d.key ? 'solid' : 'ghost'"
+                class="min-h-11"
+                @click="setDay(d.key)"
+              >
+                {{ d.label }}
+              </UButton>
+            </div>
           </div>
+        </template>
+        <div v-if="pending && !current" class="space-y-2">
+          <USkeleton v-for="i in 6" :key="i" class="h-6 w-full" />
         </div>
-      </template>
-      <div v-if="pending && !current" class="space-y-2">
-        <USkeleton v-for="i in 6" :key="i" class="h-6 w-full" />
-      </div>
-      <template v-else-if="current">
-        <p class="mb-3 text-sm text-muted">{{ dayLabel(current.date) }}</p>
-        <SvitloStateAlerts
-          class="mb-3"
-          :state="current.publishedState === 'published' ? null : current.publishedState"
-          :emergency="current.emergency"
-          :stale="current.stale"
-          :sources-agree="current.sourcesAgree"
-        />
-        <SvitloQueueMatrix
-          v-if="current.queues.length && current.publishedState !== 'not_published'"
-          :region="region"
-          :date="current.date"
-          :queues="current.queues"
-          :now="activeDay === 'today' ? now : null"
-          :highlight="savedHere"
-          :tomorrow="activeDay === 'tomorrow'"
-        />
-      </template>
-      <SvitloStateAlerts v-else error />
-    </UCard>
+        <template v-else-if="current">
+          <p class="mb-3 text-sm text-muted">{{ dayLabel(current.date) }}</p>
+          <SvitloStateAlerts
+            class="mb-3"
+            :state="current.publishedState === 'published' ? null : current.publishedState"
+            :emergency="current.emergency"
+            :stale="current.stale"
+            :sources-agree="current.sourcesAgree"
+          />
+          <SvitloQueueMatrix
+            v-if="current.queues.length && current.publishedState !== 'not_published'"
+            :region="region"
+            :date="current.date"
+            :queues="current.queues"
+            :now="activeDay === 'today' ? now : null"
+            :highlight="savedHere"
+            :tomorrow="activeDay === 'tomorrow'"
+          />
+        </template>
+        <SvitloStateAlerts v-else error />
+      </UCard>
 
-    <SvitloChangesFeed v-if="changes?.length" :changes="changes" />
+      <SvitloChangesFeed v-if="changes?.length" :changes="changes" />
 
-    <SvitloSourceFooter
-      v-if="today"
-      :source="today.source"
-      :official-url="info?.official ? info.source.url : null"
-      :region="region"
-      :updated-at="today.sourceUpdatedAt"
-      :checked-at="today.lastCheckedAt ?? today.fetchedAt"
-    />
+      <SvitloSourceFooter
+        v-if="today"
+        :source="today.source"
+        :official-url="info?.official ? info.source.url : null"
+        :region="region"
+        :updated-at="today.sourceUpdatedAt"
+        :checked-at="today.lastCheckedAt ?? today.fetchedAt"
+      />
 
-    <ShareButtons :url="canonical" :page-object="{ title: pageTitle }" />
-  </main>
+      <SvitloShare :url="canonical" :title="pageTitle" />
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -148,12 +153,19 @@ useSeoMeta({
   ogTitle: pageTitle,
   ogDescription: () => t('Svitlo.regionDescription', { region: name.value }),
   ogUrl: canonical,
-  ogImage: `${siteUrl}/svitlo-cherga.jpg`,
+  ogSiteName: () => t('Svitlo.ogSiteName'),
+  ogLocale: () => (locale.value === 'en' ? 'en_US' : 'uk_UA'),
+  ogImage: `${siteUrl}/svitlo/og/default.jpg`,
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  ogImageType: 'image/jpeg',
+  ogImageAlt: pageTitle,
   ogType: 'website',
   twitterCard: 'summary_large_image',
+  twitterImage: `${siteUrl}/svitlo/og/default.jpg`,
 });
 useHead({
   link: [{ rel: 'canonical', href: canonical }],
-  meta: [{ name: 'theme-color', content: '#0057b7' }],
+  meta: [{ name: 'theme-color', content: '#111a0b' }],
 });
 </script>

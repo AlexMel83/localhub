@@ -5,9 +5,9 @@
         v-for="seg in segments"
         :key="seg.i"
         :d="seg.d"
-        :fill="seg.status === 'maybe' ? 'var(--svitlo-maybe)' : `var(--svitlo-${seg.status})`"
-        :fill-opacity="seg.status === 'maybe' ? 0.75 : 1"
-        stroke="var(--ui-bg)"
+        :fill="seg.status === 'unknown' ? 'transparent' : `var(--svitlo-${seg.status})`"
+        :fill-opacity="(seg.status === 'maybe' ? 0.6 : 1) * (seg.past ? 0.4 : 1)"
+        stroke="var(--svitlo-bg)"
         stroke-width="0.6"
       >
         <title>{{ slotLabel(seg.i) }} — {{ t(`Svitlo.legend.${seg.status}`) }}</title>
@@ -81,7 +81,8 @@ const segments = computed(() =>
     const q0 = point(a0, R_IN);
     const f = (n: number) => n.toFixed(2);
     const d = `M${f(p0.x)},${f(p0.y)} A${R_OUT},${R_OUT} 0 0 1 ${f(p1.x)},${f(p1.y)} L${f(q1.x)},${f(q1.y)} A${R_IN},${R_IN} 0 0 0 ${f(q0.x)},${f(q0.y)} Z`;
-    return { i, status, d };
+    const end = kyivLocalToDate(props.day.date, (i + 1) * 30).getTime();
+    return { i, status, d, past: props.now !== null && end <= props.now };
   }),
 );
 

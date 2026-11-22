@@ -1,51 +1,69 @@
 <template>
-  <section :aria-label="t('Svitlo.intervals.title')">
-    <ul v-if="day.intervals.length" class="divide-y divide-default">
-      <li
-        v-for="item in items"
-        :key="item.start"
-        class="flex min-h-11 items-center gap-3 py-2"
-        :class="item.finished && 'opacity-60'"
-      >
-        <UIcon
-          :name="item.status === 'maybe' ? 'i-lucide-triangle-alert' : 'i-lucide-lightbulb-off'"
-          class="size-5 shrink-0"
-          :class="item.status === 'maybe' ? 'text-warning' : 'text-highlighted'"
-          aria-hidden="true"
-        />
-        <span class="text-base font-semibold tabular-nums">{{ range(item) }}</span>
-        <span class="text-sm text-muted">{{ duration(item.minutes) }}</span>
-        <UBadge
-          v-if="item.ongoing || item.finished || item.status === 'maybe'"
-          class="ms-auto"
-          size="sm"
-          variant="subtle"
-          :color="item.ongoing ? 'error' : item.status === 'maybe' ? 'warning' : 'neutral'"
-        >
-          {{
-            item.ongoing
-              ? t('Svitlo.intervals.ongoing')
-              : item.finished
-                ? t('Svitlo.intervals.finished')
-                : t('Svitlo.intervals.maybe')
-          }}
-        </UBadge>
-      </li>
-    </ul>
-    <dl class="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
-      <div class="rounded-lg bg-elevated px-3 py-2">
-        <dt class="text-muted">{{ t('Svitlo.totals.off') }}</dt>
-        <dd class="text-lg font-bold tabular-nums">{{ duration(day.totalOffMinutes) }}</dd>
+  <section :aria-label="t('Svitlo.intervals.title')" class="flex flex-col gap-4">
+    <dl class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div class="svitlo-card px-4 py-3">
+        <dt class="svitlo-eyebrow !text-[var(--svitlo-muted)]">{{ t('Svitlo.totals.off') }}</dt>
+        <dd class="svitlo-display mt-1 text-4xl tabular-nums">{{ duration(day.totalOffMinutes) }}</dd>
       </div>
-      <div class="rounded-lg bg-elevated px-3 py-2">
-        <dt class="text-muted">{{ t('Svitlo.totals.on') }}</dt>
-        <dd class="text-lg font-bold tabular-nums">{{ duration(onMinutes) }}</dd>
+      <div class="svitlo-card px-4 py-3">
+        <dt class="svitlo-eyebrow !text-[var(--svitlo-muted)]">{{ t('Svitlo.totals.on') }}</dt>
+        <dd class="svitlo-display mt-1 text-4xl text-[var(--svitlo-accent-ink)] tabular-nums">
+          {{ duration(onMinutes) }}
+        </dd>
       </div>
-      <div v-if="day.totalMaybeMinutes" class="rounded-lg bg-elevated px-3 py-2">
-        <dt class="text-muted">{{ t('Svitlo.totals.maybe') }}</dt>
-        <dd class="text-lg font-bold tabular-nums">{{ duration(day.totalMaybeMinutes) }}</dd>
+      <div v-if="day.totalMaybeMinutes" class="svitlo-card px-4 py-3">
+        <dt class="svitlo-eyebrow !text-[var(--svitlo-muted)]">{{ t('Svitlo.totals.maybe') }}</dt>
+        <dd class="svitlo-display mt-1 text-4xl tabular-nums">{{ duration(day.totalMaybeMinutes) }}</dd>
       </div>
     </dl>
+
+    <div v-if="day.intervals.length" class="flex flex-col gap-2">
+      <h3 class="svitlo-eyebrow">{{ t('Svitlo.intervals.title') }}</h3>
+      <ul class="flex flex-col gap-2">
+        <li
+          v-for="item in items"
+          :key="item.start"
+          class="flex min-h-16 flex-wrap items-center justify-between gap-x-3 gap-y-2 border p-4"
+          :class="
+            item.finished
+              ? 'border-[var(--svitlo-line)]'
+              : 'border-[var(--svitlo-line-strong)] bg-[var(--svitlo-surface)]'
+          "
+        >
+          <div class="flex min-w-0 items-center gap-3">
+            <UIcon
+              :name="item.status === 'maybe' ? 'i-lucide-triangle-alert' : 'i-lucide-zap-off'"
+              class="size-5 shrink-0"
+              :class="item.finished ? 'text-[var(--svitlo-muted)]' : ''"
+              aria-hidden="true"
+            />
+            <div class="flex min-w-0 flex-col">
+              <span
+                class="svitlo-display text-[1.75rem] whitespace-nowrap tabular-nums sm:text-3xl"
+                :class="item.finished && 'text-[var(--svitlo-muted)] line-through decoration-1'"
+                >{{ range(item) }}</span
+              >
+              <span class="text-sm text-[var(--svitlo-muted)]"
+                >{{ duration(item.minutes) }} ·
+                {{ item.status === 'maybe' ? t('Svitlo.intervals.maybe') : t('Svitlo.intervals.off') }}</span
+              >
+            </div>
+          </div>
+          <span
+            v-if="item.ongoing || item.next"
+            class="svitlo-cut-sm shrink-0 bg-[var(--svitlo-accent)] px-3 py-1.5 text-xs font-bold tracking-wide text-black uppercase"
+          >
+            {{ item.ongoing ? t('Svitlo.intervals.ongoing') : t('Svitlo.intervals.next') }}
+          </span>
+          <span
+            v-else-if="item.finished"
+            class="inline-flex shrink-0 items-center gap-1.5 text-[13px] text-[var(--svitlo-muted)]"
+          >
+            <UIcon name="i-lucide-check" class="size-4" aria-hidden="true" />{{ t('Svitlo.intervals.finished') }}
+          </span>
+        </li>
+      </ul>
+    </div>
   </section>
 </template>
 
@@ -56,18 +74,26 @@ import { kyivLocalToDate } from '#shared/utils/svitloSlots';
 const props = withDefaults(defineProps<{ day: QueueDayView; now?: number | null }>(), { now: null });
 const { t, range, duration } = useSvitloFormat();
 
-const items = computed(() =>
-  props.day.intervals.map((i) => {
+const items = computed(() => {
+  const now = props.now;
+  const list = props.day.intervals.map((i) => {
     const start = Date.parse(i.start);
     const end = Date.parse(i.end);
-    const now = props.now;
     return {
       ...i,
+      startMs: start,
       finished: now !== null && end <= now,
       ongoing: now !== null && start <= now && now < end,
+      next: false,
     };
-  }),
-);
+  });
+  // Mark the first upcoming outage, unless one is already in progress.
+  if (now !== null && !list.some((i) => i.ongoing)) {
+    const upcoming = list.find((i) => i.startMs > now);
+    if (upcoming) upcoming.next = true;
+  }
+  return list;
+});
 
 const onMinutes = computed(() => {
   const dayMinutes =
