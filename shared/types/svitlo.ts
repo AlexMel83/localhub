@@ -40,6 +40,7 @@ export interface RegionDay {
   source: SourceInfo;
   sourceUpdatedAt: string | null;
   fetchedAt: string | null;
+  lastCheckedAt?: string | null;
   queues: QueueDay[];
 }
 
@@ -55,7 +56,8 @@ export interface RegionInfo {
 export interface ScheduleChange {
   queue: string;
   date: string;
-  changedAt: string;
+  kind: 'published' | 'updated';
+  changedAt: string | null;
   added: OutageInterval[];
   removed: OutageInterval[];
 }
@@ -63,8 +65,32 @@ export interface ScheduleChange {
 export interface AddressMatch {
   settlement: string;
   street: string;
-  houses: string;
+  house: string | null;
   queues: string[];
   rem: string;
   fileDate: string | null;
+}
+
+export interface AddressSearchResult {
+  query: { street: string; house: string | null };
+  matches: AddressMatch[];
+}
+
+/** One queue on one day, as served by /api/svitlo/:region/:queue */
+export interface QueueDayView extends QueueDay {
+  date: string;
+  dayState: PublishedState;
+}
+
+export interface QueuePageData {
+  region: RegionInfo;
+  queue: string;
+  today: QueueDayView;
+  tomorrow: QueueDayView;
+  emergency: boolean;
+  stale: boolean;
+  sourcesAgree: boolean | null;
+  source: SourceInfo;
+  sourceUpdatedAt: string | null;
+  fetchedAt: string | null;
 }

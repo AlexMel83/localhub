@@ -67,6 +67,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     apiSecret: process.env.API_SECRET,
+    // Server-only base URL of localhub_back for /outages/* (NUXT_OUTAGES_API_BASE)
+    outagesApiBase: '',
     public: {
       apiKeyMapbox: process.env.APIKEY_MAPBOX,
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
@@ -88,10 +90,18 @@ export default defineNuxtConfig({
   ],
   nitro: {
     compressPublicAssets: true,
+    storage: {
+      // Last good outage schedules; survives restarts.
+      svitlo: { driver: 'fs', base: './.data/svitlo' },
+    },
     routeRules: {
       '/': { prerender: true },
       '/en': { prerender: true },
       '/api/**': { cors: true, headers: { 'cache-control': 's-maxage=60' } },
+      '/api/svitlo/**': {
+        cors: true,
+        headers: { 'cache-control': 'public, max-age=60, s-maxage=120, stale-while-revalidate=600' },
+      },
     }
   },
   build: {
