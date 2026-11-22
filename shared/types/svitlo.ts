@@ -94,3 +94,19 @@ export interface QueuePageData {
   sourceUpdatedAt: string | null;
   fetchedAt: string | null;
 }
+
+export interface SettlementOption {
+  settlement: string;
+  rem: string;
+}
+
+export interface HouseLookup {
+  settlement: string;
+  street: string;
+  houses: string[];
+  house: string | null;
+  found: boolean;
+  queues: string[];
+  rem: string | null;
+  fileDate: string | null;
+}

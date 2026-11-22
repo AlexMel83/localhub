@@ -70,3 +70,18 @@ export const addressSchema = z.object({
     }),
   ),
 });
+
+export const settlementsSchema = z.array(z.object({ settlement: z.string(), rem: z.string() }));
+
+export const streetsSchema = z.array(z.string());
+
+export const houseSchema = z.object({
+  settlement: z.string(),
+  street: z.string(),
+  houses: z.array(z.string()),
+  house: z.string().nullable(),
+  found: z.boolean(),
+  queues: z.array(z.string()),
+  rem: z.string().nullable(),
+  fileDate: z.string().nullable(),
+});
