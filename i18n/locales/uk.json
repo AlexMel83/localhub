@@ -422,6 +422,10 @@
     "refresh": "Оновити",
     "shareTitle": "Графік відключень світла, черга {queue} ({region})",
     "backToRegion": "Усі черги області",
-    "otherQueues": "Інші черги"
+    "otherQueues": "Інші черги",
+    "telegram": {
+      "button": "Сповіщення в Telegram",
+      "hint": "За 30 хв до кожного відключення"
+    }
   }
 }
