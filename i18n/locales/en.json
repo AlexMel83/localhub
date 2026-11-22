@@ -201,16 +201,6 @@
     "contactsTitle": "Contacts",
     "contactsDescription": "For questions regarding the processing of personal data, please contact us by e-mail:"
   },
-  "LoginRegistration": {
-    "title": "Log in or register",
-    "orInputEmail": "Or enter your email",
-    "email": "Email",
-    "password": "Password",
-    "repeat": "Repeat password",
-    "graduate": "Congratulations on successful registration!",
-    "sendEmail": "Activation letter sent to",
-    "via": "Via"
-  },
   "errors": {
     "badRequest": "Bad request",
     "notFound": "Resource not found",
@@ -461,5 +451,73 @@
     },
     "summaryOff": "no power {ranges}",
     "ogSiteName": "Svitlo Cherga · LocalHub"
+  },
+  "Auth": {
+    "loginTitle": "Sign in to LocalHub",
+    "registerTitle": "Create a LocalHub account",
+    "loginDescription": "Sign in to manage your places and settings.",
+    "registerDescription": "Create an account — we will e-mail you a confirmation link.",
+    "tabs": {
+      "login": "Sign in",
+      "register": "Sign up"
+    },
+    "email": "E-mail",
+    "emailPlaceholder": "name{'@'}example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Your password",
+    "newPasswordPlaceholder": "At least 8 characters",
+    "passwordRepeat": "Repeat password",
+    "remember": "Remember me",
+    "submitLogin": "Sign in",
+    "submitRegister": "Sign up",
+    "withGoogle": "Google",
+    "withFacebook": "Facebook",
+    "or": "or",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "toRegister": "Sign up",
+    "toLogin": "Sign in",
+    "terms": "By continuing you agree to the {link}.",
+    "termsLink": "privacy policy",
+    "registered": {
+      "title": "Check your inbox",
+      "text": "We sent an e-mail to {email}. Follow the link in it to activate your account.",
+      "back": "Back to sign in"
+    },
+    "validation": {
+      "email": "Enter a valid e-mail",
+      "passwordRequired": "Enter your password",
+      "passwordMin": "Password must be at least {n} characters",
+      "passwordMax": "Password must be at most {n} characters",
+      "passwordMatch": "Passwords do not match"
+    },
+    "errors": {
+      "title": "Something went wrong",
+      "notFound": "No account with this e-mail. Maybe sign up?",
+      "wrongPassword": "Wrong password.",
+      "notActivated": "The account is not activated yet. Follow the link from the e-mail.",
+      "exists": "An account with this e-mail already exists. Try signing in.",
+      "network": "Cannot reach the server. Please try later.",
+      "unknown": "Something went wrong. Please try again."
+    },
+    "menu": {
+      "account": "Account",
+      "logout": "Sign out",
+      "loggedOut": "You have signed out",
+      "welcome": "Welcome, {name}!"
+    },
+    "activate": {
+      "title": "Account activation",
+      "loading": "Activating your account…",
+      "success": "Your account is activated and you are signed in.",
+      "fail": "Could not activate the account",
+      "home": "Home"
+    },
+    "callback": {
+      "title": "Social sign-in",
+      "loading": "Finishing sign-in…",
+      "success": "You are signed in.",
+      "fail": "Could not sign in with the social network"
+    }
   }
 }

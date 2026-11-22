@@ -3,16 +3,17 @@ import { defineStore } from 'pinia';
 export const useModalStore = defineStore('modal', {
   state: () => ({
     isLoginModalOpen: false,
+    /** Which tab the sign-in window opens on. */
+    loginModalMode: 'login' as 'login' | 'register',
     activeModal: null as string | null,
     selectedFeature: null as unknown,
   }),
   actions: {
-    openLoginModal() {
-      console.log('Opening modal');
-      this.isLoginModalOpen = !this.isLoginModalOpen;
+    openLoginModal(mode: 'login' | 'register' = 'login') {
+      this.loginModalMode = mode;
+      this.isLoginModalOpen = true;
     },
     closeLoginModal() {
-      console.log('Closing modal');
       this.isLoginModalOpen = false;
     },
     openThankfulDetails(feature: unknown) {
