@@ -87,3 +87,9 @@ export function useSvitloSavedQueue() {
   };
   return { saved, save, clear };
 }
+
+/** Link to the outage alerts bot (NUXT_PUBLIC_TELEGRAM_BOT), or null when not configured. */
+export function useSvitloBotUrl() {
+  const bot = String(useRuntimeConfig().public.telegramBot || '').replace(/^@/, '');
+  return bot ? `https://t.me/${bot}` : null;
+}

@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ key: (route) => route.path });
+definePageMeta({ layout: 'svitlo', key: (route) => route.path });
 
 const route = useRoute();
 const region = computed(() => String(route.params.region));
