@@ -2,7 +2,7 @@
   <div>
     <MetaTags
       v-if="businessStore.business?.title"
-      :url="`https://localhub.ua/business/${businessStore.business.slug}`"
+      :url="pageUrl"
       :title="businessStore.business.title"
       :description="businessStore.business.description"
       :image="businessStore.business.image"
@@ -12,7 +12,7 @@
       :business-description="businessStore.business.description"
       :business-phone="businessStore.business.phone"
       :business-email="businessStore.business.email"
-      :business-url="`https://localhub.ua/business/${businessStore.business.slug}`"
+      :business-url="pageUrl"
       :business-logo="businessStore.business.logo"
       :business-address="{
         streetAddress: businessStore.business.address,
@@ -138,8 +138,13 @@
 import { ref, defineAsyncComponent } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRuntimeConfig } from '#imports';
-const apiBase = useRuntimeConfig().public.apiBase || 'https://api.json63.pp.ua';
+const config = useRuntimeConfig();
+const apiBase = config.public.apiBase || 'https://api.json63.pp.ua';
 const route = useRoute();
+const localePath = useLocalePath();
+const siteUrl = String(config.public.siteUrl || 'https://json63.pp.ua').replace(/\/$/, '');
+// Canonical address of this page on the current domain (it is what the sitemap lists).
+const pageUrl = computed(() => `${siteUrl}${localePath(`/starkon/${route.params.slug}`)}`);
 
 const businessStore = useBusinessStore();
 

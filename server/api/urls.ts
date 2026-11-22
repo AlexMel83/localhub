@@ -1,7 +1,8 @@
 import { defineSitemapEventHandler } from '#imports';
 
 export default defineSitemapEventHandler(async () => {
-  const siteUrl = process.env.SITE_URL || 'https://json63.pp.ua';
+  // Same site URL as the rest of the app (NUXT_PUBLIC_SITE_URL), no stray env names.
+  const siteUrl = String(useRuntimeConfig().public.siteUrl || 'https://json63.pp.ua').replace(/\/$/, '');
   const apiBase = process.env.API_BASE_URL || 'https://api.json63.pp.ua';
   const defaultLocale = 'uk';
   const locales = ['uk', 'en'];
@@ -77,8 +78,15 @@ export default defineSitemapEventHandler(async () => {
       lastmod: item.lastmod,
       changefreq: 'weekly',
       priority: item.route === '' ? 1.0 : 0.8,
+      // Absolute thumbnails (e.g. Google Photos) stay as they are; only local paths get the site URL.
       images: item.thumbnail_url
-        ? [{ loc: `${siteUrl}${item.thumbnail_url.startsWith('/') ? '' : '/'}${item.thumbnail_url}` }]
+        ? [
+            {
+              loc: /^https?:\/\//i.test(item.thumbnail_url)
+                ? item.thumbnail_url
+                : encodeURI(`${siteUrl}${item.thumbnail_url.startsWith('/') ? '' : '/'}${item.thumbnail_url}`),
+            },
+          ]
         : undefined,
     }));
   } catch (error) {
