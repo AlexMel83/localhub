@@ -55,20 +55,38 @@
         <Icon name="lucide:search" class="w-5 h-5" :class="[iconClasses, { 'scale-110': isSearchActive }]" />
       </UButton>
     </UTooltip>
-    <UTooltip text="Увійти" :popper="{ placement: 'bottom' }">
+    <ClientOnly>
+      <UDropdownMenu v-if="authStore.isAuthed" :items="accountMenu" :content="{ align: 'end' }">
+        <UButton
+          color="neutral"
+          size="sm"
+          variant="soft"
+          :class="[buttonClasses, 'flex items-center gap-1']"
+          :aria-label="t('Auth.menu.account')"
+        >
+          <UAvatar v-if="authStore.user?.picture" :src="authStore.user.picture" :alt="authStore.userName" size="2xs" />
+          <Icon v-else name="lucide:user" class="w-5 h-5" />
+          <span class="text-sm font-semibold max-w-[10rem] truncate">{{ authStore.userName }}</span>
+        </UButton>
+      </UDropdownMenu>
       <UButton
+        v-else
         color="neutral"
         size="sm"
         variant="soft"
         :class="[buttonClasses, 'flex items-center gap-1']"
         @click="openLoginModal"
       >
-        <Icon :name="authStore.isAuthed ? 'lucide:user' : 'lucide:log-in'" class="w-5 h-5" />
-        <span class="text-sm font-semibold">
-          {{ authStore.isAuthed ? authStore.user?.name || 'Кабінет' : 'Увійти' }}
-        </span>
+        <Icon name="lucide:log-in" class="w-5 h-5" />
+        <span class="text-sm font-semibold">{{ t('Auth.submitLogin') }}</span>
       </UButton>
-    </UTooltip>
+      <template #fallback>
+        <UButton color="neutral" size="sm" variant="soft" :class="[buttonClasses, 'flex items-center gap-1']">
+          <Icon name="lucide:log-in" class="w-5 h-5" />
+          <span class="text-sm font-semibold">{{ t('Auth.submitLogin') }}</span>
+        </UButton>
+      </template>
+    </ClientOnly>
   </div>
 </template>
 
@@ -105,7 +123,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const appStore = useAppStore();
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 const router = useRouter();
 const route = useRoute();
 const { $gtag } = useNuxtApp();
@@ -113,8 +131,32 @@ const { $gtag } = useNuxtApp();
 const currentLocale = computed(() => locale.value);
 
 const openLoginModal = () => {
-  modalStore.openLoginModal();
+  modalStore.openLoginModal('login');
 };
+
+const toast = useToast();
+
+// Signed-in user: name / e-mail and sign out.
+const accountMenu = computed(() => [
+  [
+    {
+      label: authStore.user?.email || authStore.userName,
+      icon: 'i-lucide-user',
+      type: 'label' as const,
+    },
+  ],
+  [
+    {
+      label: t('Auth.menu.logout'),
+      icon: 'i-lucide-log-out',
+      color: 'error' as const,
+      onSelect: async () => {
+        await authStore.logout();
+        toast.add({ title: t('Auth.menu.loggedOut'), icon: 'i-lucide-log-out' });
+      },
+    },
+  ],
+]);
 
 const languageLabel = computed(() => {
   return currentLocale.value.toUpperCase() === 'UK' ? 'ENG' : 'УКР';
