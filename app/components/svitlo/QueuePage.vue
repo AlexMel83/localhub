@@ -39,6 +39,19 @@
           >
             {{ t('Svitlo.picker.yourQueue', { queue: data.queue }) }}
           </UBadge>
+          <UButton
+            v-if="telegramLink"
+            :to="telegramLink"
+            target="_blank"
+            rel="noopener"
+            color="neutral"
+            variant="solid"
+            class="min-h-11 bg-[#229ED9] text-white hover:bg-[#1c8bc0]"
+            icon="i-simple-icons-telegram"
+            :title="t('Svitlo.telegram.hint')"
+          >
+            {{ t('Svitlo.telegram.button') }}
+          </UButton>
         </div>
       </SvitloStatusHero>
 
@@ -171,6 +184,10 @@ const tabs = computed(() => [
   { key: 'today' as const, label: t('Svitlo.today'), path: base },
   { key: 'tomorrow' as const, label: t('Svitlo.tomorrow'), path: `${base}/zavtra` },
 ]);
+
+// Deep link to the alerts bot: /start <region>_<queue> subscribes this queue.
+const telegramBot = String(config.public.telegramBot || '').replace(/^@/, '');
+const telegramLink = telegramBot ? `https://t.me/${telegramBot}?start=${props.region}_${queueToParam(queue)}` : null;
 
 const isSaved = computed(() => saved.value?.region === props.region && saved.value.queue === queue);
 function saveQueue() {

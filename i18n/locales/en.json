@@ -417,6 +417,10 @@
     "refresh": "Refresh",
     "shareTitle": "Power outage schedule, queue {queue} ({region})",
     "backToRegion": "All queues of the region",
-    "otherQueues": "Other queues"
+    "otherQueues": "Other queues",
+    "telegram": {
+      "button": "Telegram alerts",
+      "hint": "30 minutes before each outage"
+    }
   }
 }

@@ -78,6 +78,8 @@ export default defineNuxtConfig({
       googleTagManagerId: process.env.GOOGLE_TAG_MANAGER_ID, 
       googleTagManagerEnabled: process.env.GOOGLE_TAG_MANAGER_ENABLED === 'true',
       googleTagManagerDebug: process.env.GOOGLE_TAG_MANAGER_DEBUG === 'true',
+      // Telegram bot username without @ (NUXT_PUBLIC_TELEGRAM_BOT); empty hides the button
+      telegramBot: '',
     },
   },
   plugins: [
