@@ -278,7 +278,7 @@
   "optional": "Optional",
   "Svitlo": {
     "title": "Power outage schedule",
-    "metaDescription": "Hourly power outage schedules by queue: status now, countdown to the next outage, today and tomorrow. Khmelnytskyi Oblast and all of Ukraine.",
+    "metaDescription": "Hourly power outage schedules by queue: status now, countdown to the next outage, today and tomorrow. Khmelnytskyi, Kharkiv oblasts and all of Ukraine.",
     "regionTitle": "Power outage schedule – {region}",
     "regionDescription": "Hourly power outages, {region}: all queues today and tomorrow, who is without power now, find your queue by address.",
     "queueTitle": "Queue {queue}: power outage schedule – {region}",
@@ -405,7 +405,7 @@
       "fileDate": "Per operator files of {date}",
       "unavailable": "Address search is temporarily unavailable",
       "official": "Check on the operator’s website",
-      "onlyKhmelnytska": "Address search is available for Khmelnytskyi Oblast for now",
+      "onlyKhmelnytska": "Address search is available for Khmelnytskyi and Kharkiv oblasts for now",
       "streetLabel": "Street",
       "streetPlaceholder": "Start typing the street name",
       "pickSettlementFirst": "Choose a settlement first",
@@ -451,7 +451,7 @@
       "copied": "Link copied"
     },
     "footer": {
-      "about": "Hourly power outage schedule for Starokostiantyniv and Khmelnytskyi Oblast: status now, countdown to the next outage, today and tomorrow.",
+      "about": "Hourly power outage schedule for Starokostiantyniv, Balakliia, Khmelnytskyi and Kharkiv oblasts: status now, countdown to the next outage, today and tomorrow.",
       "schedule": "Schedule",
       "allQueues": "All queues",
       "findAddress": "Find your queue by address",
