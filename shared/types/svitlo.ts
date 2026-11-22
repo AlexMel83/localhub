@@ -51,6 +51,8 @@ export interface RegionInfo {
   official: boolean;
   source: SourceInfo;
   queues: string[];
+  /** Address -> queue lookup; defaultSettlement is preselected, officialUrl is the operator's own lookup. */
+  addressSearch: { defaultSettlement: string | null; officialUrl: string } | null;
 }
 
 export interface ScheduleChange {

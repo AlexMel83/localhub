@@ -43,6 +43,10 @@ export const regionsSchema = z.array(
     official: z.boolean(),
     source,
     queues: z.array(z.string()),
+    addressSearch: z
+      .object({ defaultSettlement: z.string().nullable(), officialUrl: z.string() })
+      .nullable()
+      .optional(),
   }),
 );
 

@@ -30,15 +30,13 @@
             }}</NuxtLink>
           </li>
           <li>
-            <NuxtLink
-              :to="localePath('/svitlo-cherga') + '#address'"
-              class="inline-flex min-h-11 items-center hover:underline"
-              >{{ t('Svitlo.footer.findAddress') }}</NuxtLink
-            >
+            <NuxtLink :to="regionPath + '#address'" class="inline-flex min-h-11 items-center hover:underline">{{
+              t('Svitlo.footer.findAddress')
+            }}</NuxtLink>
           </li>
           <li>
             <a
-              href="https://hoe.com.ua/page/pogodinni-vidkljuchennja"
+              :href="region.source.url"
               target="_blank"
               rel="noopener"
               class="inline-flex min-h-11 items-center gap-1 hover:underline"
@@ -88,7 +86,16 @@
 </template>
 
 <script setup lang="ts">
+import { DEFAULT_REGION, findRegion } from '#shared/utils/svitloRegions';
+
 const { t } = useI18n();
 const localePath = useLocalePath();
 const botUrl = useSvitloBotUrl();
+const route = useRoute();
+
+// Links follow the region of the current page (default region elsewhere).
+const region = computed(() => findRegion(String(route.params.region ?? '')) ?? findRegion(DEFAULT_REGION)!);
+const regionPath = computed(() =>
+  localePath(region.value.slug === DEFAULT_REGION ? '/svitlo-cherga' : `/svitlo-cherga/${region.value.slug}`),
+);
 </script>
