@@ -29,37 +29,132 @@
   --color-sun-950: #241e00;
 }
 
-/* Outage schedule semantic tokens (light / dark). Status is never shown by
-   color alone: components always pair them with an icon and text. */
+/* Outage schedule ("svitlo") theme. Light by default, `.dark` for night use.
+   Status is never shown by color alone: components always pair a fill with
+   a texture (hatching), an icon and text. */
 :root {
-  --svitlo-on: #ffd700;
-  --svitlo-on-fg: #3d3300;
-  --svitlo-off: #334155;
+  --svitlo-accent: #f17a26;
+  /* Orange for TEXT on a light ground (#f17a26 on white is only 2.9:1). */
+  --svitlo-accent-ink: #c2410c;
+  --svitlo-bg: #ffffff;
+  --svitlo-surface: #f4f5f0;
+  --svitlo-ink: #0a0a0a;
+  --svitlo-muted: #525252;
+  --svitlo-line: rgb(0 0 0 / 0.12);
+  --svitlo-line-strong: rgb(0 0 0 / 0.24);
+  --svitlo-hairline: linear-gradient(62.71deg, #f17a26 -4.93%, rgb(241 122 38 / 0.2) 51.96%, #f17a26 102%);
+
+  --svitlo-on: #f17a26;
+  --svitlo-on-fg: #000000;
+  --svitlo-off: #5c5c5c;
+  --svitlo-off-2: #2b2b2b;
   --svitlo-off-fg: #ffffff;
-  --svitlo-maybe: #f59e0b;
-  --svitlo-maybe-fg: #3b2300;
-  --svitlo-unknown: #e2e8f0;
-  --svitlo-unknown-fg: #475569;
-  --svitlo-now: #0057b7;
+  --svitlo-maybe: #f17a26;
+  --svitlo-maybe-2: #4a2610;
+  --svitlo-maybe-fg: #000000;
+  --svitlo-unknown: transparent;
+  --svitlo-unknown-fg: #525252;
+  --svitlo-now: #0a0a0a;
+  --svitlo-now-fg: #ffffff;
 }
 
 .dark,
 [data-theme='dark'] {
-  --svitlo-on: #e6c200;
-  --svitlo-on-fg: #241e00;
-  --svitlo-off: #475569;
-  --svitlo-off-fg: #f8fafc;
-  --svitlo-maybe: #d97706;
-  --svitlo-maybe-fg: #1f1300;
-  --svitlo-unknown: #1e293b;
-  --svitlo-unknown-fg: #cbd5e1;
-  --svitlo-now: #7fb0ef;
+  --svitlo-accent-ink: #f17a26;
+  --svitlo-bg: #000000;
+  --svitlo-surface: #111a0b;
+  --svitlo-ink: #ffffff;
+  --svitlo-muted: #bebebe;
+  --svitlo-line: rgb(255 255 255 / 0.14);
+  --svitlo-line-strong: rgb(255 255 255 / 0.28);
+  --svitlo-unknown-fg: #bebebe;
+  --svitlo-now: #ffffff;
+  --svitlo-now-fg: #000000;
 }
 
+/* Re-skins Nuxt UI only inside the outage pages. */
+.svitlo-page {
+  --ui-primary: var(--svitlo-accent-ink);
+  --ui-text-inverted: #ffffff;
+  --ui-bg: var(--svitlo-bg);
+  --ui-bg-muted: var(--svitlo-surface);
+  --ui-bg-elevated: var(--svitlo-surface);
+  --ui-bg-accented: var(--svitlo-surface);
+  --ui-text: var(--svitlo-ink);
+  --ui-text-highlighted: var(--svitlo-ink);
+  --ui-text-toned: var(--svitlo-muted);
+  --ui-text-muted: var(--svitlo-muted);
+  --ui-text-dimmed: var(--svitlo-muted);
+  --ui-border: var(--svitlo-line);
+  --ui-border-muted: var(--svitlo-line);
+  --ui-border-accented: var(--svitlo-line-strong);
+  --ui-radius: 0.125rem;
+  background: var(--svitlo-bg);
+  color: var(--svitlo-ink);
+  font-family:
+    'Mulish',
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+.dark .svitlo-page {
+  --ui-primary: var(--svitlo-accent);
+  --ui-text-inverted: #000000;
+}
+.svitlo-page :focus-visible {
+  outline: 2px solid #7dd3fc;
+  outline-offset: 2px;
+}
+
+.svitlo-display {
+  font-family: 'Oswald', system-ui, sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+}
+.svitlo-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--svitlo-accent-ink);
+}
+.svitlo-card {
+  background: var(--svitlo-surface);
+  border: 1px solid var(--svitlo-line);
+}
+.svitlo-hairline {
+  border: 1px solid transparent;
+  border-image: var(--svitlo-hairline) 1;
+}
+.svitlo-header {
+  background: color-mix(in srgb, var(--svitlo-bg) 88%, transparent);
+  backdrop-filter: blur(5px);
+}
+/* Diagonal corner cuts instead of radii. */
+.svitlo-cut {
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+.svitlo-cut-sm {
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.svitlo-cut-lg {
+  clip-path: polygon(17px 0, 100% 0, 100% calc(100% - 17px), calc(100% - 17px) 100%, 0 100%, 0 17px);
+}
+
+/* Slot fills: solid = light, grey hatching = no light, orange hatching = maybe. */
+.svitlo-slot-on {
+  background: var(--svitlo-on);
+}
+.svitlo-slot-off {
+  background: repeating-linear-gradient(135deg, var(--svitlo-off) 0 3px, var(--svitlo-off-2) 3px 6px);
+}
+.svitlo-slot-maybe,
 .svitlo-maybe-pattern {
-  background-image: repeating-linear-gradient(
-    135deg,
-    var(--svitlo-maybe) 0 4px,
-    color-mix(in srgb, var(--svitlo-maybe) 55%, transparent) 4px 8px
-  );
+  background: repeating-linear-gradient(135deg, var(--svitlo-maybe) 0 3px, var(--svitlo-maybe-2) 3px 6px);
+}
+.svitlo-slot-unknown {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--svitlo-line-strong);
 }

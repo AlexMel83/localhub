@@ -279,11 +279,11 @@
   "Svitlo": {
     "title": "Power outage schedule",
     "metaDescription": "Hourly power outage schedules by queue: status now, countdown to the next outage, today and tomorrow. Khmelnytskyi Oblast and all of Ukraine.",
-    "regionTitle": "Power outage schedule — {region}",
+    "regionTitle": "Power outage schedule – {region}",
     "regionDescription": "Hourly power outages, {region}: all queues today and tomorrow, who is without power now, find your queue by address.",
-    "queueTitle": "Queue {queue}: power outage schedule — {region}",
-    "queueTitleTomorrow": "Queue {queue}: tomorrow’s outage schedule — {region}",
-    "queueDescription": "When power is off for queue {queue} ({region}), {date}: {summary}. Status now and countdown to the next outage.",
+    "queueTitle": "Queue {queue}: power outage schedule – {region}",
+    "queueTitleTomorrow": "Queue {queue}: tomorrow’s outage schedule – {region}",
+    "queueDescription": "{date}: {summary}. Queue {queue}, {region} – status now and countdown to the next outage.",
     "summaryNone": "no outages planned",
     "summaryUnknown": "schedule not published yet",
     "queue": "Queue {queue}",
@@ -319,7 +319,8 @@
       "finished": "Finished as scheduled",
       "ongoing": "Ongoing",
       "maybe": "Possible outage",
-      "off": "No power"
+      "off": "No power",
+      "next": "Next"
     },
     "totals": {
       "off": "Without power today",
@@ -377,7 +378,9 @@
       "title": "All queues",
       "offNow": "Scheduled without power now: {queues}",
       "noneOffNow": "All queues have power according to the schedule now",
-      "hour": "Hour"
+      "hour": "Hour",
+      "until": "until {time}",
+      "offNowTitle": "Without power now"
     },
     "picker": {
       "region": "Region",
@@ -415,12 +418,47 @@
       "notListed": "Address not listed? Check on the operator’s website:"
     },
     "refresh": "Refresh",
-    "shareTitle": "Power outage schedule, queue {queue} ({region})",
+    "shareTitle": "Queue {queue} ({region}) – power outage schedule",
     "backToRegion": "All queues of the region",
     "otherQueues": "Other queues",
     "telegram": {
       "button": "Telegram alerts",
       "hint": "30 minutes before each outage"
-    }
+    },
+    "nowLead": "Scheduled right now",
+    "nowShort": {
+      "on": "Power on",
+      "off": "No power",
+      "maybe": "Possible outage",
+      "unknown": "No data"
+    },
+    "nextLabel": {
+      "off": "Outage in",
+      "on": "Power back in",
+      "maybe": "Possible outage in"
+    },
+    "brand": {
+      "first": "Svitlo",
+      "second": "Cherga",
+      "tagline": "Power outage schedule",
+      "nav": "Schedule navigation",
+      "home": "LocalHub home"
+    },
+    "share": {
+      "title": "Share the schedule",
+      "copy": "Copy link",
+      "native": "Share",
+      "copied": "Link copied"
+    },
+    "footer": {
+      "about": "Hourly power outage schedule for Starokostiantyniv and Khmelnytskyi Oblast: status now, countdown to the next outage, today and tomorrow.",
+      "schedule": "Schedule",
+      "allQueues": "All queues",
+      "findAddress": "Find your queue by address",
+      "bot": "Telegram bot",
+      "partOf": "Part of LocalHub Starokostiantyniv"
+    },
+    "summaryOff": "no power {ranges}",
+    "ogSiteName": "Svitlo Cherga · LocalHub"
   }
 }

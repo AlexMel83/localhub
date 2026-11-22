@@ -1,5 +1,5 @@
 <template>
-  <footer class="space-y-2 rounded-xl bg-elevated/60 p-4 text-sm text-muted">
+  <footer class="space-y-2 border-t border-[var(--svitlo-line)] pt-4 text-sm text-[var(--svitlo-muted)]">
     <p>
       {{ t('Svitlo.source.label') }}:
       <a

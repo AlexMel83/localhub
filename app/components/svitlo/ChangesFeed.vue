@@ -1,6 +1,6 @@
 <template>
-  <details class="group rounded-xl ring-1 ring-default" :open="open">
-    <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 px-4 py-2 font-semibold">
+  <details class="group border-y border-[var(--svitlo-line)]" :open="open">
+    <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-2 py-2 font-bold">
       <span class="inline-flex items-center gap-2">
         <UIcon name="i-lucide-history" class="size-5" aria-hidden="true" />
         {{ t('Svitlo.changes.title') }}
@@ -12,9 +12,9 @@
         aria-hidden="true"
       />
     </summary>
-    <div class="px-4 pb-4">
+    <div class="pb-4">
       <p v-if="!items.length" class="text-sm text-muted">{{ t('Svitlo.changes.empty') }}</p>
-      <ol v-else class="space-y-2 text-sm">
+      <ol v-else class="space-y-2.5 text-[15px]">
         <li v-for="(c, idx) in items" :key="idx" class="flex flex-wrap items-baseline gap-x-2">
           <time class="font-semibold tabular-nums" :datetime="c.changedAt ?? undefined">{{
             c.changedAt ? hm(c.changedAt) : ''
