@@ -18,15 +18,15 @@ export default defineNuxtConfig({
   robots: {
     allow: '/',
     disallow: ['/admin'],
-    sitemap: [
-      `${process.env.NUXT_PUBLIC_SITE_URL || 'https://json63.pp.ua'}/sitemap_index.xml`,
-      `${process.env.NUXT_PUBLIC_SITE_URL || 'https://json63.pp.ua'}/svitlo-cherga/sitemap.xml`,
-    ],
+    // /sitemap.xml is added by @nuxtjs/sitemap itself; there is no sitemap_index.xml
+    // (single sitemap mode), so it must not be listed.
+    sitemap: [`${process.env.NUXT_PUBLIC_SITE_URL || 'https://json63.pp.ua'}/svitlo-cherga/sitemap.xml`],
   },
   sitemap: {
     siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://json63.pp.ua',
     autoI18n: false,
     sources: ['/api/urls', '/api/__sitemap__/svitlo'],
+    exclude: ['/test-gtm', '/en/test-gtm', '/starkon/create', '/en/starkon/create'],
     gzip: true,
     debug: process.env.NODE_ENV === 'development',
     defaults: {
@@ -103,6 +103,11 @@ export default defineNuxtConfig({
       '/': { prerender: true },
       '/en': { prerender: true },
       '/svitlo-cherga-vchart': { redirect: { to: '/svitlo-cherga', statusCode: 301 } },
+      // Service pages: keep them out of search results and the sitemap.
+      '/test-gtm': { robots: false },
+      '/en/test-gtm': { robots: false },
+      '/starkon/create': { robots: false },
+      '/en/starkon/create': { robots: false },
       '/api/**': { cors: true, headers: { 'cache-control': 's-maxage=60' } },
       '/api/svitlo/**': {
         cors: true,

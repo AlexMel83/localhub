@@ -23,11 +23,11 @@
           <p class="mb-4 text-gray-700 dark:text-gray-300">
             {{ $t('PrivacyPolicy.ourSite') }}
             <a
-              href="https://localhub.pp.ua"
+              href="https://json63.pp.ua"
               target="_blank"
               class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
             >
-              https://localhub.pp.ua
+              https://json63.pp.ua
             </a>
           </p>
 
