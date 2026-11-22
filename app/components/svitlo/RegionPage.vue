@@ -171,5 +171,46 @@ useSeoMeta({
 useHead({
   link: [{ rel: 'canonical', href: canonical }],
   meta: [{ name: 'theme-color', content: '#111a0b' }],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: computed(() =>
+        JSON.stringify({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'WebPage',
+              name: pageTitle.value,
+              description: t('Svitlo.regionDescription', { region: name.value }),
+              url: canonical.value,
+              inLanguage: locale.value === 'en' ? 'en' : 'uk',
+            },
+            {
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                {
+                  '@type': 'ListItem',
+                  position: 1,
+                  name: t('Svitlo.title'),
+                  item: `${siteUrl}${localePath('/svitlo-cherga')}`,
+                },
+                { '@type': 'ListItem', position: 2, name: name.value, item: canonical.value },
+              ],
+            },
+            {
+              '@type': 'ItemList',
+              name: pageTitle.value,
+              itemListElement: info.queues.map((q, i) => ({
+                '@type': 'ListItem',
+                position: i + 1,
+                name: t('Svitlo.queue', { queue: q }),
+                url: `${siteUrl}${localePath(`/svitlo-cherga/${props.region}/${queueToParam(q)}`)}`,
+              })),
+            },
+          ],
+        }),
+      ),
+    },
+  ],
 });
 </script>

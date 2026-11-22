@@ -218,6 +218,15 @@ function setView(v: 'line' | 'ring') {
 }
 const name = computed(() => regionName(def));
 const shown = computed(() => (props.day === 'today' ? data.value!.today : data.value!.tomorrow));
+
+// Keep pages without a published schedule out of the index (thin/duplicate),
+// but let them back in as soon as the operator publishes one.
+const indexable = computed(() => {
+  if (error.value || !data.value) return false;
+  const day = props.day === 'today' ? data.value.today : data.value.tomorrow;
+  return day.publishedState !== 'not_published';
+});
+useRobotsRule(indexable.value ? true : 'noindex, follow');
 const base = `/svitlo-cherga/${props.region}/${queueToParam(queue)}`;
 const regionPath = props.region === DEFAULT_REGION ? '/svitlo-cherga' : `/svitlo-cherga/${props.region}`;
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);

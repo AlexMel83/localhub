@@ -6,7 +6,10 @@
     <div class="flex items-center justify-between gap-3">
       <div class="flex min-w-0 flex-col">
         <span class="svitlo-eyebrow">{{ regionName }}</span>
-        <span class="svitlo-display text-2xl leading-tight">{{ t('Svitlo.queue', { queue }) }}</span>
+        <h1 id="svitlo-hero-title" class="svitlo-display text-2xl leading-tight">
+          {{ t('Svitlo.queue', { queue })
+          }}<span class="sr-only"> — {{ t('Svitlo.heroHeading', { region: regionName }) }}</span>
+        </h1>
       </div>
       <slot name="aside" />
     </div>
@@ -15,12 +18,12 @@
       <div class="svitlo-cut flex size-16 shrink-0 items-center justify-center sm:size-20" :class="tileClass">
         <UIcon :name="icon" class="size-9 sm:size-10" aria-hidden="true" />
       </div>
-      <h1 id="svitlo-hero-title" class="min-w-0" aria-live="polite">
+      <p class="min-w-0" aria-live="polite">
         <span class="block text-[15px] text-[var(--svitlo-muted)]">{{ t('Svitlo.nowLead') }}</span>
         <span class="svitlo-display block text-[2.5rem] sm:text-6xl" :class="headClass">
           {{ t(`Svitlo.nowShort.${state.status}`) }}
         </span>
-      </h1>
+      </p>
     </div>
 
     <div v-if="timer" class="flex flex-col gap-2.5 border-t border-[var(--svitlo-line)] pt-4">

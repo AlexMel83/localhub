@@ -425,6 +425,7 @@
       "button": "Telegram alerts",
       "hint": "30 minutes before each outage"
     },
+    "heroHeading": "power outage schedule, {region}",
     "nowLead": "Scheduled right now",
     "nowShort": {
       "on": "Power on",
