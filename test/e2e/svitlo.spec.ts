@@ -45,6 +45,16 @@ test('region overview shows all subqueues and the matrix', async ({ page }) => {
   await noHorizontalScroll(page);
 });
 
+test('Kharkiv Oblast has its own address search and official source', async ({ page, request }) => {
+  const html = await (await request.get('/svitlo-cherga/kharkivska-oblast')).text();
+  expect(html).toContain('Харківська область');
+  expect(html).toContain('id="address"');
+  expect(html).toContain('https://t.me/kharkivenergy');
+  await page.goto('/svitlo-cherga/kharkivska-oblast');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Харківська область');
+  await noHorizontalScroll(page);
+});
+
 test('legacy query links redirect to the queue page', async ({ page }) => {
   const res = await page.goto('/svitlo-cherga?region=hmelnitska-oblast&queue=3.1');
   expect(res?.url()).toMatch(/\/svitlo-cherga\/khmelnytska-oblast\/3-1$/);
