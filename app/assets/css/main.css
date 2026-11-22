@@ -1,2 +1,65 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
+
+/* Brand palettes for Nuxt UI (app.config.ts: primary = brand, secondary = sun).
+   brand-500 is the site theme color #0057b7, sun-400 the Ukrainian yellow #ffd700. */
+@theme static {
+  --color-brand-50: #eef5ff;
+  --color-brand-100: #d9e8fc;
+  --color-brand-200: #b3d0f7;
+  --color-brand-300: #7fb0ef;
+  --color-brand-400: #3f86de;
+  --color-brand-500: #0057b7;
+  --color-brand-600: #004c9f;
+  --color-brand-700: #003f84;
+  --color-brand-800: #00336b;
+  --color-brand-900: #002856;
+  --color-brand-950: #001a38;
+
+  --color-sun-50: #fffbe6;
+  --color-sun-100: #fff4bf;
+  --color-sun-200: #ffeb80;
+  --color-sun-300: #ffe040;
+  --color-sun-400: #ffd700;
+  --color-sun-500: #e6c200;
+  --color-sun-600: #b39700;
+  --color-sun-700: #806c00;
+  --color-sun-800: #594b00;
+  --color-sun-900: #3d3300;
+  --color-sun-950: #241e00;
+}
+
+/* Outage schedule semantic tokens (light / dark). Status is never shown by
+   color alone: components always pair them with an icon and text. */
+:root {
+  --svitlo-on: #ffd700;
+  --svitlo-on-fg: #3d3300;
+  --svitlo-off: #334155;
+  --svitlo-off-fg: #ffffff;
+  --svitlo-maybe: #f59e0b;
+  --svitlo-maybe-fg: #3b2300;
+  --svitlo-unknown: #e2e8f0;
+  --svitlo-unknown-fg: #475569;
+  --svitlo-now: #0057b7;
+}
+
+.dark,
+[data-theme='dark'] {
+  --svitlo-on: #e6c200;
+  --svitlo-on-fg: #241e00;
+  --svitlo-off: #475569;
+  --svitlo-off-fg: #f8fafc;
+  --svitlo-maybe: #d97706;
+  --svitlo-maybe-fg: #1f1300;
+  --svitlo-unknown: #1e293b;
+  --svitlo-unknown-fg: #cbd5e1;
+  --svitlo-now: #7fb0ef;
+}
+
+.svitlo-maybe-pattern {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--svitlo-maybe) 0 4px,
+    color-mix(in srgb, var(--svitlo-maybe) 55%, transparent) 4px 8px
+  );
+}

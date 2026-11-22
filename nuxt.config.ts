@@ -5,7 +5,8 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   modules: [
     "@nuxt/eslint",
-    "@pinia/nuxt", 
+    "@pinia/nuxt",
+    "@vueuse/nuxt",
     "@nuxt/image",
     "@nuxt/ui",
     "@nuxt/icon",
@@ -22,7 +23,7 @@ export default defineNuxtConfig({
   sitemap: {
     siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://json63.pp.ua',
     autoI18n: false,
-    sources: ['/api/urls'],
+    sources: ['/api/urls', '/api/__sitemap__/svitlo'],
     gzip: true,
     debug: process.env.NODE_ENV === 'development',
     defaults: {
@@ -66,6 +67,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     apiSecret: process.env.API_SECRET,
+    // Server-only base URL of localhub_back for /outages/* (NUXT_OUTAGES_API_BASE)
+    outagesApiBase: '',
     public: {
       apiKeyMapbox: process.env.APIKEY_MAPBOX,
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
@@ -87,10 +90,19 @@ export default defineNuxtConfig({
   ],
   nitro: {
     compressPublicAssets: true,
+    storage: {
+      // Last good outage schedules; survives restarts.
+      svitlo: { driver: 'fs', base: './.data/svitlo' },
+    },
     routeRules: {
       '/': { prerender: true },
       '/en': { prerender: true },
+      '/svitlo-cherga-vchart': { redirect: { to: '/svitlo-cherga', statusCode: 301 } },
       '/api/**': { cors: true, headers: { 'cache-control': 's-maxage=60' } },
+      '/api/svitlo/**': {
+        cors: true,
+        headers: { 'cache-control': 'public, max-age=60, s-maxage=120, stale-while-revalidate=600' },
+      },
     }
   },
   build: {
