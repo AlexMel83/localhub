@@ -18,7 +18,10 @@ export default defineNuxtConfig({
   robots: {
     allow: '/',
     disallow: ['/admin'],
-    sitemap: `${process.env.NUXT_PUBLIC_SITE_URL || 'https://json63.pp.ua'}/sitemap_index.xml`,
+    sitemap: [
+      `${process.env.NUXT_PUBLIC_SITE_URL || 'https://json63.pp.ua'}/sitemap_index.xml`,
+      `${process.env.NUXT_PUBLIC_SITE_URL || 'https://json63.pp.ua'}/svitlo-cherga/sitemap.xml`,
+    ],
   },
   sitemap: {
     siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://json63.pp.ua',
