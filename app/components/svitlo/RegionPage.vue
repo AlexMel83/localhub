@@ -27,8 +27,12 @@
         <SvitloQueuePicker :regions="regions" :region="region" :current="savedHere" />
       </UCard>
 
-      <UCard v-if="region === 'khmelnytska-oblast'" id="address" class="scroll-mt-24 rounded-none">
-        <SvitloAddressSearch :region="region" :default-settlement="locale === 'en' ? '' : 'Старокостянтинів'" />
+      <UCard v-if="info.addressSearch" id="address" class="scroll-mt-24 rounded-none">
+        <SvitloAddressSearch
+          :region="region"
+          :default-settlement="locale === 'en' ? '' : (info.addressSearch.defaultSettlement ?? '')"
+          :official-url="info.addressSearch.officialUrl"
+        />
       </UCard>
 
       <UCard class="rounded-none">

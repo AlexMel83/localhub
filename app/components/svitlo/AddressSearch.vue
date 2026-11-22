@@ -67,9 +67,7 @@
         :title="t('Svitlo.address.unavailable')"
       >
         <template #description>
-          <a href="https://hoe.com.ua/shutdown/queue" target="_blank" rel="noopener" class="underline">{{
-            t('Svitlo.address.official')
-          }}</a>
+          <a :href="officialUrl" target="_blank" rel="noopener" class="underline">{{ t('Svitlo.address.official') }}</a>
         </template>
       </UAlert>
 
@@ -104,7 +102,7 @@
 
       <p class="mt-2 text-xs text-muted">
         {{ t('Svitlo.address.notListed') }}
-        <a href="https://hoe.com.ua/shutdown/queue" target="_blank" rel="noopener" class="text-primary underline">{{
+        <a :href="officialUrl" target="_blank" rel="noopener" class="text-primary underline">{{
           t('Svitlo.address.official')
         }}</a>
       </p>
@@ -122,7 +120,7 @@ interface Item {
   value: string;
 }
 
-const props = defineProps<{ region: string; defaultSettlement?: string }>();
+const props = defineProps<{ region: string; defaultSettlement?: string; officialUrl: string }>();
 
 const { t } = useSvitloFormat();
 const localePath = useLocalePath();

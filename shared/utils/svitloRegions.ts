@@ -25,6 +25,7 @@ const r = (
   official: false,
   source: SVITLO,
   queues: STANDARD_QUEUES,
+  addressSearch: null,
   legacyCpu,
   dtekCpu,
 });
@@ -37,6 +38,7 @@ export const SVITLO_REGIONS: RegionDef[] = [
     official: true,
     source: { name: 'АТ «Хмельницькобленерго»', url: 'https://hoe.com.ua/page/pogodinni-vidkljuchennja' },
     queues: STANDARD_QUEUES,
+    addressSearch: { defaultSettlement: 'Старокостянтинів', officialUrl: 'https://hoe.com.ua/shutdown/queue' },
     legacyCpu: 'hmelnitska-oblast',
     dtekCpu: 'khmelnytska-oblast',
   },
@@ -69,7 +71,17 @@ export const SVITLO_REGIONS: RegionDef[] = [
   r('rivnenska-oblast', 'Рівненська область', 'Rivne Oblast', 'rivnenska-oblast', 'rivnenska-oblast'),
   r('sumska-oblast', 'Сумська область', 'Sumy Oblast', 'sumska-oblast', null),
   r('ternopilska-oblast', 'Тернопільська область', 'Ternopil Oblast', 'ternopilska-oblast', 'ternopilska-oblast'),
-  r('kharkivska-oblast', 'Харківська область', 'Kharkiv Oblast', 'harkivska-oblast', 'kharkivska-oblast'),
+  {
+    slug: 'kharkivska-oblast',
+    nameUk: 'Харківська область',
+    nameEn: 'Kharkiv Oblast',
+    official: true,
+    source: { name: 'АТ «Харківобленерго»', url: 'https://t.me/kharkivenergy' },
+    queues: STANDARD_QUEUES,
+    addressSearch: { defaultSettlement: 'Балаклія', officialUrl: 'https://www.oblenergo.kharkov.ua/getinfoingao' },
+    legacyCpu: 'harkivska-oblast',
+    dtekCpu: 'kharkivska-oblast',
+  },
   r('cherkaska-oblast', 'Черкаська область', 'Cherkasy Oblast', 'cherkaska-oblast', 'cherkaska-oblast'),
   r('chernivetska-oblast', 'Чернівецька область', 'Chernivtsi Oblast', 'chernivetska-oblast', 'chernivetska-oblast'),
   r('chernihivska-oblast', 'Чернігівська область', 'Chernihiv Oblast', 'chernigivska-oblast', 'chernihivska-oblast'),
@@ -82,6 +94,6 @@ export function findRegion(slug: string): RegionDef | undefined {
 
 /** Public part of a region definition. */
 export function publicRegion(def: RegionDef): RegionInfo {
-  const { slug, nameUk, nameEn, official, source, queues } = def;
-  return { slug, nameUk, nameEn, official, source, queues };
+  const { slug, nameUk, nameEn, official, source, queues, addressSearch } = def;
+  return { slug, nameUk, nameEn, official, source, queues, addressSearch };
 }
