@@ -55,12 +55,13 @@ const visibleRoutes = computed(() => {
       <div>Завантаження маршрутів...</div>
     </div>
     <LMap ref="map" v-model:zoom="zoom" v-model:center="center" :use-global-leaflet="false" :options="mapOptions">
-      <!-- Dark mode map style or Standard implementation -->
-      <!-- Using CartoDB Voyager for a clean look -->
+      <!-- OpenStreetMap tiles (CARTO basemaps now require an API key) -->
       <LTileLayer
-        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         layer-type="base"
-        name="CartoDB Voyager"
+        name="OpenStreetMap"
+        :max-zoom="19"
+        attribution='&copy; <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
 
       <!-- Routes (Polylines) - Show only routes passing through selected stop -->
